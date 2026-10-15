@@ -15,10 +15,13 @@ Use `npx serve public` to view the site. Opening `public/index.html` straight fr
 
 ## Edit it
 
-- Pages: `content/en/*.md`. Each file starts with a short block (`title`, `slug`, `order`, `description`).
-- Site name, contact email, draft banner and indexing switch: `content/data/site.json`.
+- Pages: `content/en/*.md`. Each file starts with a short block (`title`, `slug`, `order`, `description`, plus optional `eyebrow`, `nav: false` to keep a page out of the top menu, and `layout: home`).
+- Page layout in Markdown: a line such as `{cards 3}`, `{path}`, `{defs}`, `{stats}`, `{routes}`, `{ladder}` or `{legend}` directly before a list turns it into that component. `+++ Title` followed by text makes a disclosure. `==text==` is the highlight. See the comment at the top of the Markdown section in `build.js`.
+- The eight Studio steps (title, what happens, AI role, partner, facilitator decision): `content/<lang>/studio.json`. The Studio page, the home page list and the tour all read from it.
+- Words in the page shell and in the scripts (skip link, menu, footer, tour and tool text): `content/<lang>/ui.json`. Each language folder needs its own `ui.json` and `studio.json`.
+- Site name, contact email, draft banner and indexing switch: `content/data/site.json`. While the email is still the placeholder, the site shows "to be confirmed" instead.
 - Look and feel: `static/styles.css`. Page shell: `templates/page.html`.
-- Words in the page shell (skip link, menu label, footer): `content/<lang>/ui.json`. Each language folder needs its own copy.
+- Scripts: `static/site.js` (theme button, Studio track, the two small tools) and `static/tour.js` (the 3D tour). Fonts: `static/fonts/`. Three.js: `static/vendor/`. Every page works with JavaScript off. The tour loads only after the visitor presses its button, and is not part of the offline copy.
 - Use `{{contactEmail}}` inside a page to insert the email from `site.json`.
 
 ## Before anything goes public

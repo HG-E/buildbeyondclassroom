@@ -3,24 +3,27 @@ title: Accessibility
 navTitle: Accessibility
 slug: accessibility
 order: 7
+nav: false
+eyebrow: Accessibility
 description: How this website is built to be usable by everyone, and how to ask for help.
 ---
 
-# Accessibility
+# Built to be usable by everyone.
 
 BBC aims for this website to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA. The site is a draft, and this page describes what we are building towards and what we check.
 
 ## What we build in
 
 - Clear headings and page regions, so screen readers can move around.
-- A "skip to main content" link at the top of every page.
+- A "skip to content" link at the top of every page.
 - Everything works with a keyboard, with a visible mark showing where you are.
 - Text that can be enlarged to 200% without losing content.
 - Colour contrast that meets AA, with colour never the only way to show meaning.
 - Plain language and short sentences.
 - Pages that work with JavaScript turned off, and that are small enough to load on a weak connection.
 - A print version of every page.
-- Light and dark colour schemes that follow your device settings.
+- Light and dark colour schemes that follow your device settings, and a button to switch between them.
+- Typefaces chosen for legibility, served from this site.
 
 ## How we check
 

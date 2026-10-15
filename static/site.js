@@ -1,0 +1,277 @@
+/* BBC site enhancements. Every page is complete and readable without this file.
+   It adds: a theme button, the tap-a-step Studio track, two small tools that save and send nothing,
+   copy buttons, and the launcher for the 3D tour (which loads only after its button is pressed).
+   All words come from the JSON data block in the page (#bbc-data), not from this file. */
+(function () {
+  'use strict';
+
+  var data = {};
+  try {
+    var node = document.getElementById('bbc-data');
+    if (node) data = JSON.parse(node.textContent) || {};
+  } catch (e) { data = {}; }
+  var ui = data.ui || {};
+  var studio = data.studio || null;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function h(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'class') e.className = attrs[k];
+      else if (k === 'text') e.textContent = attrs[k];
+      else if (attrs[k] === true) e.setAttribute(k, '');
+      else if (attrs[k] !== false && attrs[k] != null) e.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (k) { if (k) e.appendChild(typeof k === 'string' ? document.createTextNode(k) : k); });
+    return e;
+  }
+  function fill(str, vars) {
+    return String(str).replace(/\{(\w+)\}/g, function (_, k) { return vars[k] != null ? vars[k] : ''; });
+  }
+  function copyText(text, msgEl) {
+    function ok() { if (msgEl) msgEl.textContent = ui.copied || ''; }
+    function fallback() {
+      var t = document.createElement('textarea');
+      t.value = text; t.setAttribute('readonly', ''); t.className = 'sr-copy';
+      document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); ok(); } catch (e) { if (msgEl) msgEl.textContent = ui.copyFailed || ''; }
+      document.body.removeChild(t);
+    }
+    try { navigator.clipboard.writeText(text).then(ok, fallback); } catch (e) { fallback(); }
+  }
+
+  /* theme: follows the device; the button switches for this visit only */
+  var themeBtn = $('#themeBtn');
+  if (themeBtn) {
+    themeBtn.hidden = false;
+    themeBtn.addEventListener('click', function () {
+      var r = document.documentElement;
+      var cur = r.getAttribute('data-theme');
+      var dark = cur === 'dark' || (!cur && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+      r.setAttribute('data-theme', dark ? 'light' : 'dark');
+    });
+  }
+
+  /* print: open every disclosure so nothing is hidden on paper */
+  window.addEventListener('beforeprint', function () {
+    $$('details').forEach(function (d) { d.setAttribute('open', ''); });
+  });
+
+  /* email: copy button next to the address */
+  var emailCopy = $('#emailCopy');
+  if (emailCopy) {
+    emailCopy.hidden = false;
+    emailCopy.addEventListener('click', function () {
+      copyText($('#emailText').textContent, $('#emailMsg'));
+    });
+  }
+
+  /* studio: tap-a-step track, built from the same data as the table */
+  var staticTable = $('#studioStatic');
+  var live = $('#studioLive');
+  if (staticTable && live && studio) {
+    var cur = 0;
+    var fromHash = /^#step-(\d)$/.exec(location.hash || '');
+    if (fromHash) cur = Math.max(0, Math.min(studio.steps.length - 1, +fromHash[1] - 1));
+
+    var renderStudio = function () {
+      live.textContent = '';
+      var track = h('div', { class: 'track', role: 'group', 'aria-label': ui.studioPick });
+      track.appendChild(h('div', { class: 'rowlab', text: ui.studioRowStep }));
+      studio.steps.forEach(function (s, i) {
+        var b = h('button', { class: 'step-btn', type: 'button', 'aria-pressed': i === cur ? 'true' : 'false' }, [
+          h('span', { class: 'n', text: String(s.n) }),
+          h('span', { class: 't', text: s.title })
+        ]);
+        b.addEventListener('click', function () { cur = i; if (history.replaceState) history.replaceState(null, '', '#step-' + s.n); renderStudio(); var again = $('.step-btn[aria-pressed="true"]', live); if (again) again.focus(); });
+        track.appendChild(b);
+      });
+      track.appendChild(h('div', { class: 'rowlab', text: ui.studioRowAi }));
+      studio.steps.forEach(function (s, i) {
+        track.appendChild(h('div', { class: 'cell ' + s.ai + (i === cur ? ' on' : ''), text: studio.roles[s.ai].label }));
+      });
+      track.appendChild(h('div', { class: 'rowlab', text: ui.studioRowPartner }));
+      studio.steps.forEach(function (s, i) {
+        track.appendChild(h('div', { class: 'cell ' + (s.partner ? 'tutor' : 'none') + (i === cur ? ' on' : ''), text: s.partner ? studio.partner.yes : '—', 'aria-label': s.partner ? studio.partner.yes : studio.partner.no }));
+      });
+      track.appendChild(h('div', { class: 'rowlab', text: ui.studioRowFacilitator }));
+      studio.steps.forEach(function (s, i) {
+        var kind = s.facilitator ? s.facilitator.kind : 'guide';
+        var label = kind === 'decide' ? ui.studioDecides : kind === 'signoff' ? ui.studioSignsOff : ui.studioGuides;
+        track.appendChild(h('div', { class: 'cell ' + (s.facilitator ? 'own' : 'none') + (i === cur ? ' on' : ''), text: label }));
+      });
+      live.appendChild(h('div', { class: 'track-scroll' }, [track]));
+
+      var s = studio.steps[cur];
+      var role = studio.roles[s.ai];
+      var panel = h('div', { class: 'panel', 'aria-live': 'polite' }, [
+        h('div', {}, [
+          h('div', { class: 'big', text: String(s.n) }),
+          h('h3', { text: s.title }),
+          h('p', { class: 'lede', text: s.what })
+        ]),
+        h('ul', { class: 'facts' }, [
+          h('li', {}, [h('span', { class: 'mono', text: ui.studioLabelAi }), h('span', {}, [h('span', { class: 'pill ' + s.ai, text: role.label }), h('br'), role.explain])]),
+          h('li', {}, [h('span', { class: 'mono', text: ui.studioLabelPartner }), h('span', { text: s.partner ? studio.partner.yesLong : studio.partner.noLong })]),
+          h('li', {}, [h('span', { class: 'mono', text: ui.studioLabelFacilitator }), h('span', { text: s.facilitator ? s.facilitator.text : studio.facilitatorDefault })])
+        ])
+      ]);
+      live.appendChild(panel);
+    };
+    renderStudio();
+    staticTable.hidden = true;
+    live.hidden = false;
+    window.addEventListener('hashchange', function () {
+      var m = /^#step-(\d)$/.exec(location.hash || '');
+      if (m) { cur = Math.max(0, Math.min(studio.steps.length - 1, +m[1] - 1)); renderStudio(); }
+    });
+  }
+
+  /* tool: five questions for your field (saves and sends nothing) */
+  var lensHost = $('[data-tool="lens"]');
+  if (lensHost && ui.lensQuestions) {
+    var qEls = [];
+    var field = h('input', { id: 'lens-field', type: 'text', placeholder: ui.lensFieldHint });
+    var form = h('div', { class: 'spec' }, [h('div', { class: 'field' }, [h('label', { for: 'lens-field', text: ui.lensField }), field])]);
+    ui.lensQuestions.forEach(function (q, i) {
+      var ta = h('textarea', { id: 'lens-' + i });
+      qEls.push(ta);
+      form.appendChild(h('div', { class: 'field' }, [h('label', { for: 'lens-' + i, text: q }), ta]));
+    });
+    var meter = h('i', { class: 'p0' });
+    var count = h('p', { class: 'hint', 'aria-live': 'polite', text: fill(ui.lensCount, { done: 0 }) });
+    var brief = h('pre', { class: 'brief', 'aria-live': 'polite', text: ui.lensEmpty });
+    var msg = h('span', { class: 'hint', role: 'status' });
+    var copyBtn = h('button', { class: 'btn small', type: 'button', text: ui.lensCopy });
+    var makeBrief = function () {
+      var done = 0, lines = [];
+      qEls.forEach(function (q, i) { var v = q.value.trim(); if (v) { done++; lines.push(ui.lensShort[i] + ': ' + v); } });
+      meter.className = 'p' + done;
+      count.textContent = fill(ui.lensCount, { done: done });
+      var f = field.value.trim();
+      var text = done
+        ? ui.lensTitle + (f ? ' - ' + f : '') + '\n\n' + lines.join('\n\n') + (qEls[4].value.trim() ? '' : '\n\n' + ui.lensStill)
+        : ui.lensEmpty;
+      brief.textContent = text;
+      return done ? text : '';
+    };
+    qEls.concat([field]).forEach(function (el) { el.addEventListener('input', makeBrief); });
+    copyBtn.addEventListener('click', function () {
+      var t = makeBrief();
+      if (!t) { msg.textContent = ui.lensNeedOne; return; }
+      copyText(t, msg);
+    });
+    lensHost.appendChild(h('div', { class: 'grid g2' }, [
+      form,
+      h('div', { class: 'spec' }, [
+        h('div', {}, [h('div', { class: 'meter', 'aria-hidden': 'true' }, [meter]), count]),
+        brief,
+        h('div', { class: 'actions' }, [copyBtn, msg]),
+        h('p', { class: 'hint', text: ui.lensNote })
+      ])
+    ]));
+    lensHost.hidden = false;
+    var ns = lensHost.nextElementSibling; if (ns && ns.tagName === 'NOSCRIPT') ns.remove();
+  }
+
+  /* tool: interest-message builder (saves and sends nothing) */
+  var interestHost = $('[data-tool="interest"]');
+  if (interestHost && ui.roles) {
+    var role = 0;
+    var chips = h('div', { class: 'chips' });
+    var nameEl = h('input', { id: 'inv-name', type: 'text', autocomplete: 'name' });
+    var placeEl = h('input', { id: 'inv-place', type: 'text', placeholder: ui.interestPlaceHint });
+    var msgEl = h('textarea', { id: 'inv-msg', placeholder: ui.interestMessageHint });
+    var out = h('pre', { class: 'brief', 'aria-live': 'polite' });
+    var note = h('p', { class: 'hint' });
+    var status = h('span', { class: 'hint', role: 'status' });
+    var build = function () {
+      var r = ui.roles[role];
+      var n = nameEl.value.trim(), p = placeEl.value.trim(), m = msgEl.value.trim();
+      var text = 'Subject: ' + fill(ui.interestSubject, { role: r }) + '\n\n' + ui.interestHello + '\n\n' +
+        fill(ui.interestIntro, { role: r.toLowerCase(), place: p ? fill(ui.interestIn, { place: p }) : '' }) + ' ' +
+        (m || ui.interestDefault) + '\n\n' + ui.interestThanks + (n ? ',\n' + n : '.');
+      out.textContent = text;
+      return text;
+    };
+    var renderChips = function () {
+      chips.textContent = '';
+      ui.roles.forEach(function (r, i) {
+        var b = h('button', { class: 'chip', type: 'button', 'aria-pressed': i === role ? 'true' : 'false', text: r });
+        b.addEventListener('click', function () { role = i; renderChips(); build(); });
+        chips.appendChild(b);
+      });
+    };
+    renderChips();
+    [nameEl, placeEl, msgEl].forEach(function (el) { el.addEventListener('input', build); });
+    note.textContent = data.email ? ui.interestSendTo + ' ' + data.email : ui.interestNoEmail;
+    var copyMsg = h('button', { class: 'btn small', type: 'button', text: ui.interestCopy });
+    copyMsg.addEventListener('click', function () { copyText(build(), status); });
+    build();
+    interestHost.appendChild(h('div', { class: 'grid g2' }, [
+      h('div', { class: 'spec' }, [
+        h('fieldset', {}, [h('legend', { text: ui.interestIam }), chips]),
+        h('div', { class: 'field' }, [h('label', { for: 'inv-name', text: ui.interestName }), nameEl]),
+        h('div', { class: 'field' }, [h('label', { for: 'inv-place', text: ui.interestPlace }), placeEl]),
+        h('div', { class: 'field' }, [h('label', { for: 'inv-msg', text: ui.interestMessage }), msgEl, h('span', { class: 'hint', text: ui.interestWarning })])
+      ]),
+      h('div', { class: 'spec' }, [
+        h('h3', { text: ui.interestTitle }),
+        out,
+        h('div', { class: 'actions' }, [copyMsg, status]),
+        note,
+        h('p', { class: 'hint', text: ui.interestNote })
+      ])
+    ]));
+    interestHost.hidden = false;
+    var ns2 = interestHost.nextElementSibling; if (ns2 && ns2.tagName === 'NOSCRIPT') ns2.remove();
+  }
+
+  /* 3D tour launcher: nothing is loaded until the visitor presses the button */
+  var startBtn = $('#startTour');
+  var mount = $('#tourMount');
+  if (startBtn && mount && studio) {
+    startBtn.hidden = false;
+    var loaded = false;
+    var active = null;
+    var studioHref = ($('.hero .actions .btn') || {}).href || '/';
+    var load = function (src, done, fail) {
+      var s = document.createElement('script');
+      s.src = src; s.onload = done; s.onerror = fail;
+      document.head.appendChild(s);
+    };
+    var message = function (text) {
+      mount.textContent = '';
+      var box = h('aside', { class: 'note', role: 'status' }, [text]);
+      mount.appendChild(box);
+      return box;
+    };
+    var close = function () {
+      if (active) { active.destroy(); active = null; }
+      mount.textContent = '';
+      startBtn.hidden = false;
+      startBtn.focus();
+    };
+    var open = function () {
+      if (active) return;
+      active = window.BBCTour.start({
+        mount: mount, ui: ui, studio: studio, studioHref: studioHref,
+        onClose: close,
+        onFail: function () { active = null; var box = message(ui.tourNoGL); box.appendChild(document.createTextNode(' ')); startBtn.hidden = false; }
+      });
+      if (active) startBtn.hidden = true;
+    };
+    startBtn.addEventListener('click', function () {
+      if (loaded) { open(); return; }
+      startBtn.disabled = true;
+      startBtn.textContent = ui.tourLoading;
+      var restore = function () { startBtn.disabled = false; startBtn.textContent = startBtn.getAttribute('data-label'); };
+      startBtn.setAttribute('data-label', startBtn.getAttribute('data-label') || startBtn.textContent.replace(ui.tourLoading, ''));
+      load('/vendor/three.min.js', function () {
+        load('/tour.js', function () { loaded = true; startBtn.disabled = false; startBtn.textContent = startBtn.getAttribute('data-label'); open(); }, function () { restore(); message(ui.tourFailed); });
+      }, function () { restore(); message(ui.tourFailed); });
+    });
+    startBtn.setAttribute('data-label', startBtn.textContent);
+  }
+})();

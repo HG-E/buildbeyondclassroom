@@ -8,7 +8,11 @@
  *
  * Default language pages are written to the site root; other languages go
  * to /<lang>/. To add a language, add a folder content/<lang>/ with
- * translated copies of the .md files and add the language to site.json.
+ * translated copies of the .md files, ui.json and studio.json, and add the
+ * language to site.json.
+ *
+ * Every page is complete HTML that reads and works with JavaScript off.
+ * The words used by scripts travel in a JSON data block (not in the code).
  */
 'use strict';
 
@@ -39,6 +43,9 @@ const slugify = (s) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
+// JSON that is safe inside <script type="application/json">.
+const safeJson = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+
 function rmrf(dir) {
   fs.rmSync(dir, { recursive: true, force: true });
 }
@@ -52,6 +59,16 @@ function copyDir(src, dest) {
     else fs.copyFileSync(from, to);
   }
 }
+
+function listFiles(dir, base = dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const full = path.join(dir, e.name);
+    return e.isDirectory() ? listFiles(full, base) : ['/' + path.relative(base, full).split(path.sep).join('/')];
+  });
+}
+
+const EMAIL_PLACEHOLDER = /REPLACE|@example\.(org|com)$/i;
+const hasRealEmail = () => !!site.contactEmail && !EMAIL_PLACEHOLDER.test(site.contactEmail);
 
 /* ---------- front matter ---------- */
 
@@ -68,13 +85,24 @@ function parseFrontMatter(raw, file) {
   return { meta, body: m[2] };
 }
 
-/* ---------- Markdown (the small subset the content uses) ---------- */
+/* ---------- Markdown (the small subset the content uses, plus a few layout directives) ----------
+ *
+ * Directive lines go directly before a list:
+ *   {path}     numbered stages            {ladder}  the skills ladder
+ *   {defs}     lettered definitions       {cards N} cards in N columns (2, 3 or 4)
+ *   {stats}    "value | label" items      {routes}  "eyebrow | title | text | link text | /url/"
+ *   {legend}   "role | label | text"
+ * Card items are "**Title.** text", "Title | text" or "Eyebrow | Title | text".
+ * "+++ Summary" followed by text makes a disclosure. "==text==" is the highlight.
+ * A line holding only {{name}} inserts a block built by the builder.
+ */
 
 function inline(text) {
   let s = esc(text);
   s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
+  s = s.replace(/==([^=]+)==/g, '<span class="hl">$1</span>');
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, href) => {
     const external = /^https?:\/\//.test(href);
     const attrs = external ? ' rel="noopener noreferrer"' : '';
@@ -92,16 +120,107 @@ function splitRow(line) {
     .map((c) => c.trim());
 }
 
-function markdown(src, ui) {
+// "**Title.** text" -> { title, text }
+function titleText(item) {
+  const m = item.match(/^\*\*(.+?)\*\*\.?\s*(.*)$/);
+  return m ? { title: m[1].replace(/\.$/, ''), text: m[2] } : { title: item, text: '' };
+}
+
+function renderDirectiveList(kind, items, ui) {
+  const cell = (t) => inline(t);
+  if (kind === 'path') {
+    return `<ol class="path">${items
+      .map((t) => {
+        const { title, text } = titleText(t);
+        return `<li><strong>${cell(title)}</strong>${text ? `<br><span class="muted">${cell(text)}</span>` : ''}</li>`;
+      })
+      .join('')}</ol>`;
+  }
+  if (kind === 'ladder') {
+    return `<ol class="ladder">${items
+      .map((t, i) => `<li class="rung r${i + 1}"><span class="n">${i + 1}</span><strong>${cell(t)}</strong></li>`)
+      .join('')}</ol>`;
+  }
+  if (kind === 'defs') {
+    return `<div class="defs">${items
+      .map((t, i) => {
+        const { title, text } = titleText(t);
+        return `<div class="def"><div class="k">${String.fromCharCode(65 + i)}</div><div><h3>${cell(title)}</h3><p class="muted">${cell(text)}</p></div></div>`;
+      })
+      .join('')}</div>`;
+  }
+  if (kind === 'stats') {
+    return `<div class="stats">${items
+      .map((t) => {
+        const [value, label] = t.split('|').map((x) => x.trim());
+        const pending = /^n\/a$/i.test(value) ? ' pending' : '';
+        return `<div class="stat${pending}"><b>${cell(value)}</b><span>${cell(label || '')}</span></div>`;
+      })
+      .join('')}</div>`;
+  }
+  if (kind === 'routes') {
+    return `<div class="grid g4">${items
+      .map((t) => {
+        const [eyebrow, title, text, go, href] = t.split('|').map((x) => x.trim());
+        return `<a class="route" href="${esc(href)}"><span class="mono">${cell(eyebrow)}</span><strong>${cell(title)}</strong><span class="muted">${cell(text)}</span><span class="go">${cell(go)}</span></a>`;
+      })
+      .join('')}</div>`;
+  }
+  if (kind === 'legend') {
+    return `<div class="legend">${items
+      .map((t) => {
+        const [role, label, text] = t.split('|').map((x) => x.trim());
+        return `<span class="pill ${esc(role)}">${cell(label)}</span><span class="hint">${cell(text)}</span>`;
+      })
+      .join('')}</div>`;
+  }
+  const m = kind.match(/^cards(?:\s+(\d))?$/);
+  if (m) {
+    const cols = { 2: 'g2', 3: 'g3', 4: 'g4' }[m[1] || 3] || 'g3';
+    return `<div class="grid ${cols}">${items
+      .map((t) => {
+        const parts = t.split(' | ').map((x) => x.trim());
+        let eyebrow = '';
+        let title;
+        let text = '';
+        if (parts.length >= 3) [eyebrow, title, text] = parts;
+        else if (parts.length === 2) [title, text] = parts;
+        else ({ title, text } = titleText(parts[0]));
+        return `<div class="card">${eyebrow ? `<p class="mono">${cell(eyebrow)}</p>` : ''}<h3>${cell(title)}</h3>${text ? `<p class="muted">${cell(text)}</p>` : ''}</div>`;
+      })
+      .join('')}</div>`;
+  }
+  throw new Error(`Unknown directive {${kind}}`);
+}
+
+function markdown(src, ui, blocks) {
   const lines = src.replace(/\r\n/g, '\n').split('\n');
   const out = [];
   const headings = [];
+  let h1 = '';
+  let lede = '';
+  let sectionOpen = false;
+  let afterH1 = false;
   let i = 0;
+
+  const closeSection = () => {
+    if (sectionOpen) out.push('</section>');
+    sectionOpen = false;
+  };
 
   while (i < lines.length) {
     const line = lines[i];
 
     if (!line.trim()) {
+      i++;
+      continue;
+    }
+
+    // inserted block: a line holding only {{name}}
+    const blk = line.trim().match(/^\{\{(\w+)\}\}$/);
+    if (blk) {
+      if (!(blk[1] in blocks)) throw new Error(`Markdown uses {{${blk[1]}}}, which the builder does not provide`);
+      out.push(blocks[blk[1]]);
       i++;
       continue;
     }
@@ -112,9 +231,55 @@ function markdown(src, ui) {
       const level = h[1].length;
       const text = h[2].trim();
       const id = slugify(text);
-      if (level === 2) headings.push({ id, text });
-      out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
+      if (level === 1) {
+        h1 = `<h1 id="${id}" tabindex="-1">${inline(text)}</h1>`;
+        afterH1 = true;
+        i++;
+        continue;
+      }
+      afterH1 = false;
+      if (level === 2) {
+        closeSection();
+        headings.push({ id, text });
+        out.push(`<section class="block"><div class="head"><h2 id="${id}">${inline(text)}</h2></div>`);
+        sectionOpen = true;
+      } else {
+        out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
+      }
       i++;
+      continue;
+    }
+
+    // directive before a list: {path}, {cards 3}, ...
+    const dir = line.trim().match(/^\{([a-z]+(?:\s+\d)?)\}$/);
+    if (dir && lines[i + 1] !== undefined) {
+      const kind = dir[1];
+      i++;
+      const re = /^\s*(?:[-*]|\d+\.)\s+(.*)$/;
+      const items = [];
+      while (i < lines.length && re.test(lines[i])) {
+        items.push(lines[i].match(re)[1]);
+        i++;
+      }
+      out.push(renderDirectiveList(kind, items, ui));
+      continue;
+    }
+
+    // disclosure: "+++ Summary" then text
+    if (/^\+\+\+\s+/.test(line)) {
+      const group = [];
+      while (i < lines.length && /^\+\+\+\s+/.test(lines[i])) {
+        const summary = lines[i].replace(/^\+\+\+\s+/, '').trim();
+        i++;
+        const body = [];
+        while (i < lines.length && lines[i].trim() && !/^\+\+\+\s+/.test(lines[i])) {
+          body.push(lines[i].trim());
+          i++;
+        }
+        while (i < lines.length && !lines[i].trim()) i++;
+        group.push(`<details><summary>${inline(summary)}</summary><p>${inline(body.join(' '))}</p></details>`);
+      }
+      out.push(`<div class="disclosures">${group.join('')}</div>`);
       continue;
     }
 
@@ -131,7 +296,7 @@ function markdown(src, ui) {
       const tr = rows
         .map((r) => `<tr>${r.map((c, n) => (n === 0 ? `<th scope="row">${inline(c)}</th>` : `<td>${inline(c)}</td>`)).join('')}</tr>`)
         .join('');
-      out.push(`<div class="table-wrap" tabindex="0" role="region" aria-label="${esc(ui.tableLabel)}"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`);
+      out.push(`<div class="tw" tabindex="0" role="region" aria-label="${esc(ui.tableLabel)}"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`);
       continue;
     }
 
@@ -146,7 +311,8 @@ function markdown(src, ui) {
         items.push(lines[i].match(re)[1]);
         i++;
       }
-      out.push(`<${tag}>${items.map((t) => `<li>${inline(t)}</li>`).join('')}</${tag}>`);
+      out.push(`<${tag} class="plain">${items.map((t) => `<li>${inline(t)}</li>`).join('')}</${tag}>`);
+      afterH1 = false;
       continue;
     }
 
@@ -158,6 +324,7 @@ function markdown(src, ui) {
         i++;
       }
       out.push(`<aside class="note">${inline(quote.join(' '))}</aside>`);
+      afterH1 = false;
       continue;
     }
 
@@ -169,18 +336,27 @@ function markdown(src, ui) {
       !/^(#{1,3})\s/.test(lines[i]) &&
       !/^\s*[-*]\s+/.test(lines[i]) &&
       !/^\s*\d+\.\s+/.test(lines[i]) &&
-      !/^>\s?/.test(lines[i])
+      !/^>\s?/.test(lines[i]) &&
+      !/^\+\+\+\s+/.test(lines[i]) &&
+      !/^\{[a-z]+(?:\s+\d)?\}$/.test(lines[i].trim()) &&
+      !/^\{\{\w+\}\}$/.test(lines[i].trim())
     ) {
       para.push(lines[i].trim());
       i++;
     }
-    out.push(`<p>${inline(para.join(' '))}</p>`);
+    if (afterH1 && !lede) {
+      lede = `<p class="lede">${inline(para.join(' '))}</p>`;
+    } else {
+      out.push(`<p>${inline(para.join(' '))}</p>`);
+    }
+    afterH1 = false;
   }
+  closeSection();
 
-  return { html: out.join('\n'), headings };
+  return { h1, lede, html: out.join('\n'), headings };
 }
 
-/* ---------- build ---------- */
+/* ---------- content data ---------- */
 
 function loadPages(lang) {
   const dir = path.join(CONTENT, lang);
@@ -195,17 +371,22 @@ function loadPages(lang) {
     .sort((a, b) => a.order - b.order);
 }
 
-// Words used by the page shell live in content/<lang>/ui.json, never in the template or here.
-const UI_KEYS = ['skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel'];
+// Words used by the page shell and the scripts live in content/<lang>/, never in the template or here.
+const UI_KEYS = [
+  'skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel', 'brandLabel', 'ctaLabel', 'ctaSlug',
+  'themeLabel', 'themeButton', 'draftTag', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking',
+  'emailPending', 'emailLabel', 'copyEmail', 'homePrimary', 'homePrimarySlug', 'heroLogTitle', 'heroLogHint',
+  'tourStart', 'noJavaScript',
+];
 
-function loadUi(lang) {
-  const file = path.join(CONTENT, lang, 'ui.json');
-  if (!fs.existsSync(file)) throw new Error(`content/${lang}/ui.json is missing (copy it from content/${site.defaultLanguage}/)`);
-  const ui = JSON.parse(fs.readFileSync(file, 'utf8'));
-  for (const key of UI_KEYS) {
-    if (typeof ui[key] !== 'string' || !ui[key]) throw new Error(`content/${lang}/ui.json needs a value for "${key}"`);
+function loadJson(lang, name, keys) {
+  const file = path.join(CONTENT, lang, name);
+  if (!fs.existsSync(file)) throw new Error(`content/${lang}/${name} is missing (copy it from content/${site.defaultLanguage}/)`);
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  for (const key of keys) {
+    if (data[key] === undefined || data[key] === '') throw new Error(`content/${lang}/${name} needs a value for "${key}"`);
   }
-  return ui;
+  return data;
 }
 
 function urlFor(lang, slug) {
@@ -213,17 +394,76 @@ function urlFor(lang, slug) {
   return `${prefix}/${slug ? slug + '/' : ''}`;
 }
 
-function render(page, pages, ui) {
-  // {{contactEmail}} can be used inside page text; it is filled from site.json.
-  const { html } = markdown(page.body.replace(/{{contactEmail}}/g, site.contactEmail), ui);
+/* ---------- blocks built from data ---------- */
+
+function studioTable(studio, ui) {
+  const c = studio.columns;
+  const rows = studio.steps
+    .map((s) => {
+      const role = studio.roles[s.ai];
+      const partner = s.partner ? studio.partner.yes : studio.partner.no;
+      const fac = s.facilitator ? s.facilitator.text : studio.facilitatorDefault;
+      return `<tr id="step-${s.n}"><th scope="row">${s.n}. ${esc(s.title)}</th><td>${esc(s.what)}</td><td><span class="pill ${esc(s.ai)}">${esc(role.label)}</span></td><td>${esc(partner)}</td><td>${esc(fac)}</td></tr>`;
+    })
+    .join('');
+  return (
+    `<div class="tw" id="studioStatic" tabindex="0" role="region" aria-label="${esc(ui.tableLabel)}"><table>` +
+    `<thead><tr><th scope="col">${esc(c.step)}</th><th scope="col">${esc(c.what)}</th><th scope="col">${esc(c.ai)}</th><th scope="col">${esc(c.partner)}</th><th scope="col">${esc(c.facilitator)}</th></tr></thead>` +
+    `<tbody>${rows}</tbody></table></div><div id="studioLive" hidden></div>`
+  );
+}
+
+function toolShell(name, ui) {
+  return `<div class="tool" data-tool="${name}" hidden></div><noscript><p class="hint">${esc(ui.noJavaScript)}</p></noscript>`;
+}
+
+function emailBox(ui) {
+  if (!hasRealEmail()) {
+    return `<p class="emailbox"><span class="mono">${esc(ui.emailLabel)}</span> <strong>${esc(ui.emailPending)}</strong></p>`;
+  }
+  return (
+    `<p class="emailbox"><span class="mono">${esc(ui.emailLabel)}</span> <strong class="pick" id="emailText">${esc(site.contactEmail)}</strong> ` +
+    `<button class="btn small ghost" type="button" id="emailCopy" hidden>${esc(ui.copyEmail)}</button> <span class="hint" id="emailMsg" role="status"></span></p>`
+  );
+}
+
+/* ---------- page render ---------- */
+
+function render(page, pages, ui, studio) {
   const lang = page.lang;
-  const nav = pages
-    .filter((p) => p.meta.nav !== 'false')
+  const email = hasRealEmail() ? site.contactEmail : '';
+
+  // {{contactEmail}} can be used inside page text; it is filled from site.json.
+  let body = page.body;
+  const mailLink = '[{{contactEmail}}](mailto:{{contactEmail}})';
+  body = body.split(mailLink).join(email ? `[${email}](mailto:${email})` : ui.emailPending);
+  body = body.replace(/{{contactEmail}}/g, email || ui.emailPending);
+
+  const blocks = {
+    studioSteps: studioTable(studio, ui),
+    lensTool: toolShell('lens', ui),
+    interestTool: toolShell('interest', ui),
+    emailBox: emailBox(ui),
+  };
+  const md = markdown(body, ui, blocks);
+
+  const needsStudio = /\{\{studioSteps\}\}/.test(page.body) || page.meta.layout === 'home';
+  const needsTools = /\{\{(lensTool|interestTool)\}\}/.test(page.body);
+  const needsEmail = /\{\{emailBox\}\}/.test(page.body) || needsTools;
+  const isHome = page.meta.layout === 'home';
+
+  const navPages = pages.filter((p) => p.meta.nav !== 'false');
+  const navLinks = navPages
     .map((p) => {
       const href = urlFor(lang, p.meta.slug);
       const current = p === page ? ' aria-current="page"' : '';
-      return `<li><a href="${href}"${current}>${esc(p.meta.navTitle || p.meta.title)}</a></li>`;
+      return `<a href="${href}"${current}>${esc(p.meta.navTitle || p.meta.title)}</a>`;
     })
+    .join('');
+  const ctaHref = urlFor(lang, ui.ctaSlug);
+  const footerLinks = pages
+    .filter((p) => p.meta.slug !== '')
+    .map((p) => `<li><a href="${urlFor(lang, p.meta.slug)}">${esc(p.meta.navTitle || p.meta.title)}</a></li>`)
     .join('');
 
   const langLinks = site.languages
@@ -234,25 +474,64 @@ function render(page, pages, ui) {
   const title = page.meta.slug === '' ? site.name : `${page.meta.title} | ${site.name}`;
   const robots = site.indexing ? 'index,follow' : 'noindex,nofollow';
   const draft = site.status
-    ? `<p class="status" role="note">${esc(site.status)}</p>`
+    ? `<div class="draft" role="note"><div class="wrap"><span class="tag">${esc(ui.draftTag)}</span><span>${esc(site.status)}</span></div></div>`
     : '';
+
+  const eyebrow = page.meta.eyebrow ? `<p class="mono">${esc(page.meta.eyebrow)}</p>` : '';
+
+  let top;
+  if (isHome) {
+    const log = studio.steps
+      .map(
+        (s) =>
+          `<li><a href="${urlFor(lang, ui.homePrimarySlug)}#step-${s.n}"><span class="n">${s.n}</span><span>${esc(s.title)}</span><span class="pill ${esc(s.ai)}">${esc(studio.roles[s.ai].label)}</span></a></li>`
+      )
+      .join('');
+    top =
+      `<section class="hero" id="hero"><div class="wrap">` +
+      `<div class="hero-copy">${eyebrow}${md.h1}${md.lede}` +
+      `<div class="actions"><a class="btn" href="${urlFor(lang, ui.homePrimarySlug)}">${esc(ui.homePrimary)}</a>` +
+      `<a class="btn ghost" href="${ctaHref}">${esc(ui.ctaLabel)}</a>` +
+      `<button class="btn ghost" type="button" id="startTour" hidden>${esc(ui.tourStart)}</button></div></div>` +
+      `<div class="log"><div class="log-head"><strong>${esc(ui.heroLogTitle)}</strong><span class="mono">${esc(ui.heroLogHint)}</span></div><ol>${log}</ol></div>` +
+      `</div></section><div id="tourMount"></div>`;
+  } else {
+    top = `<div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div>`;
+  }
+
+  const data = {};
+  if (needsStudio || needsTools || needsEmail) data.ui = ui.js || {};
+  if (needsStudio) data.studio = studio;
+  if (needsTools || needsEmail) data.email = email || null;
+  data.lang = lang;
+  const dataBlock = `<script type="application/json" id="bbc-data">${safeJson(data)}</script>`;
+
+  const footerEmail = email
+    ? `<a href="mailto:${esc(email)}">${esc(email)}</a>`
+    : esc(ui.emailPending);
+
+  const pageHtml = `${top}<div class="wrap">${md.html}</div>`;
 
   return TEMPLATE.replace(/{{lang}}/g, esc(lang))
     .replace(/{{title}}/g, esc(title))
     .replace(/{{description}}/g, esc(page.meta.description || site.tagline))
     .replace(/{{robots}}/g, robots)
+    .replace(/{{bodyClass}}/g, isHome ? ' class="is-home"' : '')
     .replace(/{{siteName}}/g, esc(site.name))
     .replace(/{{tagline}}/g, esc(site.tagline))
-    .replace(/{{nav}}/g, nav)
+    .replace(/{{navLinks}}/g, navLinks)
+    .replace(/{{ctaHref}}/g, ctaHref)
+    .replace(/{{footerLinks}}/g, footerLinks)
+    .replace(/{{footerEmail}}/g, () => footerEmail)
     .replace(/{{langLinks}}/g, langLinks)
-    .replace(/{{status}}/g, draft)
-    .replace(/{{contactEmail}}/g, esc(site.contactEmail))
+    .replace(/{{status}}/g, () => draft)
     .replace(/{{year}}/g, String(new Date().getFullYear()))
     .replace(/{{ui\.(\w+)}}/g, (_, key) => {
       if (typeof ui[key] !== 'string') throw new Error(`templates/page.html uses {{ui.${key}}}, which is not in ui.json`);
       return esc(ui[key]);
     })
-    .replace(/{{content}}/g, () => html);
+    .replace(/{{data}}/g, () => dataBlock)
+    .replace(/{{content}}/g, () => pageHtml);
 }
 
 function main() {
@@ -264,18 +543,22 @@ function main() {
   for (const { code } of site.languages) {
     if (!fs.existsSync(path.join(CONTENT, code))) continue;
     const pages = loadPages(code);
-    const ui = loadUi(code);
+    const ui = loadJson(code, 'ui.json', UI_KEYS);
+    const studio = loadJson(code, 'studio.json', ['columns', 'roles', 'partner', 'facilitatorDefault', 'steps']);
     for (const page of pages) {
       const url = urlFor(code, page.meta.slug);
       const dest = path.join(OUT, url, 'index.html');
       fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.writeFileSync(dest, render(page, pages, ui));
+      fs.writeFileSync(dest, render(page, pages, ui, studio));
       written.push(url);
     }
   }
 
-  // Offline layer: the service worker caches every page and the static files.
-  const assets = fs.readdirSync(STATIC).filter((f) => !/^service-worker\.js$/.test(f)).map((f) => '/' + f);
+  // Offline layer: the service worker keeps every page and the small static files.
+  // The tour (Three.js and tour.js) is large and optional, so it is never kept offline.
+  const assets = listFiles(STATIC).filter(
+    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && !/\.txt$/.test(f)
+  );
   const precache = [...written, ...assets];
   const version = crypto.createHash('sha1').update(JSON.stringify(precache) + Date.now()).digest('hex').slice(0, 10);
   const swPath = path.join(OUT, 'service-worker.js');

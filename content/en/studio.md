@@ -3,23 +3,17 @@ title: The Community Problem Studio
 navTitle: Studio
 slug: studio
 order: 3
+eyebrow: The Community Problem Studio
 description: The eight steps every team follows, and how AI is used safely at each one.
 ---
 
-# The Community Problem Studio
+# From a real need to a solution in use.
 
-The Studio is how a team goes from a real need to a solution in use. A facilitator plans each cycle, and teams work through eight steps.
+A facilitator plans each cycle, and teams work through eight steps. For each step the table shows who is involved and how AI may be used.
 
 ## The eight steps
 
-1. **Find the need.** Talk to the people affected and a community partner.
-2. **Research feasibility.** Check whether the problem is real, big enough and doable by this team.
-3. **Ideate.** Generate and compare ideas.
-4. **Design.** Shape the chosen idea and how it will be used.
-5. **Build.** Make a first working version.
-6. **Deploy.** Put it in front of real users.
-7. **Pitch.** Explain the solution and its business case to the partner and a panel.
-8. **Sustain.** Plan who owns it, how it is paid for and how it keeps working.
+{{studioSteps}}
 
 The facilitator decides whether to go on, redesign or stop at step 2, signs off safety at step 6, and brings the community partner in at steps 1, 4, 7 and 8.
 
@@ -27,9 +21,10 @@ The facilitator decides whether to go on, redesign or stop at step 2, signs off 
 
 AI is a tool for learning and building. It is not allowed to replace the learner's own thinking.
 
-- **As a tutor:** always allowed, at every step.
-- **As a co-builder:** mainly in steps 4 to 6, where the team is designing, building and deploying. It is allowed only if the learner reviews and edits the result and can explain it.
-- **As the author:** not allowed in steps 2, 7 and 8, where the team's own research, pitch and plan must be its own work.
+{legend}
+- tutor | Tutor | always allowed, at every step
+- build | Co-builder | mainly in steps 4 to 6, and only if the learner reviews, edits and can explain the result
+- own | Own work | AI may not be the author in steps 2, 7 and 8
 
 Three short checks with the tool closed, at the start, middle and end of a cycle, show whether learners have learned or only produced.
 

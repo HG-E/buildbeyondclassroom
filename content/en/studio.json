@@ -1,0 +1,90 @@
+{
+  "columns": {
+    "step": "Step",
+    "what": "What happens",
+    "ai": "AI may be",
+    "partner": "Community partner",
+    "facilitator": "Facilitator"
+  },
+  "roles": {
+    "tutor": {
+      "label": "Tutor",
+      "explain": "At this step AI works as a tutor. It explains and coaches. The team still does the thinking."
+    },
+    "build": {
+      "label": "Co-builder",
+      "explain": "AI can act as a co-builder here, and as a tutor. It is allowed only if the learner reviews and edits the result and can explain it."
+    },
+    "own": {
+      "label": "Own work",
+      "explain": "AI may not be the author here. The research, pitch or plan must be the team's own work. AI can still act as a tutor."
+    }
+  },
+  "partner": {
+    "yes": "Joins",
+    "no": "Not at this step",
+    "yesLong": "The community partner is brought in at this step.",
+    "noLong": "The team works on its own, with the facilitator."
+  },
+  "facilitatorDefault": "Guides the team and plans the cycle.",
+  "steps": [
+    {
+      "n": 1,
+      "title": "Find the need",
+      "what": "Talk to the people affected and a community partner.",
+      "ai": "tutor",
+      "partner": true
+    },
+    {
+      "n": 2,
+      "title": "Research feasibility",
+      "what": "Check whether the problem is real, big enough and doable by this team.",
+      "ai": "own",
+      "partner": false,
+      "facilitator": { "kind": "decide", "text": "Decides: go on, redesign or stop." }
+    },
+    {
+      "n": 3,
+      "title": "Ideate",
+      "what": "Generate and compare ideas.",
+      "ai": "tutor",
+      "partner": false
+    },
+    {
+      "n": 4,
+      "title": "Design",
+      "what": "Shape the chosen idea and how it will be used.",
+      "ai": "build",
+      "partner": true
+    },
+    {
+      "n": 5,
+      "title": "Build",
+      "what": "Make a first working version.",
+      "ai": "build",
+      "partner": false
+    },
+    {
+      "n": 6,
+      "title": "Deploy",
+      "what": "Put it in front of real users.",
+      "ai": "build",
+      "partner": false,
+      "facilitator": { "kind": "signoff", "text": "Signs off safety with the Do-No-Harm Check." }
+    },
+    {
+      "n": 7,
+      "title": "Pitch",
+      "what": "Explain the solution and its business case to the partner and a panel.",
+      "ai": "own",
+      "partner": true
+    },
+    {
+      "n": 8,
+      "title": "Sustain",
+      "what": "Plan who owns it, how it is paid for and how it keeps working.",
+      "ai": "own",
+      "partner": true
+    }
+  ]
+}

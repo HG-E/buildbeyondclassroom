@@ -3,10 +3,12 @@ title: Get involved
 navTitle: Get involved
 slug: get-involved
 order: 8
+nav: false
+eyebrow: Get involved
 description: How to register interest as a learner, facilitator, hub host or partner.
 ---
 
-# Get involved
+# Tell us who you are and what you want to do.
 
 BBC has not opened applications. You can register interest now, and we will contact you when there is something to join. For now, the way to do that is email.
 
@@ -27,8 +29,12 @@ BBC has not opened applications. You can register interest now, and we will cont
 
 Please do not include sensitive personal information, or any information about children.
 
+## Prepare your message
+
+{{interestTool}}
+
 ## Where to write
 
-Email [{{contactEmail}}](mailto:{{contactEmail}}).
+{{emailBox}}
 
 Read how BBC handles information in [safeguarding and data](/safeguarding-and-data/).

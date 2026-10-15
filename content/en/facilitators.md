@@ -3,15 +3,18 @@ title: Facilitators
 navTitle: Facilitators
 slug: facilitators
 order: 5
+nav: false
+eyebrow: Facilitators
 description: How people become certified BBC facilitators, and what facilitators do.
 ---
 
-# Facilitators
+# Every cohort has a certified facilitator.
 
-Every BBC cohort has a certified facilitator. Facilitators are certified individuals who work through hubs, and BBC's aim is that local people run the studios in their own communities.
+Facilitators are certified individuals who work through hubs, and BBC's aim is that local people run the studios in their own communities.
 
 ## A route in three stages
 
+{path}
 1. **Participate.** Take part in a cohort to see the method from the learner's side.
 2. **Co-run.** Run a cohort alongside an experienced facilitator.
 3. **Lead and certify.** Lead a cohort and be certified to run studios locally.
