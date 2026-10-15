@@ -160,8 +160,35 @@ ul.plain, ol.plain { margin: 0; padding-left: 1.3em; display: grid; gap: .5rem; 
   margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * max(1rem, env(safe-area-inset-right, 0px)));
   padding-left: var(--gutter); padding-right: max(1rem, env(safe-area-inset-right, 0px));
 }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 2.75rem; align-items: center; }
-@media (max-width: 860px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); } }
+/* On screen the hero is always a dark scene, whatever the page theme: a still of the 3D tour
+   (static/hero-poster.jpg, loaded as a plain image, no script) under a veil that keeps text readable.
+   The tour button brings the same scene to life. Print keeps the plain light page. */
+@media screen {
+  .hero {
+    --bg: #0C1A15; --surface: #13251E; --surface2: #1A3027; --ink: #E9F0EB; --muted: #A3B6AD; --line: #2A4238;
+    --accent: #8EA9FF; --accent-ink: #0C1A15; --focus: #F6C927;
+    --tutor: #4FD1BC; --tutor-bg: #123C35; --build: #8EA9FF; --build-bg: #1B2B57; --own: #F4A55C; --own-bg: #4A2E14;
+    color: var(--ink);
+    background-color: #0A1612;
+    background-image:
+      linear-gradient(90deg, rgba(10, 22, 18, .94) 0%, rgba(10, 22, 18, .86) 38%, rgba(10, 22, 18, .5) 55%, rgba(10, 22, 18, .1) 75%, rgba(10, 22, 18, 0) 100%),
+      url("/hero-poster.jpg");
+    background-size: cover; background-position: 70% center; background-repeat: no-repeat;
+  }
+}
+@media screen and (max-width: 860px) {
+  /* narrow screens: text on top, the scene shows through underneath */
+  .hero { background-image: none; padding-bottom: 0; display: block; min-height: 0; }
+  .hero::after {
+    content: ""; display: block; height: 15rem; margin: 2.25rem calc(-1 * var(--gutter)) 0;
+    background: #0A1612 url("/hero-poster.jpg") 70% 40% / cover no-repeat;
+  }
+}
+@media (min-width: 861px) { .hero { min-height: min(78vh, 40rem); display: flex; align-items: center; } }
+.hero .wrap { width: 100%; }
+.hero-copy { max-width: 40rem; }
+.steps-strip { padding-block: 2rem; border-top: 0; }
+.steps-strip .log ol { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 4px 1.25rem; }
 .hero-copy .mono { margin-bottom: .9rem; }
 .hero .lede { margin-top: 1.25rem; }
 .log { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem; box-shadow: 0 1px 0 var(--line); }
@@ -372,7 +399,7 @@ footer p { margin-top: .5rem; }
   :root { --bg: #fff; --surface: #fff; --surface2: #fff; --ink: #000; --muted: #333; --accent: #000; --line: #999; --tutor-bg: #fff; --build-bg: #fff; --own-bg: #fff; --tutor: #000; --build: #000; --own: #000; --grid: transparent; }
   body { font-size: 12pt; padding: 0; }
   header.site, .skip, .draft, .lang-links, .actions, .tool, #startTour, #tourMount, .btn, .icon-btn { display: none !important; }
-  .hero { background: none; padding-block: 0 1rem; }
+  .hero { background: none; padding-block: 0 1rem; min-height: 0; display: block; }
   .hero .wrap { display: block; }
   .wrap, .bar { max-width: none; }
   .stat, .card, .route, .log, .rung, .path li { border: 1px solid #000; }

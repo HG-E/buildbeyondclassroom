@@ -493,8 +493,8 @@ function render(page, pages, ui, studio) {
       `<div class="actions"><a class="btn" href="${urlFor(lang, ui.homePrimarySlug)}">${esc(ui.homePrimary)}</a>` +
       `<a class="btn ghost" href="${ctaHref}">${esc(ui.ctaLabel)}</a>` +
       `<button class="btn ghost" type="button" id="startTour" hidden>${esc(ui.tourStart)}</button></div></div>` +
-      `<div class="log"><div class="log-head"><strong>${esc(ui.heroLogTitle)}</strong><span class="mono">${esc(ui.heroLogHint)}</span></div><ol>${log}</ol></div>` +
-      `</div></section><div id="tourMount"></div>`;
+      `</div></section><div id="tourMount"></div>` +
+      `<div class="wrap"><section class="block steps-strip"><div class="log"><div class="log-head"><strong>${esc(ui.heroLogTitle)}</strong><span class="mono">${esc(ui.heroLogHint)}</span></div><ol>${log}</ol></div></section></div>`;
   } else {
     top = `<div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div>`;
   }
@@ -557,7 +557,7 @@ function main() {
   // Offline layer: the service worker keeps every page and the small static files.
   // The tour (Three.js and tour.js) is large and optional, so it is never kept offline.
   const assets = listFiles(STATIC).filter(
-    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && !/\.txt$/.test(f)
+    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && f !== '/hero-poster.jpg' && !/\.txt$/.test(f)
   );
   const precache = [...written, ...assets];
   const version = crypto.createHash('sha1').update(JSON.stringify(precache) + Date.now()).digest('hex').slice(0, 10);
