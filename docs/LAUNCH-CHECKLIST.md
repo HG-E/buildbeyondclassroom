@@ -23,11 +23,22 @@ The site is a draft. Nothing below happens until the owner says so. Tick each it
 
 ## Accounts and hosting (Gate 7)
 
+Done and verified on 15 October 2026:
+
+- [x] Vercel project `bbc-site` is connected to the GitHub repository and deploys every push to `main` (latest: success).
+- [x] The domain `buildbeyondclassroom.com` is connected and shows "Valid Configuration" in Vercel, with Vercel's nameservers set at the registrar (details in `docs/HOSTING.md`).
+- [x] `https://www.buildbeyondclassroom.com` serves the site over valid HTTPS. The bare domain redirects (308) to www. `http` redirects to `https`. The free address `bbc-site-ten.vercel.app` also works.
+- [x] The live site sends the security headers from `vercel.json` and is still marked `noindex,nofollow`.
+
+Still to do:
+
 - [ ] A shared BBC email address that two people can open (`buildbeyondclassroom@gmail.com` is in `site.json`). Turn on two-step sign-in.
-- [ ] A BBC GitHub account using that email, with two-step sign-in and a second owner. Transfer the repository to it.
-- [ ] Vercel account signed in with GitHub, repository imported. Keep it on the free address.
+- [ ] A BBC GitHub account using that email, with two-step sign-in and a second owner. The repository is currently private under a personal account (`HG-E`); transfer it.
+- [ ] Two-step sign-in and a second owner on the Vercel account, and on the registrar account that holds the domain.
 - [ ] Ask Vercel support in writing whether the pilot qualifies as non-commercial on Hobby. Keep the reply.
 - [ ] If anyone is paid for site work (including through a grant), or an institution pays BBC, move to Cloudflare Pages or Netlify first.
+- [ ] Hold the domain in the name of the legal entity once the legal form is decided, with a renewal reminder 60 days before expiry (Gate 7). Check the registrar's auto-renew setting.
+- [ ] Check the live 3D scene and the tour on a real phone and a real computer (only tested on a software renderer so far).
 
 ## Decisions still open (the site says "to be decided" where relevant)
 

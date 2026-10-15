@@ -30,6 +30,8 @@ Use `node preview.js` to see the site. Opening `public/index.html` straight from
 2. Check every page against the gates. Nothing here is final: the legal form, first pilot site, evaluator, prices and domain are all undecided.
 3. When you approve launch, set `"indexing": true` in `site.json`. Until then the site tells search engines to stay away.
 
+> The site is already online. See `docs/HOSTING.md` for what is connected (GitHub, Vercel, the domain) and `docs/LAUNCH-CHECKLIST.md` for what is still open. The steps below are how it was set up.
+
 ## Put it online (all free, no card expected)
 
 1. Create a shared BBC email address that two people can open.

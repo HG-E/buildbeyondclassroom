@@ -44,4 +44,6 @@ build.js               the builder (no dependencies)
 public/                generated output (not committed)
 vercel.json            build command and security headers
 docs/                  GATE-DECISIONS.md digest; gates/ full gate text; design/ approved design reference and build prompt
+docs/HOSTING.md       what is connected (GitHub, Vercel, domain) and how it was set up
+docs/LAUNCH-CHECKLIST.md  what is verified and what still needs a person
 ```
