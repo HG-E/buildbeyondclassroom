@@ -1,0 +1,4 @@
+Three.js r128 (npm package three@0.128.0), build/three.min.js, unmodified. Licence: MIT (LICENSE-three.txt).
+Obtained 15 October 2026 from the npm registry.
+Loaded only after a visitor presses "Take the virtual tour". Not part of the offline copy.
+SHA-256: 9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2  three.min.js
