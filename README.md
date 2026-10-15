@@ -7,11 +7,11 @@ A static website in raw HTML, CSS and JavaScript. No CMS, no framework, no depen
 You need [Node.js](https://nodejs.org) 18 or later.
 
 ```
-node build.js          # writes the site into public/
-npx serve public       # optional: view it at http://localhost:3000
+node preview.js        # builds the site and shows it at http://localhost:3000
+node build.js          # only builds, writing the site into public/
 ```
 
-Use `npx serve public` to view the site. Opening `public/index.html` straight from the folder will not work properly: the pages link to `/styles.css` and other files from the site root, so the stylesheet will not load.
+Use `node preview.js` to see the site. Opening `public/index.html` straight from the folder will not work properly: the pages link to `/styles.css` and other files from the site root, so the stylesheet will not load.
 
 ## Edit it
 
