@@ -1,0 +1,1070 @@
+<title>Build Beyond Classroom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a build plan on blueprint paper. Calm tinted neutrals, one cobalt accent for action,
+   one marker-yellow highlight used once per page, and three role colours that mean "how AI may be used". */
+:root{
+  --bg:#F1F4F0; --surface:#FFFFFF; --surface2:#E8EDE7; --ink:#10251E; --muted:#475A52; --line:#CBD5CD;
+  --accent:#1D4ED8; --accent-ink:#FFFFFF; --mark:#F6C927; --focus:#B45309;
+  --tutor:#0A6B5E; --tutor-bg:#D9EFEA; --build:#1D4ED8; --build-bg:#DEE7FC; --own:#9A4A06; --own-bg:#FBE5CF;
+  --grid:rgba(16,37,30,.06);
+  --font-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --font-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1A15; --surface:#13251E; --surface2:#1A3027; --ink:#E9F0EB; --muted:#A3B6AD; --line:#2A4238;
+  --accent:#8EA9FF; --accent-ink:#0C1A15; --mark:#F6C927; --focus:#F6C927;
+  --tutor:#4FD1BC; --tutor-bg:#123C35; --build:#8EA9FF; --build-bg:#1B2B57; --own:#F4A55C; --own-bg:#4A2E14;
+  --grid:rgba(233,240,235,.06); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1A15; --surface:#13251E; --surface2:#1A3027; --ink:#E9F0EB; --muted:#A3B6AD; --line:#2A4238;
+  --accent:#8EA9FF; --accent-ink:#0C1A15; --mark:#F6C927; --focus:#F6C927;
+  --tutor:#4FD1BC; --tutor-bg:#123C35; --build:#8EA9FF; --build-bg:#1B2B57; --own:#F4A55C; --own-bg:#4A2E14;
+  --grid:rgba(233,240,235,.06); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--font-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-text-size-adjust:100%}
+.wrap{max-width:1120px;margin:0 auto;min-width:0}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(2.35rem,6.2vw,4.3rem);font-weight:800;letter-spacing:-.025em}
+h2{font-size:clamp(1.65rem,3.4vw,2.4rem);font-weight:700}
+h3{font-size:1.25rem;font-weight:700}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:.2em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.mono{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:6px;z-index:50}
+.skip:focus{left:8px}
+.lede{font-size:1.2rem;max-width:60ch;color:var(--ink)}
+.prose{max-width:66ch}
+.muted{color:var(--muted)}
+
+/* header */
+header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--font-display);font-weight:800;font-size:1.1rem;white-space:nowrap}
+.brand svg{width:30px;height:30px;flex:none}
+nav.main{display:flex;gap:2px;margin-left:auto;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}
+nav.main a{padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-weight:700;font-size:.98rem;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center}
+nav.main a:hover{background:var(--surface2)}
+nav.main a[aria-current="page"]{box-shadow:inset 0 -3px 0 var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 20px;border-radius:10px;border:2px solid var(--accent);
+  background:var(--accent);color:var(--accent-ink);font:700 1rem var(--font-body);text-decoration:none;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{min-height:44px;padding:8px 14px;font-size:.95rem}
+.icon-btn{min-height:44px;min-width:44px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;font:700 .9rem var(--font-body);cursor:pointer;padding:0 12px}
+@media (max-width:720px){nav.main{order:3;width:100%;margin-left:0}.bar .cta-head{display:none}}
+
+.draft{background:var(--surface2);border-bottom:1px solid var(--line);font-size:.92rem;
+  margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));
+  padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.draft .wrap{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tag{font:500 .72rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--mark);color:#10251E;white-space:nowrap}
+
+/* sections */
+.page{padding-block:44px 24px}
+.page[hidden]{display:none!important}
+section.block{padding-block:56px;border-top:1px solid var(--line)}
+section.block:first-of-type{border-top:0}
+.head{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.grid{display:grid;gap:24px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.grid>*{min-width:0}
+
+/* hero */
+.hero{position:relative;padding-block:48px 56px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;
+  margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:44px;align-items:center}
+@media (max-width:860px){.hero .wrap{grid-template-columns:minmax(0,1fr)}}
+.hl{background:linear-gradient(transparent 62%,var(--mark) 62% 92%,transparent 92%);padding:0 .08em}
+.hero .lede{margin-top:20px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+
+/* log (hero build log) */
+.log{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 1px 0 var(--line)}
+.log-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:10px;flex-wrap:wrap}
+.log ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.log li button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:8px 8px;border-radius:8px;cursor:pointer;min-height:44px}
+.log li button:hover{background:var(--surface2)}
+.log li button:focus-visible{outline:3px solid var(--focus)}
+.n{font:500 .85rem var(--font-mono);width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center}
+.pill{font:500 .72rem var(--font-mono);letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.tutor{background:var(--tutor-bg);color:var(--tutor)}
+.pill.build{background:var(--build-bg);color:var(--build)}
+.pill.own{background:var(--own-bg);color:var(--own)}
+
+/* lists */
+.defs{display:grid;gap:0}
+.def{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;padding-block:20px;border-top:1px solid var(--line)}
+.def:last-child{border-bottom:1px solid var(--line)}
+.def .k{font:800 1.6rem var(--font-display);color:var(--accent)}
+.def h3{margin-bottom:4px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.stat{padding:20px 18px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:800 2.4rem/1 var(--font-display);font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:6px;font-size:.92rem;color:var(--muted)}
+.stat.pending b{color:var(--muted)}
+.route{display:flex;flex-direction:column;gap:8px;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--ink)}
+.route:hover{border-color:var(--accent)}
+.route .mono{color:var(--accent)}
+.route strong{font:700 1.2rem var(--font-display)}
+.route .go{margin-top:auto;font-weight:700;color:var(--accent)}
+.note{border-left:4px solid var(--mark);background:var(--surface);padding:14px 18px;border-radius:0 10px 10px 0;max-width:70ch}
+ul.plain{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h3{margin-bottom:8px}
+
+/* ladder */
+.ladder{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rung{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  margin-left:calc((var(--i) - 1) * clamp(0px,2.2vw,22px))}
+.rung .n{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* studio */
+.track-scroll{overflow-x:auto;padding-bottom:6px}
+.track{min-width:760px;display:grid;grid-template-columns:104px repeat(8,minmax(0,1fr));gap:6px;align-items:stretch}
+.track .rowlab{font:500 .7rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+.step-btn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);min-height:84px}
+.step-btn:hover{border-color:var(--accent)}
+.step-btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--build-bg);background:var(--surface)}
+.step-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.step-btn .t{font:700 .92rem/1.2 var(--font-display)}
+.cell{border-radius:8px;display:grid;place-items:center;font:500 .68rem var(--font-mono);letter-spacing:.04em;text-transform:uppercase;min-height:34px;text-align:center;padding:4px}
+.cell.tutor{background:var(--tutor-bg);color:var(--tutor)}
+.cell.build{background:var(--build-bg);color:var(--build)}
+.cell.own{background:var(--own-bg);color:var(--own)}
+.cell.none{color:var(--muted);background:transparent;border:1px dashed var(--line)}
+.cell.on{outline:2px solid var(--ink)}
+.panel{margin-top:22px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px}
+@media (max-width:820px){.panel{grid-template-columns:minmax(0,1fr)}}
+.panel .big{font:800 clamp(3rem,8vw,5rem)/1 var(--font-display);color:var(--accent)}
+.facts{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.facts li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;padding-block:10px;border-top:1px solid var(--line)}
+.facts li:first-child{border-top:0}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:14px;align-items:center}
+
+/* tabs / chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 .98rem var(--font-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:hover{border-color:var(--accent)}
+.out{margin-top:18px}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:620px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .74rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:700}
+
+/* disclosure */
+details{border-top:1px solid var(--line);padding-block:4px}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;min-height:48px;display:flex;align-items:center;gap:14px;font:700 1.08rem var(--font-display);list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font:500 1.2rem var(--font-mono);color:var(--accent);width:20px}
+details[open] summary::before{content:"\2212"}
+details p{padding:0 0 16px 34px;max-width:64ch;color:var(--muted)}
+
+/* path */
+.path{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;counter-reset:s}
+.path li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+.path li::before{content:"Stage " counter(s);display:block;font:500 .72rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+
+/* forms */
+label{display:block;font-weight:700;margin-bottom:6px}
+textarea,input[type=text],select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px}
+textarea{min-height:84px;resize:vertical}
+.field{display:grid;gap:4px}
+.hint{font-size:.92rem;color:var(--muted)}
+.meter{height:8px;background:var(--surface2);border-radius:999px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+pre.brief{white-space:pre-wrap;word-break:break-word;font:400 .92rem/1.5 var(--font-mono);background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:0}
+
+/* design page */
+.sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.sw div{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);font-size:.85rem}
+.sw i{display:block;height:54px}
+.sw span{display:block;padding:8px 10px}
+.sw code{font:400 .76rem var(--font-mono);color:var(--muted)}
+.spec{display:grid;gap:18px}
+footer.site{border-top:1px solid var(--line);margin-top:56px;padding-block:32px 48px;color:var(--muted);font-size:.95rem}
+footer.site .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:24px}
+footer a{color:var(--ink)}
+footer ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+@media (max-width:560px){.facts li{grid-template-columns:minmax(0,1fr)}.rung{margin-left:0}}
+
+/* 3D tour stage: always a dark world, independent of the page theme */
+.stage{position:relative;isolation:isolate;height:clamp(620px,92vh,860px);background:#0A1612;color:#E9F0EB;border-bottom:1px solid var(--line);overflow:hidden;
+  margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)))}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
+#gl:active{cursor:grabbing}
+.veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,22,18,.92) 0%,rgba(10,22,18,.6) 42%,rgba(10,22,18,0) 72%);transition:opacity .9s;pointer-events:none}
+.stage:not(.at-start) .veil{opacity:0}
+.hintbar{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:14px;margin:0;max-width:34ch;text-align:right;font:500 .7rem/1.4 var(--font-mono);letter-spacing:.05em;text-transform:uppercase;color:rgba(233,240,235,.62);pointer-events:none}
+.ui{position:absolute;inset:0;padding-block:clamp(22px,4vw,48px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.ui-in{max-width:1120px;margin:0 auto;height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:16px;min-width:0}
+.ui-in button,.ui-in a,.ui-in .tcard{pointer-events:auto}
+.intro{max-width:620px;min-width:0}
+.intro .mono{color:rgba(233,240,235,.72);margin-bottom:14px}
+.stage h1{color:#fff;transition:font-size .6s}
+.stage:not(.at-start) h1{font-size:1.05rem;letter-spacing:0;font-weight:700;max-width:34ch;text-shadow:0 1px 8px #0A1612}
+.stage:not(.at-start) .intro .mono{display:none}
+.intro-more{transition:opacity .5s,transform .5s}
+.stage:not(.at-start) .intro-more{opacity:0;transform:translateY(-10px);visibility:hidden}
+.stage .lede{color:#E9F0EB;margin-top:18px}
+.btn.ghost.light{color:#fff;border-color:rgba(255,255,255,.75)}
+.btn.ghost.light:hover{background:rgba(255,255,255,.12)}
+.tourbar{display:grid;grid-template-columns:minmax(0,470px) auto;justify-content:space-between;align-items:end;gap:16px}
+.tcard{background:rgba(10,22,18,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:18px 20px;display:grid;gap:8px}
+.tcard[hidden]{display:none}
+.tcard .mono{color:rgba(233,240,235,.7)}
+.tcard .tt{font:800 1.7rem/1.1 var(--font-display);color:#fff}
+.tcard p{margin:0;color:#E9F0EB}
+.tcard .row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-size:.92rem}
+.linkbtn{all:unset;box-sizing:border-box;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;color:#9DB4FF;font-weight:700;text-decoration:underline;text-underline-offset:.2em}
+.linkbtn:focus-visible{outline:3px solid #F6C927;outline-offset:2px;border-radius:4px}
+.tright{display:grid;gap:12px;justify-items:end}
+.tctl{display:flex;gap:8px}
+.rbtn{min-width:46px;min-height:46px;border-radius:999px;border:1.5px solid rgba(255,255,255,.45);background:rgba(10,22,18,.78);color:#fff;font:700 1.3rem/1 var(--font-body);cursor:pointer;padding:0 14px}
+.rbtn.wide{font-size:.95rem;padding:0 18px}
+.rbtn:hover:not(:disabled){background:rgba(255,255,255,.14)}
+.rbtn:disabled{opacity:.35;cursor:default}
+.rbtn[aria-pressed="true"]{background:#F6C927;color:#10251E;border-color:#F6C927}
+.rbtn:focus-visible,.dot:focus-visible,.stage:focus-visible{outline:3px solid #F6C927;outline-offset:2px}
+.dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.dot{width:24px;height:44px;display:grid;place-items:center;background:none;border:0;padding:0;cursor:pointer}
+.dot i{display:block;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.35);transition:transform .3s,background .3s}
+.dot[aria-current="true"] i{background:#F6C927;transform:scale(1.5)}
+.dot.done i{background:rgba(246,201,39,.65)}
+.fallback{display:none}
+.stage.nogl{height:auto;background:var(--bg);color:var(--ink);padding-block:40px;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.stage.nogl #gl,.stage.nogl .veil,.stage.nogl .hintbar,.stage.nogl .ui{display:none}
+.stage.nogl .fallback{display:block}
+@media (max-width:720px){
+  .stage{height:clamp(640px,92vh,780px)}
+  .tourbar{grid-template-columns:minmax(0,1fr);justify-items:stretch}
+  .tright{justify-items:stretch}.tctl{justify-content:space-between}.dots{justify-content:center}
+  .hintbar{display:none}
+  .tcard .tt{font-size:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){.stage h1,.intro-more,.veil{transition:none}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="draft" role="note"><div class="wrap"><span class="tag">Draft design</span><span>BBC has not launched. This is the proposed design of the site, built from the gate decisions. Details may change.</span></div></div>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="#home" aria-label="Build Beyond Classroom, home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="9" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="15" y="3" width="14" height="14" rx="3" fill="var(--accent)"/></svg>
+      <span>Build Beyond Classroom</span>
+    </a>
+    <nav class="main" aria-label="Main">
+      <a href="#programme" data-nav="programme">Programme</a>
+      <a href="#studio" data-nav="studio">Studio</a>
+      <a href="#partners" data-nav="partners">Partners</a>
+      <a href="#trust" data-nav="trust">Safety and data</a>
+    </nav>
+    <a class="btn small cta-head" href="#involved">Register interest</a>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch between light and dark theme">Theme</button>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- HOME -->
+<div class="page" data-page="home" style="padding-top:0">
+  <div class="stage at-start" id="stage" tabindex="0" role="region" aria-label="Interactive 3D tour of a BBC project. Use the buttons, arrow keys, or drag to look around.">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="veil" aria-hidden="true"></div>
+    <p class="hintbar" aria-hidden="true">Drag to look around. Tap a label to jump. Stops light up as the project reaches them.</p>
+    <div class="ui"><div class="ui-in">
+      <div class="intro">
+        <p class="mono">A programme for any country, field and age group</p>
+        <h1 tabindex="-1">Build with AI. Solve a <span class="hl">real problem</span>. Own the result.</h1>
+        <div class="intro-more" id="introMore">
+          <p class="lede">Build Beyond Classroom helps people use AI to build solutions to problems in their own communities, and to make the business case for them in their own field.</p>
+          <div class="actions">
+            <button class="btn" id="startTour" type="button">Take the virtual tour</button>
+            <a class="btn ghost light" href="#involved">Register interest</a>
+          </div>
+        </div>
+      </div>
+      <div class="tourbar">
+        <div class="tcard" id="tcard" aria-live="polite" hidden></div>
+        <div class="tright">
+          <div class="tctl" role="group" aria-label="Tour controls">
+            <button id="tPrev" class="rbtn" type="button" aria-label="Previous stop" disabled>&#8249;</button>
+            <button id="tPlay" class="rbtn wide" type="button" aria-pressed="false">Play tour</button>
+            <button id="tNext" class="rbtn" type="button" aria-label="Next stop">&#8250;</button>
+          </div>
+          <div class="dots" id="dots" role="group" aria-label="Tour stops"></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="fallback">
+      <div class="wrap" style="display:grid;gap:24px">
+        <div>
+          <p class="mono" style="margin-bottom:12px">A programme for any country, field and age group</p>
+          <p class="lede">Build Beyond Classroom helps people use AI to build solutions to problems in their own communities, and to make the business case for them in their own field.</p>
+          <div class="actions"><a class="btn" href="#studio">See how a project is built</a><a class="btn ghost" href="#involved">Register interest</a></div>
+        </div>
+        <div class="log" aria-label="The eight steps of a project">
+          <div class="log-head"><strong style="font-family:var(--font-display)">One project, eight steps</strong><span class="mono">Tap a step</span></div>
+          <ol id="heroLog"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="block wrap">
+    <div class="head"><p class="mono">What every learner does</p><h2>Four things, in this order of importance.</h2></div>
+    <div class="defs" style="max-width:860px">
+      <div class="def"><div class="k">A</div><div><h3>Builds with AI</h3><p class="muted">Learners use AI tools to design, build and publish something real.</p></div></div>
+      <div class="def"><div class="k">B</div><div><h3>Finds and checks a community problem</h3><p class="muted">The need is confirmed with the people who live with it. It is never assumed.</p></div></div>
+      <div class="def"><div class="k">C</div><div><h3>Makes the business case in their own field</h3><p class="muted">Who benefits, who pays, what it costs, what rules apply and who else already serves the need.</p></div></div>
+      <div class="def"><div class="k">D</div><div><h3>Owns the result</h3><p class="muted">The work belongs to the learner and goes with them, in open formats.</p></div></div>
+    </div>
+  </section>
+
+  <section class="block wrap">
+    <div class="head"><p class="mono">The programme in numbers</p><h2>The shape is fixed. The results are not claimed yet.</h2></div>
+    <div class="stats">
+      <div class="stat"><b>8</b><span>steps in the Community Problem Studio</span></div>
+      <div class="stat"><b>3</b><span>journeys: Explore, Build, Launch</span></div>
+      <div class="stat"><b>3</b><span>levels, aligned to UNESCO and OECD frameworks</span></div>
+      <div class="stat"><b>7</b><span>rungs on the skills ladder</span></div>
+      <div class="stat pending"><b>n/a</b><span>learners or projects. BBC has not launched.</span></div>
+    </div>
+    <p class="hint" style="margin-top:12px">Impact numbers will appear here only after an independent evaluation has measured them. BBC does not claim outcomes it has not measured.</p>
+  </section>
+
+  <section class="block wrap">
+    <div class="head"><p class="mono">Start where you are</p><h2>Who are you?</h2></div>
+    <div class="grid g4">
+      <a class="route" href="#programme"><span class="mono">Learner</span><strong>Find your journey</strong><span class="muted">Three journeys and a ladder of skills, built around your own field.</span><span class="go">See the programme</span></a>
+      <a class="route" href="#programme"><span class="mono">Facilitator</span><strong>Guide a team</strong><span class="muted">Participate, co-run, lead and certify. Every group has a person who guides it.</span><span class="go">See the route</span></a>
+      <a class="route" href="#partners"><span class="mono">Hub or community partner</span><strong>Host a cohort</strong><span class="muted">A space, a certified facilitator and a signed data protocol.</span><span class="go">See what is needed</span></a>
+      <a class="route" href="#partners"><span class="mono">Funder or employer</span><strong>Back real projects</strong><span class="muted">Pay for cohorts without buying any say over content or findings.</span><span class="go">See the agreement</span></a>
+    </div>
+  </section>
+
+  <section class="block wrap">
+    <div class="head"><p class="mono">What makes it different</p><h2>A shipped project is the measure.</h2></div>
+    <div class="grid g2" style="gap:32px">
+      <div><h3>Success is a solution in use</h3><p class="muted" style="margin-top:6px">Real people use it, and a community partner confirms it. Attendance does not count.</p></div>
+      <div><h3>A person guides every group</h3><p class="muted" style="margin-top:6px">At a hub, in a hybrid format or in live online sessions. There is no self-paced online course at the core.</p></div>
+      <div><h3>AI helps you learn. It does not think for you.</h3><p class="muted" style="margin-top:6px">Short checks with the tool closed show whether you learned or only produced.</p></div>
+      <div><h3>Light and open</h3><p class="muted" style="margin-top:6px">Programme content is open and works on weak connections. Information about learners is protected.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- PROGRAMME -->
+<div class="page" data-page="programme" hidden>
+  <div class="wrap">
+    <div class="head"><p class="mono">The programme</p><h1 tabindex="-1">Three journeys, three levels, one ladder.</h1>
+      <p class="lede">People learn to use AI best by building something real that helps their community.</p></div>
+
+    <section class="block">
+      <div class="head"><h2>Three journeys</h2></div>
+      <div class="grid g3">
+        <div class="card"><p class="mono">Journey</p><h3>Explore</h3><p class="muted">A first look at how a field works as a business and which path might suit you. Facilitator-led, and offered only after local advisers have cleared age and consent rules.</p></div>
+        <div class="card"><p class="mono">Journey, the core</p><h3>Build</h3><p class="muted">A team works through a real community problem from need to launch, with a facilitator. The first pilot is an eight-week facilitated Build journey for adults aged 18 and over.</p></div>
+        <div class="card"><p class="mono">Journey</p><h3>Launch</h3><p class="muted">Taking a finished solution to real users and towards funding or income.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Three levels</h2><p class="muted prose">The levels follow <a href="https://www.unesco.org/en/articles/ai-competency-framework-students" target="_blank" rel="noopener">UNESCO's AI competency framework for students</a> and the <a href="https://digital-skills-jobs.europa.eu/en/latest/news/new-ai-literacy-framework-common-reference-integrating-ai-literacy-education" target="_blank" rel="noopener">OECD and European Commission AI literacy framework</a>, so schools and funders can see where BBC fits.</p></div>
+      <div class="grid g3">
+        <div class="card"><p class="mono">Level 1</p><h3>Understand and use</h3><p class="muted">Use AI tools well and safely.</p></div>
+        <div class="card"><p class="mono">Level 2</p><h3>Apply and build</h3><p class="muted">Use them to build solutions.</p></div>
+        <div class="card"><p class="mono">Level 3</p><h3>Create and scale</h3><p class="muted">Take a solution further, with a verified portfolio and a path to funding or work.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>A ladder of skills</h2><p class="muted prose">Tools are supporting actors. Each rung describes what a learner can do.</p></div>
+      <ol class="ladder" id="ladder"></ol>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Your own field, in five questions</h2>
+        <p class="muted prose">Every learner looks at their own subject through these. Try it with a field you know. Nothing is saved or sent.</p></div>
+      <div class="grid g2" style="gap:32px">
+        <form id="lens" class="spec" onsubmit="return false">
+          <div class="field"><label for="lens-field">Your field or subject</label><input id="lens-field" type="text" placeholder="For example: nursing, farming, law, graphic design"></div>
+          <div class="field"><label for="lens-0">1. Who benefits?</label><textarea id="lens-0" data-q="Who benefits"></textarea></div>
+          <div class="field"><label for="lens-1">2. Who pays?</label><textarea id="lens-1" data-q="Who pays"></textarea></div>
+          <div class="field"><label for="lens-2">3. What does it cost?</label><textarea id="lens-2" data-q="What it costs"></textarea></div>
+          <div class="field"><label for="lens-3">4. What rules apply?</label><textarea id="lens-3" data-q="What rules apply"></textarea></div>
+          <div class="field"><label for="lens-4">5. Who else already serves this need?</label><textarea id="lens-4" data-q="Who else already serves this need"></textarea></div>
+        </form>
+        <div class="spec" style="align-content:start">
+          <div><div class="meter" aria-hidden="true"><i id="lensMeter"></i></div><p class="hint" id="lensCount" style="margin-top:6px" aria-live="polite">0 of 5 answered</p></div>
+          <pre class="brief" id="lensBrief" aria-live="polite">Your field brief will appear here as you answer.</pre>
+          <div class="actions" style="margin:0"><button class="btn small" type="button" id="lensCopy">Copy brief</button><span class="hint" id="lensMsg" role="status"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Who can take part</h2></div>
+      <ul class="plain prose">
+        <li>BBC is for learners of different ages and backgrounds. Learners under 13 take part only in facilitator-led sessions.</li>
+        <li>The first pilot is for adults aged 18 and over. Work with younger learners begins only after local legal advice has cleared the rules.</li>
+        <li>The plan is to keep access free or low cost for learners, with institutions and funders paying for cohorts. This is still being tested and no prices have been set.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>The facilitator route</h2><p class="muted prose">Facilitators are trained and certified. The route has four stages.</p></div>
+      <ol class="path"><li><strong>Participate</strong><br><span class="muted">Join a cohort and see it from the inside.</span></li><li><strong>Co-run</strong><br><span class="muted">Share a cohort with a certified facilitator.</span></li><li><strong>Lead</strong><br><span class="muted">Run a cohort with support.</span></li><li><strong>Certify</strong><br><span class="muted">Become certified to run cohorts and train others.</span></li></ol>
+    </section>
+  </div>
+</div>
+
+<!-- STUDIO -->
+<div class="page" data-page="studio" hidden>
+  <div class="wrap">
+    <div class="head"><p class="mono">The Community Problem Studio</p><h1 tabindex="-1">From a real need to a solution in use.</h1>
+      <p class="lede">A facilitator plans each cycle. Teams work through eight steps. Pick a step to see who is involved and how AI may be used.</p></div>
+    <div class="track-scroll"><div class="track" id="track" role="group" aria-label="The eight steps"></div></div>
+    <div class="legend">
+      <span class="pill tutor">Tutor</span><span class="hint">always allowed, at every step</span>
+      <span class="pill build">Co-builder</span><span class="hint">allowed in steps 4 to 6</span>
+      <span class="pill own">Own work</span><span class="hint">AI may not be the author in steps 2, 7 and 8</span>
+    </div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+
+    <section class="block" style="margin-top:44px">
+      <div class="grid g2" style="gap:32px">
+        <div>
+          <h2 style="margin-bottom:14px">Three checks with the tool closed</h2>
+          <p class="muted prose">At the start, middle and end of a cycle, learners complete a short check without AI. They show whether someone has learned or only produced.</p>
+        </div>
+        <div>
+          <h2 style="margin-bottom:14px">Staying safe</h2>
+          <ul class="plain">
+            <li>A <strong>Do-No-Harm Check</strong> is signed off by the facilitator before a solution reaches users.</li>
+            <li>Teams stop and ask the facilitator if AI would be the only source of medical, legal or financial advice.</li>
+            <li>Teams stop if a design needs personal data it does not need, or would profile people.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- PARTNERS -->
+<div class="page" data-page="partners" hidden>
+  <div class="wrap">
+    <div class="head"><p class="mono">Hubs and partners</p><h1 tabindex="-1">Use the most human contact a site allows.</h1>
+      <p class="lede">BBC is delivered through facilitated cohorts. Virtual sessions are added only to reach what a hub cannot.</p></div>
+
+    <section class="block">
+      <div class="head"><h2>Ways to run a cohort</h2></div>
+      <div class="chips" id="fmtChips"></div>
+      <div class="card out" id="fmtOut" aria-live="polite"></div>
+      <p class="hint" style="margin-top:10px">A hub can be a university room, a school classroom, a library, an NGO centre or a community hall. Hubs aim to provide shared devices so no learner needs to own one.</p>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>What a hub needs before it opens</h2></div>
+      <div class="grid g2">
+        <div class="card"><p class="mono">Required</p><h3>A certified facilitator</h3><p class="muted">Young people take part only in sessions run by a certified facilitator.</p></div>
+        <div class="card"><p class="mono">Required</p><h3>A signed data protocol</h3><p class="muted">With a named data owner, before any learner information is kept.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Who BBC works with</h2></div>
+      <div class="tw"><table>
+        <thead><tr><th>Partner</th><th>What they give</th><th>What they get</th></tr></thead>
+        <tbody>
+          <tr><td>Hub host</td><td>A safe space and shared devices</td><td>Certified hub status, a certified facilitator and the toolkit</td></tr>
+          <tr><td>Regional partner</td><td>Hosting and supervision of several hubs</td><td>Standards, facilitator training and support</td></tr>
+          <tr><td>Community partner</td><td>A real community problem and access to it</td><td>Learner work on their problem, documented openly</td></tr>
+          <tr><td>Employer or field mentor</td><td>Time, field knowledge and review</td><td>A view of emerging talent</td></tr>
+          <tr><td>Funder</td><td>Money for cohorts, facilitators or hubs</td><td>Reports on learner skills and community outcomes</td></tr>
+          <tr><td>Independent evaluator</td><td>An evaluation design and findings</td><td>Access to anonymised programme data</td></tr>
+        </tbody></table></div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>The path to a first cohort</h2><p class="muted prose">A partner that does not pass a stage stays at that stage and runs no cohort.</p></div>
+      <ol class="path"><li><strong>A conversation</strong><br><span class="muted">Fit and expectations.</span></li><li><strong>A pilot agreement</strong><br><span class="muted">The seven commitments below.</span></li><li><strong>A readiness check</strong><br><span class="muted">Facilitator and data owner in place.</span></li><li><strong>The cohort</strong><br><span class="muted">Starts with support.</span></li></ol>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>What every partner agrees to</h2></div>
+      <div>
+        <details><summary>Safeguarding</summary><p>Of young people, in every session and every hub.</p></details>
+        <details><summary>Data</summary><p>Data protection, with a named data owner.</p></details>
+        <details><summary>Open content and the BBC name</summary><p>Programme content is open, and the BBC name is used fairly.</p></details>
+        <details><summary>Learner ownership</summary><p>Learners own their own work.</p></details>
+        <details><summary>AI use</summary><p>AI is used within the programme's rules: tutor always, co-builder in steps 4 to 6, never the author where the work must be the team's own.</p></details>
+        <details><summary>Standards and reporting</summary><p>Including a certified facilitator at every cohort.</p></details>
+        <details><summary>Independence and exit</summary><p>Payment buys no say over content, learner data or evaluation findings.</p></details>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div class="page" data-page="trust" hidden>
+  <div class="wrap">
+    <div class="head"><p class="mono">Safeguarding and data</p><h1 tabindex="-1">Content is open. Information about people is protected.</h1>
+      <p class="lede">The rules, in plain words.</p></div>
+
+    <section class="block">
+      <div class="grid g2" style="gap:32px">
+        <div><h2 style="margin-bottom:14px">Safeguarding</h2>
+          <ul class="plain"><li>Learners under 13 take part only in facilitator-led sessions.</li><li>Young people take part only in sessions run by a certified facilitator.</li><li>The first pilot is for adults aged 18 and over.</li><li>The facilitator signs a Do-No-Harm Check before a solution reaches users.</li><li>Every hub has a signed data protocol and a named data owner before it opens.</li></ul></div>
+        <div><h2 style="margin-bottom:14px">What this website does</h2>
+          <ul class="plain"><li>No accounts, no forms that save information and no analytics.</li><li>No tracking cookies and no third-party scripts.</li><li>It can keep a copy of its public pages on your device so it works offline. You can clear it in your browser settings.</li><li>If you email BBC, we use your message only to reply.</li></ul></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Eight rules for learner information</h2></div>
+      <div class="grid g4" id="rules"></div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>How results will be measured</h2></div>
+      <div class="grid g2" style="gap:32px">
+        <ul class="plain"><li>Impact is counted at community results: where the partner confirms the solution is in use, at step 8 and again at day 90.</li><li>At the start, records are kept on paper and in one spreadsheet per hub, using codes rather than names where possible.</li></ul>
+        <ul class="plain"><li>An independent evaluator agrees the design and thresholds before week 1.</li><li>BBC will not claim outcomes it has not measured.</li></ul>
+      </div>
+      <div class="note" style="margin-top:28px">BBC has not yet confirmed which data protection laws apply in each pilot country. Local legal advice is being arranged before any learner records are kept beyond paper and a hub spreadsheet.</div>
+    </section>
+  </div>
+</div>
+
+<!-- INVOLVED -->
+<div class="page" data-page="involved" hidden>
+  <div class="wrap">
+    <div class="head"><p class="mono">Get involved</p><h1 tabindex="-1">Tell us who you are and what you want to do.</h1>
+      <p class="lede">The first pilot has not been announced. Registering interest is how you hear first. This page prepares your message. It does not send or store anything.</p></div>
+    <div class="grid g2" style="gap:36px">
+      <form class="spec" id="inv" onsubmit="return false">
+        <fieldset style="border:0;padding:0;margin:0"><legend style="font-weight:700;margin-bottom:8px">I am a</legend>
+          <div class="chips" id="roleChips"></div></fieldset>
+        <div class="field"><label for="inv-name">Your name (optional)</label><input id="inv-name" type="text" autocomplete="name"></div>
+        <div class="field"><label for="inv-place">Country and place</label><input id="inv-place" type="text" placeholder="For example: a city and a country"></div>
+        <div class="field"><label for="inv-msg">What would you like to do?</label><textarea id="inv-msg" placeholder="A sentence or two is enough."></textarea>
+          <span class="hint">Please do not include sensitive personal information, or any information about children.</span></div>
+      </form>
+      <div class="spec" style="align-content:start">
+        <h2>Your message</h2>
+        <pre class="brief" id="invOut" aria-live="polite"></pre>
+        <div class="actions" style="margin:0"><button class="btn small" type="button" id="invCopy">Copy message</button><span class="hint" id="invMsg" role="status"></span></div>
+        <div class="note"><strong>Send it to:</strong> the BBC role email address. It has not been set up yet, so this draft shows no address.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DESIGN NOTES -->
+<div class="page" data-page="design" hidden>
+  <div class="wrap">
+    <div class="head"><p class="mono">Design notes</p><h1 tabindex="-1">Why the site is built this way.</h1>
+      <p class="lede">What comparable programme and research sites do well, and the decision each one led to here.</p></div>
+
+    <section class="block">
+      <div class="head"><h2>Research to decision</h2></div>
+      <div class="tw"><table>
+        <thead><tr><th>Pattern found</th><th>Source</th><th>Decision for BBC</th></tr></thead>
+        <tbody>
+          <tr><td>Four primary navigation items serve several audiences without overload.</td><td><a href="https://ixd.prattsi.org/2026/05/redesigning-the-school-of-leadership-platform-to-drive-partner-engagement/" target="_blank" rel="noopener">Pratt SI, School of Leadership redesign</a></td><td>Programme, Studio, Partners, Safety and data, plus one action button. The home page routes by audience.</td></tr>
+          <tr><td>Trust numbers belong on the home page. Buttons should say what happens next.</td><td>Same case study</td><td>A numbers strip with an honest "not measured yet" slot. Buttons such as "See how a project is built".</td></tr>
+          <tr><td>Partners and funders should never have to decode internal terms.</td><td>Same case study</td><td>Plain labels everywhere. Each step and rung is named by what the learner does.</td></tr>
+          <tr><td>Move reports from PDFs to web pages. Use tabs and collapsed detail so pages scan.</td><td><a href="https://www.mozillafoundation.org/en/blog/design-in-a-movement-building-organization-reflections-from-2021/" target="_blank" rel="noopener">Mozilla Foundation, design in a movement-building organisation</a></td><td>Everything is a web page. Agreements and rules use disclosure sections. One report template later.</td></tr>
+          <tr><td>Projects, people, funding and impact are linked sections, not separate silos.</td><td><a href="https://theopenscholar.com/blog/how-make-your-research-website-fundable-7-content-and-ux-strategies" target="_blank" rel="noopener">OpenScholar, fundable research websites</a></td><td>Version 2 adds a partner view that links projects, hubs and impact data.</td></tr>
+          <tr><td>Strong contrast, readable type, large targets, mobile first, one clear action.</td><td><a href="https://kanopi.com/?p=11376" target="_blank" rel="noopener">Kanopi, UX for nonprofits</a></td><td>WCAG 2.2 AA target, 44 px targets, a typeface built for legibility, layouts that start at phone width.</td></tr>
+        </tbody></table></div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Principles</h2></div>
+      <div class="grid g3">
+        <div class="card"><h3>Show the mechanism</h3><p class="muted">The Studio track is the product. It appears on the home page, then in full on its own page, with the same colours and words.</p></div>
+        <div class="card"><h3>Colour means a rule</h3><p class="muted">Three role colours say how AI may be used. They are never used for decoration, and each also carries a text label.</p></div>
+        <div class="card"><h3>Say only what is decided</h3><p class="muted">Open decisions show as open. No prices, no outcomes and no launch dates are invented.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Colour</h2><p class="muted prose">Tinted neutrals, one action colour, one highlight, three role colours. All values change with the theme.</p></div>
+      <div class="sw">
+        <div><i style="background:var(--bg)"></i><span>Paper<br><code>--bg</code></span></div>
+        <div><i style="background:var(--surface)"></i><span>Surface<br><code>--surface</code></span></div>
+        <div><i style="background:var(--ink)"></i><span>Ink<br><code>--ink</code></span></div>
+        <div><i style="background:var(--accent)"></i><span>Action<br><code>--accent</code></span></div>
+        <div><i style="background:var(--mark)"></i><span>Highlight<br><code>--mark</code></span></div>
+        <div><i style="background:var(--tutor)"></i><span>Tutor<br><code>--tutor</code></span></div>
+        <div><i style="background:var(--build)"></i><span>Co-builder<br><code>--build</code></span></div>
+        <div><i style="background:var(--own)"></i><span>Own work<br><code>--own</code></span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Type</h2></div>
+      <div class="grid g3">
+        <div class="card"><p class="mono">Display</p><p style="font:800 2rem/1.1 var(--font-display)">Bricolage Grotesque</p><p class="hint" style="margin-top:8px">Headings and numbers. Friendly, with character.</p></div>
+        <div class="card"><p class="mono">Body</p><p style="font:700 1.4rem/1.2 var(--font-body)">Atkinson Hyperlegible</p><p class="hint" style="margin-top:8px">Designed for low-vision readers. Distinct letter shapes help every reader, including on weak screens.</p></div>
+        <div class="card"><p class="mono">Labels</p><p style="font:500 1.1rem var(--font-mono)">IBM Plex Mono</p><p class="hint" style="margin-top:8px">Short labels and tags only.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Components</h2></div>
+      <div class="spec">
+        <div class="actions" style="margin:0"><a class="btn" href="#design">Primary</a><a class="btn ghost" href="#design">Secondary</a><button class="chip" aria-pressed="true" type="button">Selected</button><button class="chip" aria-pressed="false" type="button">Option</button></div>
+        <div class="actions" style="margin:0;align-items:center"><span class="pill tutor">Tutor</span><span class="pill build">Co-builder</span><span class="pill own">Own work</span><span class="tag">Draft</span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="head"><h2>Build phases</h2></div>
+      <div class="grid g3">
+        <div class="card"><p class="mono">Version 0, first pilot</p><h3>Static site</h3><p class="muted">No database, no accounts, no analytics. Hand-written HTML, CSS and JavaScript built from Markdown. Hosted on Vercel Hobby, which allows non-commercial use only.</p></div>
+        <div class="card"><p class="mono">Version 1, pilots two and three</p><h3>Records</h3><p class="muted">Turso (SQLite) for portfolios, consent and sign-offs, with learner export.</p></div>
+        <div class="card"><p class="mono">Version 2</p><h3>Partner view</h3><p class="muted">Impact data, roles for many hubs, and a hosting review before any paid engagement.</p></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div><strong style="color:var(--ink);font-family:var(--font-display)">Build Beyond Classroom</strong><p style="margin-top:8px">Build with AI. Solve a real problem. Own the result. Draft design, not yet launched.</p></div>
+    <div><strong style="color:var(--ink)">Pages</strong><ul><li><a href="#programme">Programme</a></li><li><a href="#studio">Studio</a></li><li><a href="#partners">Partners</a></li><li><a href="#trust">Safety and data</a></li><li><a href="#involved">Get involved</a></li></ul></div>
+    <div><strong style="color:var(--ink)">About this design</strong><ul><li><a href="#design">Design notes and research</a></li></ul><p style="margin-top:10px">No cookies, no tracking, no third-party scripts on the site.</p></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+var STEPS=[
+ {n:1,t:"Find the need",ai:"tutor",what:"Talk to the people affected and a community partner.",partner:true},
+ {n:2,t:"Research feasibility",ai:"own",what:"Check whether the problem is real, worth solving and safe to work on.",gate:"The facilitator decides: go on, redesign or stop."},
+ {n:3,t:"Ideate",ai:"tutor",what:"Generate and compare ideas."},
+ {n:4,t:"Design",ai:"build",what:"Shape the chosen idea and how it will be used.",partner:true},
+ {n:5,t:"Build",ai:"build",what:"Make a first working version."},
+ {n:6,t:"Deploy",ai:"build",what:"Put it in front of real users.",gate:"The facilitator signs off safety with the Do-No-Harm Check."},
+ {n:7,t:"Pitch",ai:"own",what:"Explain the solution and its business case to the partner and a panel.",partner:true},
+ {n:8,t:"Sustain",ai:"own",what:"Plan who owns it, how it is paid for and how it keeps working.",partner:true}
+];
+var AIL={tutor:"Tutor",build:"Co-builder",own:"Own work"};
+var AIX={tutor:"AI can act as a tutor here. It explains and coaches. The team still does the thinking.",build:"AI can act as a co-builder here, and as a tutor. The team decides and checks the work.",own:"AI may not be the author here. The research, pitch or plan must be the team's own work. AI can still tutor."};
+var cur=0;
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+
+/* hero log */
+var log=$("#heroLog");
+STEPS.forEach(function(s,i){
+  var li=el("li");var b=el("button",null,'<span class="n">'+s.n+'</span><span>'+s.t+'</span><span class="pill '+s.ai+'">'+AIL[s.ai]+'</span>');
+  b.type="button";b.setAttribute("aria-label","Step "+s.n+", "+s.t+". See it in the Studio.");
+  b.addEventListener("click",function(){cur=i;location.hash="studio";renderStudio()});
+  li.appendChild(b);log.appendChild(li)
+});
+
+/* ladder */
+var RUNGS=["Chat and research with AI","Create content and design","Use no-code and AI app builders","Automate tasks and build assistants","Write code with AI","Deploy and publish","Operate and measure what you have built"];
+var lad=$("#ladder");
+RUNGS.forEach(function(r,i){var li=el("li","rung",'<span class="n">'+(i+1)+'</span><strong>'+r+'</strong>');li.style.setProperty("--i",i+1);lad.appendChild(li)});
+
+/* studio */
+function renderStudio(){
+  var tr=$("#track");tr.innerHTML="";
+  tr.appendChild(el("div","rowlab","Step"));
+  STEPS.forEach(function(s,i){var b=el("button","step-btn",'<span class="n">'+s.n+'</span><span class="t">'+s.t+'</span>');b.type="button";b.setAttribute("aria-pressed",i===cur?"true":"false");b.addEventListener("click",function(){cur=i;renderStudio()});tr.appendChild(b)});
+  tr.appendChild(el("div","rowlab","AI may be"));
+  STEPS.forEach(function(s,i){tr.appendChild(el("div","cell "+s.ai+(i===cur?" on":""),AIL[s.ai]))});
+  tr.appendChild(el("div","rowlab","Partner"));
+  STEPS.forEach(function(s,i){tr.appendChild(el("div","cell "+(s.partner?"tutor":"none")+(i===cur?" on":""),s.partner?"Joins":"—"))});
+  tr.appendChild(el("div","rowlab","Facilitator"));
+  STEPS.forEach(function(s,i){tr.appendChild(el("div","cell "+(s.gate?"own":"none")+(i===cur?" on":""),s.gate?(s.n===2?"Decides":"Signs off"):"Guides"))});
+  var s=STEPS[cur];
+  $("#panel").innerHTML='<div><div class="big">'+s.n+'</div><h2 style="margin:6px 0 10px">'+s.t+'</h2><p class="lede" style="font-size:1.1rem">'+s.what+'</p></div>'+
+   '<ul class="facts"><li><span class="mono">AI</span><span><span class="pill '+s.ai+'">'+AIL[s.ai]+'</span><br>'+AIX[s.ai]+'</span></li>'+
+   '<li><span class="mono">Partner</span><span>'+(s.partner?"The community partner is brought in at this step.":"The team works on its own, with the facilitator.")+'</span></li>'+
+   '<li><span class="mono">Facilitator</span><span>'+(s.gate||"Guides the team and plans the cycle.")+'</span></li></ul>'
+}
+renderStudio();
+
+/* formats */
+var FMT=[
+ {k:"Physical hub",t:"The cohort meets in person each week at a hub, with virtual sessions for experts and reviews."},
+ {k:"Hybrid",t:"In-person meetings plus a reliable connection and a room set up for virtual sessions."},
+ {k:"Virtual, live-facilitated",t:"For learners who cannot reach a hub. Small teams, a facilitator, and a local community partner for each team."}
+];
+var fc=$("#fmtChips"),fo=$("#fmtOut"),fi=0;
+function renderFmt(){fc.innerHTML="";FMT.forEach(function(f,i){var b=el("button","chip",f.k);b.type="button";b.setAttribute("aria-pressed",i===fi?"true":"false");b.addEventListener("click",function(){fi=i;renderFmt()});fc.appendChild(b)});fo.innerHTML="<h3>"+FMT[fi].k+"</h3><p class=\"muted\">"+FMT[fi].t+"</p>"}
+renderFmt();
+
+/* rules */
+var RULES=[["Separate consent for research","Joining a cohort and agreeing to research use are two choices."],["No ranking","Learners are never ranked against each other."],["Small-number rule","Results are not reported for groups too small to protect people."],["Pseudonyms","Codes or pseudonyms are used rather than names."],["18 and over for the pilot","Younger learners only after local legal advice."],["No named data to partners or funders","They receive anonymised results."],["Learner-first access","Learners see and can take their own data first."],["No profiling","BBC does not profile learners."]];
+var rl=$("#rules");RULES.forEach(function(r,i){rl.appendChild(el("div","card",'<p class="mono">Rule '+(i+1)+'</p><h3 style="font-size:1.05rem;margin:6px 0">'+r[0]+'</h3><p class="muted" style="font-size:.95rem">'+r[1]+'</p>'))});
+
+/* clipboard */
+function copy(text,msgEl){
+  function ok(){msgEl.textContent="Copied."}
+  function fb(){var t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();try{document.execCommand("copy");ok()}catch(e){msgEl.textContent="Select the text and copy it."}document.body.removeChild(t)}
+  try{navigator.clipboard.writeText(text).then(ok,fb)}catch(e){fb()}
+}
+
+/* field lens */
+var qs=$$("#lens textarea"),lf=$("#lens-field");
+function lensBrief(){
+  var done=0,lines=[];
+  qs.forEach(function(q){var v=q.value.trim();if(v){done++;lines.push(q.getAttribute("data-q")+": "+v)}});
+  var f=lf.value.trim();
+  $("#lensMeter").style.width=(done*20)+"%";$("#lensCount").textContent=done+" of 5 answered";
+  var out=done?("FIELD BRIEF"+(f?" - "+f:"")+"\n\n"+lines.join("\n\n")+(qs[4].value.trim()?"":"\n\nStill to check: who else already serves this need?")):"Your field brief will appear here as you answer.";
+  $("#lensBrief").textContent=out;return done?out:""
+}
+qs.concat([lf]).forEach(function(q){q.addEventListener("input",lensBrief)});
+$("#lensCopy").addEventListener("click",function(){var t=lensBrief();if(!t){$("#lensMsg").textContent="Answer at least one question first.";return}copy(t,$("#lensMsg"))});
+
+/* involved */
+var ROLES=["Learner","Facilitator","Hub host","Community partner","Funder","Employer or field mentor","Researcher or evaluator"];
+var role=0,rc=$("#roleChips");
+function renderRoles(){rc.innerHTML="";ROLES.forEach(function(r,i){var b=el("button","chip",r);b.type="button";b.setAttribute("aria-pressed",i===role?"true":"false");b.addEventListener("click",function(){role=i;renderRoles();inv()});rc.appendChild(b)})}
+function inv(){
+  var n=$("#inv-name").value.trim(),p=$("#inv-place").value.trim(),m=$("#inv-msg").value.trim();
+  var t="Subject: Interest in Build Beyond Classroom ("+ROLES[role]+")\n\nHello,\n\nI am a "+ROLES[role].toLowerCase()+(p?" in "+p:"")+". "+(m||"I would like to hear when the first pilot is announced.")+"\n\nThank you"+(n?",\n"+n:".");
+  $("#invOut").textContent=t;return t
+}
+["#inv-name","#inv-place","#inv-msg"].forEach(function(s){$(s).addEventListener("input",inv)});
+renderRoles();inv();
+$("#invCopy").addEventListener("click",function(){copy(inv(),$("#invMsg"))});
+
+/* theme */
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,dark=r.getAttribute("data-theme")==="dark"||(!r.getAttribute("data-theme")&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+  r.setAttribute("data-theme",dark?"light":"dark")
+});
+
+window.BBC={steps:STEPS,AIL:AIL,AIX:AIX,go:function(i){cur=i;renderStudio();location.hash="studio"}};
+/* router */
+var TITLES={home:"Build Beyond Classroom",programme:"The programme",studio:"The Community Problem Studio",partners:"Hubs and partners",trust:"Safety and data",involved:"Get involved",design:"Design notes"};
+function route(first){
+  var h=(location.hash||"#home").slice(1);if(!TITLES[h])h="home";
+  $$(".page").forEach(function(p){p.hidden=p.getAttribute("data-page")!==h});
+  $$("nav.main a").forEach(function(a){if(a.getAttribute("data-nav")===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  try{document.title=h==="home"?TITLES.home:TITLES[h]+" - Build Beyond Classroom"}catch(e){}
+  if(!first){window.scrollTo(0,0);var hh=$('.page[data-page="'+h+'"] h1');if(hh){try{hh.focus({preventScroll:true})}catch(e){}}}
+}
+window.addEventListener("hashchange",function(){route(false)});
+route(true);
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+var stage=document.getElementById("stage");
+if(!stage||!window.BBC)return;
+function $(i){return document.getElementById(i)}
+var STEPS=BBC.steps,AIL=BBC.AIL;
+var RM=!!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);
+var canvas=$("gl"),card=$("tcard"),dotsEl=$("dots"),bPrev=$("tPrev"),bNext=$("tNext"),bPlay=$("tPlay"),bStart=$("startTour"),more=$("introMore");
+var target=0,p=0,auto=false,hold=0,hasGL=false;
+var HEX={tutor:"#35D0B5",build:"#7C9CFF",own:"#F4A55C"};
+
+/* ---------- UI (works with or without WebGL) ---------- */
+var dotBtns=[];
+for(var di=0;di<=8;di++){(function(i){
+  var b=document.createElement("button");b.type="button";b.className="dot";
+  b.setAttribute("aria-label",i===0?"Start of the tour":"Stop "+i+": "+STEPS[i-1].t);
+  b.innerHTML="<i></i>";b.addEventListener("click",function(){goTo(i,true)});
+  dotsEl.appendChild(b);dotBtns.push(b)})(di)}
+function setAuto(on){auto=!!on&&!RM;bPlay.setAttribute("aria-pressed",auto?"true":"false");bPlay.textContent=auto?"Pause tour":"Play tour";hold=0}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function render(){
+  var atStart=target===0;
+  stage.classList.toggle("at-start",atStart);
+  if(atStart)more.removeAttribute("inert");else more.setAttribute("inert","");
+  card.hidden=atStart;
+  if(!atStart){
+    var s=STEPS[target-1];
+    var extra=s.gate?esc(s.gate):(s.partner?"The community partner joins at this step.":"The team works with the facilitator.");
+    card.innerHTML='<p class="mono">Stop '+target+' of 8</p><h2 class="tt">'+esc(s.t)+'</h2><p>'+esc(s.what)+'</p>'+
+      '<p class="row"><span class="pill '+s.ai+'">'+AIL[s.ai]+'</span><span>'+extra+'</span></p>'+
+      '<button class="linkbtn" type="button" data-open="'+(target-1)+'">Open this step in the Studio</button>';
+  }
+  bPrev.disabled=atStart;bNext.disabled=target===8;
+  dotBtns.forEach(function(b,i){if(i===target)b.setAttribute("aria-current","true");else b.removeAttribute("aria-current");b.classList.toggle("done",i<target&&i>0)});
+}
+function goTo(i,user){target=Math.max(0,Math.min(8,i));if(user)setAuto(false);render();if(RM)p=target}
+card.addEventListener("click",function(e){var b=e.target.closest("[data-open]");if(b)BBC.go(+b.getAttribute("data-open"))});
+bPrev.addEventListener("click",function(){goTo(target-1,true)});
+bNext.addEventListener("click",function(){goTo(target+1,true)});
+bPlay.addEventListener("click",function(){if(auto){setAuto(false)}else{if(target>=8)goTo(0,false);if(target===0)goTo(1,false);setAuto(true)}});
+bStart.addEventListener("click",function(){goTo(1,false);setAuto(true);stage.focus({preventScroll:true})});
+if(RM)bPlay.hidden=true;
+stage.addEventListener("keydown",function(e){
+  if(e.target!==stage)return;
+  if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();goTo(target+1,true)}
+  else if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();goTo(target-1,true)}
+  else if(e.key==="Home"){e.preventDefault();goTo(0,true)}
+  else if(e.key==="End"){e.preventDefault();goTo(8,true)}
+});
+render();
+
+/* ---------- 3D ---------- */
+if(!window.THREE){stage.classList.add("nogl");return}
+var renderer;
+try{renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,powerPreference:"low-power"});hasGL=true}
+catch(err){stage.classList.add("nogl");return}
+renderer.outputEncoding=THREE.sRGBEncoding;
+
+var V3=THREE.Vector3,UP=new V3(0,1,0);
+var C={tutor:0x35D0B5,build:0x7C9CFF,own:0xF4A55C,mark:0xF6C927,paper:0xE9F0EB,deep:0x0A1612};
+var scene=new THREE.Scene();scene.background=new THREE.Color(C.deep);scene.fog=new THREE.Fog(C.deep,40,210);
+var camera=new THREE.PerspectiveCamera(50,1,.5,600);
+scene.add(new THREE.HemisphereLight(0xcfe3ff,0x0c1a15,.5));
+var sun=new THREE.DirectionalLight(0xffffff,.7);sun.position.set(40,70,30);scene.add(sun);
+var glow=new THREE.PointLight(C.mark,1.7,52);scene.add(glow);
+
+function M(color,o){o=o||{};var m=new THREE.MeshStandardMaterial({color:color,roughness:.75,metalness:.05,flatShading:true,emissive:o.emissive||0x000000,emissiveIntensity:o.ei||0,side:o.side||THREE.FrontSide});
+  m.transparent=true;m.opacity=o.opacity!=null?o.opacity:1;m.userData.base=m.opacity;return m}
+function FX(color,op){var m=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:op!=null?op:1,side:THREE.DoubleSide});m.userData.fx=true;return m}
+function mesh(geo,mat,x,y,z){var m=new THREE.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);return m}
+function edges(geo,color){var l=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:color,transparent:true}));l.material.userData.base=1;return l}
+function ring(r,tube,mat){var m=new THREE.Mesh(new THREE.TorusGeometry(r,tube,8,56),mat);m.rotation.x=-Math.PI/2;return m}
+function house(x,z,s,col,roof){var g=new THREE.Group();
+  g.add(mesh(new THREE.BoxGeometry(2*s,1.6*s,2*s),M(col),0,.8*s,0));
+  var r=mesh(new THREE.ConeGeometry(1.7*s,1.2*s,4),M(roof||C.paper),0,2.2*s,0);r.rotation.y=Math.PI/4;g.add(r);
+  g.position.set(x,0,z);return g}
+function person(x,z,col){var g=new THREE.Group();
+  g.add(mesh(new THREE.CylinderGeometry(.35,.5,1.3,8),M(col),0,.65,0));
+  g.add(mesh(new THREE.SphereGeometry(.4,10,8),M(C.paper),0,1.65,0));g.position.set(x,0,z);return g}
+function ease(x){return x*x*(3-2*x)}
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+
+/* ground, stars, dust */
+var ground=new THREE.Mesh(new THREE.PlaneGeometry(600,600),new THREE.MeshStandardMaterial({color:0x0F2119,roughness:1}));ground.rotation.x=-Math.PI/2;scene.add(ground);
+var grid=new THREE.GridHelper(600,150,0x2a5a4a,0x173128);grid.position.y=.03;grid.material.transparent=true;grid.material.opacity=.55;scene.add(grid);
+(function(){var n=500,pos=new Float32Array(n*3);
+  for(var i=0;i<n;i++){var a=Math.random()*6.283,r=140+Math.random()*160;pos[i*3]=Math.cos(a)*r;pos[i*3+1]=45+Math.random()*150;pos[i*3+2]=Math.sin(a)*r-40}
+  var g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xcfe3ff,size:1.6,sizeAttenuation:false,fog:false,transparent:true,opacity:.7})))})();
+var dust;(function(){var n=260,pos=new Float32Array(n*3);
+  for(var i=0;i<n;i++){pos[i*3]=(Math.random()-.5)*140;pos[i*3+1]=.5+Math.random()*22;pos[i*3+2]=60-Math.random()*220}
+  var g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  dust=new THREE.Points(g,new THREE.PointsMaterial({color:C.mark,size:.4,transparent:true,opacity:.55}));scene.add(dust)})();
+
+/* path through the community */
+var P=[[-30,0,60],[-18,0,42],[-26,0,20],[-6,0,2],[14,0,-14],[2,0,-38],[26,0,-56],[40,0,-82],[22,0,-104],[-4,0,-124],[-24,0,-146]].map(function(v){return new V3(v[0],v[1],v[2])});
+var path=new THREE.CatmullRomCurve3(P);
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(path,400,.28,6,false),new THREE.MeshBasicMaterial({color:C.mark})));
+var trav=[];for(var ti=0;ti<3;ti++){var tm=new THREE.Mesh(new THREE.SphereGeometry(.75,10,8),new THREE.MeshBasicMaterial({color:0xffffff}));scene.add(tm);trav.push(tm)}
+
+/* quiet background community */
+var samples=path.getSpacedPoints(200);
+var seed=7;function R(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+var fmats=[0x1d3d33,0x244a3e,0x2b3f4a,0x30403a].map(function(c){return new THREE.MeshStandardMaterial({color:c,flatShading:true,roughness:1})});
+var bgeo=new THREE.BoxGeometry(2,1.6,2),rgeo=new THREE.ConeGeometry(1.7,1.2,4);
+(function(){var placed=0,tries=0;
+  while(placed<70&&tries<1500){tries++;var x=(R()-.5)*210,z=70-R()*240,ok=true;
+    for(var k=0;k<samples.length;k+=2){var dx=samples[k].x-x,dz=samples[k].z-z;if(dx*dx+dz*dz<24*24){ok=false;break}}
+    if(!ok)continue;
+    var mm=fmats[Math.floor(R()*fmats.length)],g=new THREE.Group(),b=new THREE.Mesh(bgeo,mm),rf=new THREE.Mesh(rgeo,mm);
+    b.position.y=.8;rf.position.y=2.2;rf.rotation.y=Math.PI/4;g.add(b);g.add(rf);
+    g.scale.setScalar(1+R()*1.6);g.position.set(x,0,z);g.rotation.y=R()*3;scene.add(g);placed++}})();
+
+/* ---------- the hub and eight stations ---------- */
+function hubObj(){var g=new THREE.Group(),fm=M(C.paper),s=12,t=1;
+  g.add(mesh(new THREE.BoxGeometry(s,t,t),fm,0,t/2,0));
+  g.add(mesh(new THREE.BoxGeometry(s,t,t),fm,0,s-t/2,0));
+  g.add(mesh(new THREE.BoxGeometry(t,s,t),fm,-(s/2-t/2),s/2,0));
+  g.add(mesh(new THREE.BoxGeometry(t,s,t),fm,s/2-t/2,s/2,0));
+  var cube=mesh(new THREE.BoxGeometry(6,6,6),M(C.build,{emissive:C.build,ei:.35}),8,13,0);g.add(cube);
+  g.add(house(-13,-3,1.2,C.tutor));g.add(house(15,-5,1.1,C.own));g.add(house(-10,-12,1,C.build));
+  g.userData.tick=function(t){cube.rotation.y=t*.5;cube.rotation.x=t*.3;cube.position.y=13+Math.sin(t*1.1)*.7};
+  return g}
+
+function s1(col){var g=new THREE.Group();
+  [[-6,-3],[-3,-6],[4,-5],[6,1],[-6,3]].forEach(function(p,i){g.add(house(p[0],p[1],1+(i%2)*.3,i%2?C.build:C.tutor))});
+  [[0,0],[1.6,1.2],[-1.6,1.4]].forEach(function(p){g.add(person(p[0],p[1],col))});
+  var rs=[];for(var i=0;i<3;i++){var r=ring(2,.09,FX(col,.9));r.position.y=.15;g.add(r);rs.push(r)}
+  g.userData.tick=function(t){rs.forEach(function(r,i){var k=(t*.45+i/3)%1;r.scale.setScalar(.5+k*3.2);r.material.opacity=(1-k)*.85*(g.userData.r||0)})};
+  return g}
+function s2(col){var g=new THREE.Group();
+  [3,5,2.5,6,4].forEach(function(h,i){g.add(mesh(new THREE.BoxGeometry(1.4,h,1.4),M(i===3?C.mark:C.paper),(i-2)*2.2,h/2,0))});
+  var lens=new THREE.Group();lens.add(new THREE.Mesh(new THREE.TorusGeometry(1.8,.24,10,32),M(col)));
+  var h=mesh(new THREE.CylinderGeometry(.22,.22,3.2,8),M(col),1.3,-1.9,0);h.rotation.z=Math.PI/4;lens.add(h);lens.position.set(0,8.5,2);g.add(lens);
+  var gm=M(C.own);g.add(mesh(new THREE.BoxGeometry(.45,5,.45),gm,-3.4,2.5,5.5));g.add(mesh(new THREE.BoxGeometry(.45,5,.45),gm,3.4,2.5,5.5));g.add(mesh(new THREE.BoxGeometry(7.3,.5,.5),gm,0,5.1,5.5));
+  g.userData.tick=function(t){lens.position.x=Math.sin(t*.8)*5;lens.position.y=8.5+Math.sin(t*1.6)*.4;lens.rotation.y=Math.sin(t*.8)*.5};
+  return g}
+function s3(col){var g=new THREE.Group();
+  var core=mesh(new THREE.SphereGeometry(1.6,16,12),M(C.mark,{emissive:C.mark,ei:.6}),0,5,0);g.add(core);
+  g.add(mesh(new THREE.CylinderGeometry(.3,.5,3.6,8),M(C.paper),0,1.8,0));
+  var cs=[C.tutor,C.build,C.own,C.paper,C.mark,C.tutor,C.build],orb=[];
+  for(var i=0;i<7;i++){var m=mesh(new THREE.IcosahedronGeometry(.7+(i%3)*.15,0),M(cs[i]),0,5,0);g.add(m);orb.push(m)}
+  g.userData.tick=function(t){orb.forEach(function(m,i){var a=t*.7+i*(Math.PI*2/7),r=3.8+(i%3)*.8;m.position.set(Math.cos(a)*r,5+Math.sin(t*1.2+i)*1.4,Math.sin(a)*r);m.rotation.x=t+i;m.rotation.y=t*.8});core.scale.setScalar(1+Math.sin(t*3)*.06)};
+  return g}
+function s4(col){var g=new THREE.Group();
+  g.add(mesh(new THREE.BoxGeometry(13,.2,10),M(0x13342b),0,.1,0));
+  var wf=edges(new THREE.BoxGeometry(6,4,5),col);wf.position.y=2.2;g.add(wf);
+  var rf=edges(new THREE.ConeGeometry(4.6,2.6,4),col);rf.rotation.y=Math.PI/4;rf.position.y=5.5;g.add(rf);
+  var bp=mesh(new THREE.PlaneGeometry(5.5,3.6),M(C.build,{opacity:.35,side:THREE.DoubleSide}),-6,5,-1);bp.rotation.y=.6;g.add(bp);
+  g.add(mesh(new THREE.BoxGeometry(7,.12,.5),M(C.mark),0,.3,4.2));
+  g.add(person(6,3,C.tutor));
+  g.userData.tick=function(t){wf.scale.set(1+Math.sin(t)*.03,1,1);rf.position.y=5.5+Math.sin(t*1.2)*.15;bp.position.y=5+Math.sin(t*.9)*.3};
+  return g}
+function s5(col){var g=new THREE.Group(),bl=[];
+  for(var i=0;i<12;i++){var x=(i%3-1)*2.1,z=(Math.floor(i/3)%2-.5)*2.1,y=Math.floor(i/6)*1.9+.95;
+    var b=mesh(new THREE.BoxGeometry(2,1.8,2),M(i%4===0?C.mark:(i%2?C.build:C.paper)),x,y,z);b.userData.y=y;g.add(b);bl.push(b)}
+  g.add(mesh(new THREE.BoxGeometry(.6,12,.6),M(col),6.5,6,0));
+  var jib=mesh(new THREE.BoxGeometry(9,.5,.5),M(col),2.5,12,0);g.add(jib);
+  var hook=mesh(new THREE.BoxGeometry(.2,5,.2),M(C.paper),-1.5,9.5,0);g.add(hook);
+  g.userData.tick=function(t){var k=((t*.16)%1)*16;
+    bl.forEach(function(b,i){var l=ease(clamp(k-i,0,1));b.position.y=b.userData.y+(1-l)*8;b.scale.setScalar(.2+.8*l)});
+    jib.rotation.y=Math.sin(t*.4)*.15;hook.position.x=-1.5+Math.sin(t*.8)*.8};
+  return g}
+function s6(col){var g=new THREE.Group();
+  g.add(mesh(new THREE.CylinderGeometry(.6,1.4,10,8),M(C.paper),0,5,0));
+  g.add(mesh(new THREE.SphereGeometry(1,12,10),M(col,{emissive:col,ei:.8}),0,10.7,0));
+  var rs=[];for(var i=0;i<3;i++){var r=ring(1,.12,FX(col,.8));r.position.y=10.7;g.add(r);rs.push(r)}
+  var sh=mesh(new THREE.CylinderGeometry(1.7,1.7,.3,6),M(C.tutor),6,5,0);sh.rotation.x=Math.PI/2;g.add(sh);
+  [[-5,4],[5,5],[-6,-3],[3,-6]].forEach(function(p){g.add(person(p[0],p[1],C.build))});
+  g.userData.tick=function(t){rs.forEach(function(r,i){var k=(t*.4+i/3)%1;r.scale.setScalar(1+k*7);r.material.opacity=(1-k)*.8*(g.userData.r||0)});sh.position.y=5+Math.sin(t*1.3)*.4;sh.rotation.y=t*.6};
+  return g}
+function s7(col){var g=new THREE.Group();
+  g.add(mesh(new THREE.CylinderGeometry(6.5,7,.8,28),M(0x1a3a30),0,.4,0));
+  var cv=document.createElement("canvas");cv.width=320;cv.height=200;var cx=cv.getContext("2d"),tex=new THREE.CanvasTexture(cv);
+  var sm=new THREE.MeshBasicMaterial({map:tex,transparent:true});sm.userData.base=1;
+  var scr=new THREE.Mesh(new THREE.PlaneGeometry(9,5.6),sm);scr.position.set(0,6.4,-3.5);g.add(scr);
+  g.add(mesh(new THREE.BoxGeometry(9.4,.3,.3),M(col),0,3.5,-3.5));
+  g.add(mesh(new THREE.BoxGeometry(1.6,2.4,1.4),M(col),-4.6,2,1.5));
+  for(var i=0;i<5;i++)g.add(mesh(new THREE.BoxGeometry(1.8,1,1.6),M(C.paper),(i-2)*2.5,.5,9.5+Math.abs(i-2)*.8));
+  var fr=0;
+  g.userData.tick=function(t){fr++;if(fr%3)return;
+    cx.fillStyle="#0F2A22";cx.fillRect(0,0,320,200);cx.fillStyle="#E9F0EB";cx.font="700 20px sans-serif";cx.fillText("Business case",16,30);
+    for(var i=0;i<5;i++){var h=20+(Math.sin(t*.9+i*.8)*.5+.5)*70+i*14;cx.fillStyle=i===4?"#F6C927":"#7C9CFF";cx.fillRect(24+i*58,180-h,40,h)}
+    tex.needsUpdate=true};
+  return g}
+function s8(col){var g=new THREE.Group();
+  g.add(mesh(new THREE.CylinderGeometry(.6,.9,5,8),M(0x8A5A2B),0,2.5,0));
+  var lv=[];[[0,6.4,0,3],[1.8,8.2,.6,2.3],[-1.6,8.6,-.4,2.1]].forEach(function(a){var l=mesh(new THREE.IcosahedronGeometry(a[3],1),M(0x3FBF7F),a[0],a[1],a[2]);g.add(l);lv.push(l)});
+  var coins=[];for(var i=0;i<6;i++){var c=mesh(new THREE.CylinderGeometry(1.1,1.1,.3,16),M(C.mark,{emissive:C.mark,ei:.25}),6.5,.2+i*.34,2);g.add(c);coins.push(c)}
+  var loop=new THREE.Mesh(new THREE.TorusGeometry(6,.16,8,64),M(col,{emissive:col,ei:.5}));loop.position.y=5;g.add(loop);
+  g.userData.tick=function(t){lv.forEach(function(l,i){l.scale.setScalar(1+Math.sin(t*1.3+i*1.7)*.05)});loop.rotation.y=t*.5;loop.rotation.x=1.2+Math.sin(t*.4)*.1;
+    coins.forEach(function(c,i){c.position.y=.2+i*.34+Math.max(0,Math.sin(t*2-i*.5))*.12})};
+  return g}
+
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function makeLabel(num,text,hex){
+  var cv=document.createElement("canvas");cv.width=720;cv.height=150;var ctx=cv.getContext("2d"),tex=new THREE.CanvasTexture(cv);
+  function draw(){ctx.clearRect(0,0,720,150);ctx.fillStyle="rgba(10,22,18,.9)";rr(ctx,4,4,712,142,34);ctx.fill();ctx.lineWidth=5;ctx.strokeStyle=hex;ctx.stroke();
+    ctx.fillStyle=hex;ctx.beginPath();ctx.arc(75,75,42,0,6.283);ctx.fill();
+    ctx.fillStyle="#0A1612";ctx.font="700 46px 'IBM Plex Mono',monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(num,75,79);
+    ctx.fillStyle="#E9F0EB";ctx.font="800 50px 'Bricolage Grotesque','Trebuchet MS',sans-serif";ctx.textAlign="left";ctx.fillText(text,140,79);tex.needsUpdate=true}
+  draw();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,fog:false}));
+  sp.scale.set(12,2.5,1);sp.renderOrder=10;return sp}
+
+var BUILD=[s1,s2,s3,s4,s5,s6,s7,s8],stations=[],camPts=[],lookPts=[],clickables=[];
+
+/* hub (stop 0) */
+var u0=.012,S0=path.getPointAt(u0),T0=path.getTangentAt(u0);T0.y=0;T0.normalize();
+var N0=new V3(T0.z,0,-T0.x);
+var hub=hubObj();hub.position.copy(S0);hub.rotation.y=Math.atan2(T0.x,T0.z);hub.userData.idx=0;scene.add(hub);clickables.push(hub);
+var hubLabel=makeLabel("★","A BBC community","#F6C927");hubLabel.position.copy(S0).add(new V3(0,15.5,0));scene.add(hubLabel);
+camPts.push(S0.clone().addScaledVector(T0,-36).addScaledVector(N0,22).setY(15));
+lookPts.push(S0.clone().addScaledVector(N0,12).setY(6));
+
+STEPS.forEach(function(st,i){
+  var u=.13+i*.108,S=path.getPointAt(u),T=path.getTangentAt(u);T.y=0;T.normalize();
+  var N=new V3(T.z,0,-T.x),side=(i%2)?1:-1,col=C[st.ai];
+  var O=S.clone().addScaledVector(N,side*11);
+  var Cm=S.clone().addScaledVector(T,-25).addScaledVector(N,-side*3.5);Cm.y=11.5;
+  var L=O.clone();L.y=2.6;
+  var g=BUILD[i](col);g.position.copy(O);var d=Cm.clone().sub(O);g.rotation.y=Math.atan2(d.x,d.z);g.userData.idx=i+1;scene.add(g);
+  var mats=[];g.traverse(function(o){var m=o.material;if(m&&!m.userData.fx&&mats.indexOf(m)<0)mats.push(m)});
+  var lab=makeLabel(String(i+1),st.t,HEX[st.ai]);lab.position.copy(O).add(new V3(0,11,0));scene.add(lab);lab.userData.idx=i+1;
+  stations.push({g:g,mats:mats,lab:lab,r:-1,O:O,col:HEX[st.ai]});clickables.push(g,lab);
+  camPts.push(Cm);lookPts.push(L);
+});
+clickables.push(hubLabel);hubLabel.userData.idx=0;
+var camCurve=new THREE.CatmullRomCurve3(camPts),lookCurve=new THREE.CatmullRomCurve3(lookPts);
+
+/* ---------- interaction ---------- */
+var yaw=0,pitch=0,dragging=false,lx=0,ly=0,moved=0,t0=0,px=0,py=0;
+canvas.addEventListener("pointerdown",function(e){dragging=true;moved=0;lx=e.clientX;ly=e.clientY;t0=performance.now();try{canvas.setPointerCapture(e.pointerId)}catch(_){}});
+canvas.addEventListener("pointermove",function(e){
+  var rc=canvas.getBoundingClientRect();px=((e.clientX-rc.left)/rc.width-.5)*2;py=((e.clientY-rc.top)/rc.height-.5)*2;
+  if(!dragging)return;var dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);
+  yaw=clamp(yaw-dx*.006,-.9,.9);pitch=clamp(pitch+dy*.004,-.35,.5);if(moved>6)setAuto(false)});
+function endDrag(e){if(!dragging)return;dragging=false;
+  if(e.type==="pointerup"&&moved<6&&performance.now()-t0<500)pick(e)}
+canvas.addEventListener("pointerup",endDrag);canvas.addEventListener("pointercancel",endDrag);
+var ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+function pick(e){var rc=canvas.getBoundingClientRect();ndc.set(((e.clientX-rc.left)/rc.width)*2-1,-((e.clientY-rc.top)/rc.height)*2+1);
+  ray.setFromCamera(ndc,camera);var hit=ray.intersectObjects(clickables,true)[0];
+  if(!hit)return;var o=hit.object;while(o&&o.userData.idx===undefined)o=o.parent;if(o)goTo(o.userData.idx,true)}
+
+/* ---------- loop ---------- */
+var clock=new THREE.Clock(),visible=true,lw=0,lh=0;
+if(window.IntersectionObserver)new IntersectionObserver(function(en){visible=en[0].isIntersecting},{threshold:0}).observe(stage);
+function resize(){var w=stage.clientWidth,h=stage.clientHeight;if(!w||!h||(w===lw&&h===lh))return;lw=w;lh=h;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(w,h,false);
+  camera.aspect=w/h;camera.fov=w/h<.85?66:50;camera.updateProjectionMatrix()}
+var cp=new V3(),lp=new V3(),off=new V3(),gc=new THREE.Color(C.mark),tc=new THREE.Color(),gp=new V3();
+function frame(){
+  requestAnimationFrame(frame);
+  if(!visible||document.hidden||!stage.clientWidth)return;
+  resize();
+  var dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+  if(auto&&Math.abs(p-target)<.06){hold+=dt;if(hold>6.5){hold=0;if(target<8)goTo(target+1,false);else setAuto(false)}}
+  p+=(target-p)*(RM?1:1-Math.exp(-dt*2.3));if(Math.abs(target-p)<.002)p=target;
+  var tt=clamp(p/8,0,1);camCurve.getPoint(tt,cp);lookCurve.getPoint(tt,lp);
+  var sway=RM?0:1;cp.x+=Math.sin(t*.33)*.9*sway;cp.y+=Math.sin(t*.41)*.35*sway;
+  if(!dragging){yaw*=Math.exp(-dt*1.2);pitch*=Math.exp(-dt*1.2)}
+  off.copy(cp).sub(lp);var len=off.length();off.applyAxisAngle(UP,yaw+(RM?0:px*.05));off.y+=(pitch+(RM?0:py*.03))*len*.55;
+  camera.position.copy(lp).add(off);camera.lookAt(lp);
+  stations.forEach(function(s,i){
+    var k=i+1,rt=clamp((p-(k-1.6))/1.1,0,1),r=ease(rt);
+    s.r+=(r-s.r)*(RM||s.r<0?1:1-Math.exp(-dt*5));
+    if(s.last===undefined||Math.abs(s.r-s.last)>.002){s.last=s.r;var f=.14+.86*s.r;
+      s.mats.forEach(function(m){m.opacity=m.userData.base*f});s.lab.material.opacity=.4+.6*s.r;s.g.scale.y=.86+.14*s.r}
+    s.g.userData.r=s.r;if(s.g.userData.tick)s.g.userData.tick(t);
+  });
+  hub.userData.tick(t);
+  trav.forEach(function(m,i){path.getPointAt(((t*.035)+i/3)%1,gp);m.position.set(gp.x,gp.y+.9,gp.z)});
+  if(target>0){var st=stations[target-1];glow.position.set(st.O.x,10,st.O.z);tc.set(st.col)}else{glow.position.set(S0.x,12,S0.z);tc.set(C.mark)}
+  gc.lerp(tc,.06);glow.color.copy(gc);
+  dust.rotation.y=Math.sin(t*.05)*.03;
+  renderer.render(scene,camera);
+}
+resize();frame();
+if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);
+})();
+</script>
