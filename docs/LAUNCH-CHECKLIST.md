@@ -33,7 +33,7 @@ Done and verified on 15 October 2026:
 Still to do:
 
 - [ ] A shared BBC email address that two people can open (`buildbeyondclassroom@gmail.com` is in `site.json`). Turn on two-step sign-in.
-- [ ] A BBC GitHub account using that email, with two-step sign-in and a second owner. The repository is currently private under a personal account (`HG-E`); transfer it.
+- [ ] A BBC GitHub account using that email, with two-step sign-in and a second owner. The repository is public but still sits under a personal account (`HG-E`); transfer it, and Vercel and GitHub redirects keep the old address working.
 - [ ] Two-step sign-in and a second owner on the Vercel account, and on the registrar account that holds the domain.
 - [ ] Ask Vercel support in writing whether the pilot qualifies as non-commercial on Hobby. Keep the reply.
 - [ ] If anyone is paid for site work (including through a grant), or an institution pays BBC, move to Cloudflare Pages or Netlify first.
@@ -57,3 +57,10 @@ Still to do:
 - [ ] Set `"indexing": true` in `content/data/site.json` and rebuild.
 - [ ] Make the repository public (Gate 7: open content). This publishes `docs/gates/` too, so decide whether those files should stay in the public repository.
 - [ ] Remove or reword the draft banner in `site.json`.
+
+## Public repository (15 October 2026)
+
+The repository is public at `https://github.com/HG-E/buildbeyondclassroom`. This publishes everything in it, including `docs/gates/` and `docs/design/`, and the full Git history. Before this was done the history was scanned: no keys, tokens, passwords or personal file paths. Commits show the author name and a GitHub no-reply address.
+
+- [ ] Choose a licence (nothing is set, so by default all rights are reserved). The programme says its content is open: for example MIT for the code and CC BY-SA 4.0 for the content under `content/` and `docs/`. This is the owner's decision.
+- [ ] Decide whether `docs/gates/` (the full design documents, some decisions still unconfirmed) should stay in the public repository.

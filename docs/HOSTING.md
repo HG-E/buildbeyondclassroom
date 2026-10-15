@@ -6,7 +6,7 @@ Written 15 October 2026. This records what is connected and what was learned, so
 
 | Part | Setting |
 |---|---|
-| Code and content | GitHub repository `HG-E/bbc-site` (private), branch `main` |
+| Code and content | GitHub repository `HG-E/buildbeyondclassroom` (public, renamed from `bbc-site` on 15 October 2026), branch `main` |
 | Hosting | Vercel project `bbc-site`, Hobby plan, deploys on every push to `main` |
 | Build | `node build.js`, output folder `public/` (from `vercel.json`) |
 | Free address | `https://bbc-site-ten.vercel.app` |
