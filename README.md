@@ -9,6 +9,7 @@ You need [Node.js](https://nodejs.org) 18 or later.
 ```
 node preview.js        # builds the site and shows it at http://localhost:3000
 node build.js          # only builds, writing the site into public/
+node check.js          # builds, then runs the automatic checks (about 390)
 ```
 
 Use `node preview.js` to see the site. Opening `public/index.html` straight from the folder will not work properly: the pages link to `/styles.css` and other files from the site root, so the stylesheet will not load.

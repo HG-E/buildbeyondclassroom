@@ -28,7 +28,7 @@ v0 has **no database, no accounts, no forms that save data and no analytics**. D
 
 ## How to work
 - One small task per session. Plan first for anything touching data or consent, and show the plan.
-- Run `node build.js` after changes and open `public/index.html` or `npx serve public`.
+- Run `node check.js` after changes. It builds the site and checks links, accessibility basics, privacy rules, file sizes and the corrected claims. Look at the result with `node preview.js` (opening `public/index.html` from the folder cannot load the stylesheet).
 - Commit after each working step with a clear message.
 
 ## Layout
@@ -43,6 +43,9 @@ static/vendor/         self-hosted Three.js, pinned, with licence (tour only)
 build.js               the builder (no dependencies)
 public/                generated output (not committed)
 vercel.json            build command and security headers
+check.js              automatic checks (also run on every push by .github/workflows/check.yml)
+preview.js            builds and serves the site at http://localhost:3000
+content/en/404.md      the page shown for a wrong address (written to public/404.html)
 docs/                  GATE-DECISIONS.md digest; gates/ full gate text; design/ approved design reference and build prompt
 docs/HOSTING.md       what is connected (GitHub, Vercel, domain) and how it was set up
 docs/LAUNCH-CHECKLIST.md  what is verified and what still needs a person

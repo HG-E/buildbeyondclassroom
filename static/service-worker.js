@@ -20,14 +20,20 @@ self.addEventListener('activate', (event) => {
 });
 
 // Network first so people see fresh content when online; fall back to the saved copy.
+// Only the pages and small files listed in PRECACHE are ever kept. The optional 3D scene
+// (Three.js, tour.js, the poster) is never stored, so the offline copy stays small.
+const KEEP = new Set(PRECACHE);
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  const url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+  const keep = KEEP.has(url.pathname);
   event.respondWith(
     fetch(req)
       .then((res) => {
         // Keep only complete, successful responses, so an error page is never served offline.
-        if (res.ok && res.status === 200) {
+        if (keep && res.ok && res.status === 200) {
           const copy = res.clone();
           caches.open(CACHE).then((cache) => cache.put(req, copy));
         }

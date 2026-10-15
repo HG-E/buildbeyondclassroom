@@ -1,0 +1,13 @@
+{
+  "name": "build-beyond-classroom-site",
+  "private": true,
+  "description": "Build Beyond Classroom website v0: static HTML, CSS and JavaScript, built by a zero-dependency Node script.",
+  "scripts": {
+    "build": "node build.js",
+    "preview": "node preview.js",
+    "check": "node check.js"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

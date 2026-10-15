@@ -64,3 +64,24 @@ The repository is public at `https://github.com/HG-E/buildbeyondclassroom`. This
 
 - [ ] Choose a licence (nothing is set, so by default all rights are reserved). The programme says its content is open: for example MIT for the code and CC BY-SA 4.0 for the content under `content/` and `docs/`. This is the owner's decision.
 - [ ] Decide whether `docs/gates/` (the full design documents, some decisions still unconfirmed) should stay in the public repository.
+
+## Audit of 15 October 2026
+
+Fixed in the repository:
+
+- [x] The offline copy stored everything the page asked for, including the 600 KB 3D scene. It now keeps only the listed pages and small files.
+- [x] Fonts and Three.js were re-downloaded on every visit (no caching headers). They now cache for a year.
+- [x] Wrong addresses showed Vercel's plain "NOT_FOUND" page. They now show a 404 page in the site's own words (never indexed).
+- [x] Markdown links were not restricted. The build now stops on anything other than https, mailto, site paths and anchors.
+- [x] Added `object-src 'none'`, `X-Frame-Options`, `Cross-Origin-Opener-Policy` and more permission restrictions.
+- [x] Canonical links, social tags, `sitemap.xml` and `robots.txt` are ready: launching is one switch, with guards against launching with a placeholder email or no `siteUrl`.
+- [x] `check.js` and a GitHub Action run about 390 automatic checks on every push, including a check that the vendored files still match their recorded SHA-256 hashes.
+- [x] `SECURITY.md` added; blank public issues switched off in the issue settings file; `docs/design/` marked as a historical reference.
+
+Needs the owner (account settings, not code):
+
+- [ ] **Email spoofing.** The domain has no SPF or DMARC record, so anyone can send mail that appears to come from `@buildbeyondclassroom.com`. The domain sends no mail, so two DNS records fix it: a TXT record `v=spf1 -all` on the bare domain, and a TXT record `v=DMARC1; p=reject` on `_dmarc`.
+- [ ] **GitHub:** turn on secret scanning and push protection (shown as disabled for this public repository), and consider disabling the Projects feature. Public Issues can still be opened through templates only; consider switching Issues off entirely until someone can moderate them, because strangers could paste personal information.
+- [ ] **GitHub:** protect the `main` branch against force-pushes and deletion once the history is settled.
+- [ ] **Licence** (see "Public repository" above).
+- [ ] The Vercel project is still named `bbc-site`. Renaming it is optional and cosmetic.

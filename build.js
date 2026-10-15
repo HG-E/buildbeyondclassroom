@@ -97,6 +97,14 @@ function parseFrontMatter(raw, file) {
  * A line holding only {{name}} inserts a block built by the builder.
  */
 
+// Only https, mailto, site paths and anchors may be linked from content. Anything else
+// (javascript:, data:, http:, ...) stops the build, so a typo cannot ship an unsafe link.
+function assertSafeHref(href) {
+  if (/^(https:\/\/|mailto:|\/|#|\.{1,2}\/)/i.test(href)) return;
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(href)) return; // a relative path with no scheme
+  throw new Error('Link target not allowed (only https, mailto, paths and anchors): ' + href);
+}
+
 function inline(text) {
   let s = esc(text);
   s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -104,6 +112,7 @@ function inline(text) {
   s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
   s = s.replace(/==([^=]+)==/g, '<span class="hl">$1</span>');
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, href) => {
+    assertSafeHref(href);
     const external = /^https?:\/\//.test(href);
     const attrs = external ? ' rel="noopener noreferrer"' : '';
     return `<a href="${href}"${attrs}>${label}</a>`;
@@ -162,6 +171,7 @@ function renderDirectiveList(kind, items, ui) {
     return `<div class="grid g4">${items
       .map((t) => {
         const [eyebrow, title, text, go, href] = t.split('|').map((x) => x.trim());
+        assertSafeHref(href);
         return `<a class="route" href="${esc(href)}"><span class="mono">${cell(eyebrow)}</span><strong>${cell(title)}</strong><span class="muted">${cell(text)}</span><span class="go">${cell(go)}</span></a>`;
       })
       .join('')}</div>`;
@@ -462,7 +472,7 @@ function render(page, pages, ui, studio) {
     .join('');
   const ctaHref = urlFor(lang, ui.ctaSlug);
   const footerLinks = pages
-    .filter((p) => p.meta.slug !== '')
+    .filter((p) => p.meta.slug !== '' && p.meta.slug !== '404')
     .map((p) => `<li><a href="${urlFor(lang, p.meta.slug)}">${esc(p.meta.navTitle || p.meta.title)}</a></li>`)
     .join('');
 
@@ -472,11 +482,24 @@ function render(page, pages, ui, studio) {
     .join(' ');
 
   const title = page.meta.slug === '' ? site.name : `${page.meta.title} | ${site.name}`;
-  const robots = site.indexing ? 'index,follow' : 'noindex,nofollow';
+  const is404 = page.meta.slug === '404';
+  const robots = site.indexing && !is404 ? 'index,follow' : 'noindex,nofollow';
   const draft = site.status
     ? `<div class="draft" role="note"><div class="wrap"><span class="tag">${esc(ui.draftTag)}</span><span>${esc(site.status)}</span></div></div>`
     : '';
 
+  const pageUrl = site.siteUrl ? site.siteUrl.replace(/\/$/, '') + urlFor(lang, page.meta.slug) : '';
+  const metaTags = [
+    pageUrl && !is404 ? `<link rel="canonical" href="${esc(pageUrl)}">` : '',
+    `<meta property="og:site_name" content="${esc(site.name)}">`,
+    '<meta property="og:type" content="website">',
+    `<meta property="og:title" content="${esc(title)}">`,
+    `<meta property="og:description" content="${esc(page.meta.description || site.tagline)}">`,
+    pageUrl && !is404 ? `<meta property="og:url" content="${esc(pageUrl)}">` : '',
+    '<meta name="twitter:card" content="summary">',
+  ]
+    .filter(Boolean)
+    .join('\n  ');
   const eyebrow = page.meta.eyebrow ? `<p class="mono">${esc(page.meta.eyebrow)}</p>` : '';
 
   let top;
@@ -516,6 +539,7 @@ function render(page, pages, ui, studio) {
     .replace(/{{title}}/g, esc(title))
     .replace(/{{description}}/g, esc(page.meta.description || site.tagline))
     .replace(/{{robots}}/g, robots)
+    .replace(/{{meta}}/g, () => metaTags)
     .replace(/{{bodyClass}}/g, isHome ? ' class="is-home"' : '')
     .replace(/{{siteName}}/g, esc(site.name))
     .replace(/{{tagline}}/g, esc(site.tagline))
@@ -546,11 +570,14 @@ function main() {
     const ui = loadJson(code, 'ui.json', UI_KEYS);
     const studio = loadJson(code, 'studio.json', ['columns', 'roles', 'partner', 'facilitatorDefault', 'steps']);
     for (const page of pages) {
+      const is404 = page.meta.slug === '404';
       const url = urlFor(code, page.meta.slug);
-      const dest = path.join(OUT, url, 'index.html');
+      const dest = is404
+        ? path.join(OUT, code === site.defaultLanguage ? '' : code, '404.html')
+        : path.join(OUT, url, 'index.html');
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       fs.writeFileSync(dest, render(page, pages, ui, studio));
-      written.push(url);
+      if (!is404) written.push(url);
     }
   }
 
@@ -570,8 +597,20 @@ function main() {
       .replace('__PRECACHE__', JSON.stringify(precache))
   );
 
-  // While the site is a draft, ask search engines to stay away.
-  if (!site.indexing) fs.writeFileSync(path.join(OUT, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  if (site.indexing) {
+    if (!site.siteUrl) throw new Error('site.json needs "siteUrl" before "indexing" can be turned on');
+    if (!hasRealEmail()) throw new Error('Set a real "contactEmail" in site.json before turning "indexing" on');
+    const base = site.siteUrl.replace(/\/$/, '');
+    const urls = written.map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n');
+    fs.writeFileSync(
+      path.join(OUT, 'sitemap.xml'),
+      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n'
+    );
+    fs.writeFileSync(path.join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`);
+  } else {
+    // While the site is a draft, ask search engines to stay away.
+    fs.writeFileSync(path.join(OUT, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  }
 
   console.log(`Built ${written.length} pages into public/`);
   for (const u of written) console.log('  ' + u);
