@@ -493,7 +493,7 @@ function render(page, pages, ui, studio) {
       `<div class="actions"><a class="btn" href="${urlFor(lang, ui.homePrimarySlug)}">${esc(ui.homePrimary)}</a>` +
       `<a class="btn ghost" href="${ctaHref}">${esc(ui.ctaLabel)}</a>` +
       `<button class="btn ghost" type="button" id="startTour" hidden>${esc(ui.tourStart)}</button></div></div>` +
-      `</div></section><div id="tourMount"></div>` +
+      `</div></section>` +
       `<div class="wrap"><section class="block steps-strip"><div class="log"><div class="log-head"><strong>${esc(ui.heroLogTitle)}</strong><span class="mono">${esc(ui.heroLogHint)}</span></div><ol>${log}</ol></div></section></div>`;
   } else {
     top = `<div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div>`;

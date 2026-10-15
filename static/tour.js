@@ -1,8 +1,13 @@
-/* BBC virtual tour. Loaded only after the visitor presses "Take the virtual tour",
-   together with the self-hosted Three.js (static/vendor/three.min.js).
+/* BBC 3D scene. Loaded by site.js together with the self-hosted Three.js (static/vendor/three.min.js).
    The scene is ported from the approved design reference (docs/design/bbc-design.html).
-   Words and the eight steps come from the page's JSON data block, not from this file.
-   Keyboard: arrows move between stops, Home and End jump, Escape closes the tour. */
+
+   Two modes in one canvas, inside the home-page hero:
+     ambient  the scene runs behind the headline: slow camera drift, pointer parallax. No controls.
+     tour     "Take the virtual tour": a guided walk through the eight Studio steps, with a card,
+              buttons, stop dots, keyboard use (arrows, Home, End, Escape) and drag to look around.
+
+   site.js only starts this for visitors who can take it (no reduced motion, no data-saver, not 2G/3G).
+   Words and the eight steps come from the page's JSON data block, not from this file. */
 (function () {
   'use strict';
 
@@ -18,95 +23,50 @@
 
   function start(opts) {
     var THREE = window.THREE;
-    var ui = opts.ui, studio = opts.studio;
+    var hero = opts.hero, ui = opts.ui, studio = opts.studio;
     var STEPS = studio.steps;
     var ROLES = studio.roles;
+    var total = STEPS.length;
 
-    if (!THREE) { opts.onFail(); return null; }
+    if (!THREE || !hero) { if (opts.onFail) opts.onFail(); return null; }
 
-    /* ---------- DOM ---------- */
-    var stage = el('section', 'stage');
-    stage.setAttribute('tabindex', '0');
-    stage.setAttribute('role', 'region');
-    stage.setAttribute('aria-label', ui.tourRegion);
-    var canvas = el('canvas');
-    canvas.id = 'gl';
+    /* ---------- canvas and renderer (fails cleanly without WebGL) ---------- */
+    var canvas = el('canvas', 'hero-canvas');
     canvas.setAttribute('aria-hidden', 'true');
-    var hint = el('p', 'hintbar', ui.tourHint);
-    hint.setAttribute('aria-hidden', 'true');
-    var closeBtn = el('button', 'btn small ghost stage-close', ui.tourClose);
-    closeBtn.type = 'button';
-    var overlay = el('div', 'ui');
-    var inner = el('div', 'ui-in');
-    var bar = el('div', 'tourbar');
-    var card = el('div', 'tcard');
-    card.setAttribute('aria-live', 'polite');
-    card.hidden = true;
-    var right = el('div', 'tright');
-    var ctl = el('div', 'tctl');
-    ctl.setAttribute('role', 'group');
-    ctl.setAttribute('aria-label', ui.tourControls);
-    var bPrev = el('button', 'rbtn', '‹');
-    bPrev.type = 'button'; bPrev.setAttribute('aria-label', ui.tourPrev); bPrev.disabled = true;
-    var bPlay = el('button', 'rbtn wide', ui.tourPlay);
-    bPlay.type = 'button'; bPlay.setAttribute('aria-pressed', 'false');
-    var bNext = el('button', 'rbtn', '›');
-    bNext.type = 'button'; bNext.setAttribute('aria-label', ui.tourNext);
-    var dotsEl = el('div', 'dots');
-    dotsEl.setAttribute('role', 'group');
-    dotsEl.setAttribute('aria-label', ui.tourStops);
-    ctl.appendChild(bPrev); ctl.appendChild(bPlay); ctl.appendChild(bNext);
-    right.appendChild(ctl); right.appendChild(dotsEl);
-    bar.appendChild(card); bar.appendChild(right);
-    inner.appendChild(bar); overlay.appendChild(inner);
-    stage.appendChild(canvas); stage.appendChild(hint); stage.appendChild(closeBtn); stage.appendChild(overlay);
-
-    /* ---------- state ---------- */
-    var RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-    var target = 0, p = 0, auto = false, hold = 0, dead = false, raf = 0;
-    var HEX = { tutor: '#35D0B5', build: '#7C9CFF', own: '#F4A55C' };
-
-    /* ---------- renderer (fails cleanly without WebGL) ---------- */
     var renderer;
     try {
       renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, powerPreference: 'low-power' });
     } catch (err) {
-      opts.onFail();
+      if (opts.onFail) opts.onFail();
       return null;
     }
     renderer.outputEncoding = THREE.sRGBEncoding;
+    hero.insertBefore(canvas, hero.firstChild);
 
-    opts.mount.textContent = '';
-    opts.mount.appendChild(stage);
+    /* ---------- state ---------- */
+    var RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var target = 0, p = 0, auto = false, hold = 0, dead = false, raf = 0, touring = false, tick = 0, ready = false;
+    var HEX = { tutor: '#35D0B5', build: '#7C9CFF', own: '#F4A55C' };
+    var overlay = null, card, bPrev, bPlay, bNext, dotsEl, dotBtns = [];
 
-    /* ---------- UI ---------- */
-    var dotBtns = [];
-    var di;
-    for (di = 0; di <= 8; di++) {
-      (function (i) {
-        var b = el('button', 'dot');
-        b.type = 'button';
-        b.setAttribute('aria-label', i === 0 ? ui.tourStartLabel : fill(ui.tourStopLabel, { n: i, title: STEPS[i - 1].title }));
-        b.appendChild(el('i'));
-        b.addEventListener('click', function () { goTo(i, true); });
-        dotsEl.appendChild(b);
-        dotBtns.push(b);
-      })(di);
-    }
+    /* ---------- tour interface (built only while touring) ---------- */
     function setAuto(on) {
       auto = !!on && !RM;
-      bPlay.setAttribute('aria-pressed', auto ? 'true' : 'false');
-      bPlay.textContent = auto ? ui.tourPause : ui.tourPlay;
+      if (bPlay) {
+        bPlay.setAttribute('aria-pressed', auto ? 'true' : 'false');
+        bPlay.textContent = auto ? ui.tourPause : ui.tourPlay;
+      }
       hold = 0;
     }
     function renderCard() {
+      if (!overlay) return;
       var atStart = target === 0;
       card.hidden = atStart;
       card.textContent = '';
       if (!atStart) {
         var s = STEPS[target - 1];
         var extra = s.facilitator ? s.facilitator.text : (s.partner ? studio.partner.yesLong : studio.partner.noLong);
-        card.appendChild(el('p', 'mono', fill(ui.tourStopOf, { n: target, total: STEPS.length })));
+        card.appendChild(el('p', 'mono', fill(ui.tourStopOf, { n: target, total: total })));
         card.appendChild(el('h2', 'tt', s.title));
         card.appendChild(el('p', null, s.what));
         var row = el('p', 'row');
@@ -116,44 +76,115 @@
         var open = el('button', 'linkbtn', ui.tourOpenStep);
         open.type = 'button';
         open.addEventListener('click', function () {
-          var base = opts.studioHref.split('#')[0];
-          window.location.href = base + '#step-' + s.n;
+          window.location.href = opts.studioHref.split('#')[0] + '#step-' + s.n;
         });
         card.appendChild(open);
       }
       bPrev.disabled = atStart;
-      bNext.disabled = target === STEPS.length;
+      bNext.disabled = target === total;
       dotBtns.forEach(function (b, i) {
         if (i === target) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
         b.classList.toggle('done', i < target && i > 0);
       });
     }
     function goTo(i, user) {
-      target = Math.max(0, Math.min(STEPS.length, i));
+      target = Math.max(0, Math.min(total, i));
       if (user) setAuto(false);
       renderCard();
       if (RM) p = target;
     }
-    bPrev.addEventListener('click', function () { goTo(target - 1, true); });
-    bNext.addEventListener('click', function () { goTo(target + 1, true); });
-    bPlay.addEventListener('click', function () {
-      if (auto) { setAuto(false); }
-      else { if (target >= STEPS.length) goTo(0, false); if (target === 0) goTo(1, false); setAuto(true); }
-    });
-    if (RM) bPlay.hidden = true;
-    stage.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { e.preventDefault(); opts.onClose(); return; }
-      if (e.target !== stage) return;
+    function onKey(e) {
+      if (!touring) return;
+      if (e.key === 'Escape') { e.preventDefault(); exitTour(); return; }
+      var t = e.target;
+      if (t && t !== hero && t.tagName && /^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(target + 1, true); }
       else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(target - 1, true); }
       else if (e.key === 'Home') { e.preventDefault(); goTo(0, true); }
-      else if (e.key === 'End') { e.preventDefault(); goTo(STEPS.length, true); }
-    });
-    closeBtn.addEventListener('click', function () { opts.onClose(); });
-    goTo(1, false);
-    setAuto(true);
-    renderCard();
-    try { stage.scrollIntoView({ block: 'start' }); stage.focus({ preventScroll: true }); } catch (e) { /* older browsers */ }
+      else if (e.key === 'End') { e.preventDefault(); goTo(total, true); }
+    }
+    function buildOverlay() {
+      overlay = el('div', 'ui');
+      var inner = el('div', 'ui-in');
+      var bar = el('div', 'tourbar');
+      card = el('div', 'tcard');
+      card.setAttribute('aria-live', 'polite');
+      card.hidden = true;
+      var right = el('div', 'tright');
+      var ctl = el('div', 'tctl');
+      ctl.setAttribute('role', 'group');
+      ctl.setAttribute('aria-label', ui.tourControls);
+      bPrev = el('button', 'rbtn', '‹');
+      bPrev.type = 'button'; bPrev.setAttribute('aria-label', ui.tourPrev);
+      bPlay = el('button', 'rbtn wide', ui.tourPlay);
+      bPlay.type = 'button'; bPlay.setAttribute('aria-pressed', 'false');
+      bNext = el('button', 'rbtn', '›');
+      bNext.type = 'button'; bNext.setAttribute('aria-label', ui.tourNext);
+      dotsEl = el('div', 'dots');
+      dotsEl.setAttribute('role', 'group');
+      dotsEl.setAttribute('aria-label', ui.tourStops);
+      dotBtns = [];
+      for (var i = 0; i <= total; i++) {
+        (function (n) {
+          var b = el('button', 'dot');
+          b.type = 'button';
+          b.setAttribute('aria-label', n === 0 ? ui.tourStartLabel : fill(ui.tourStopLabel, { n: n, title: STEPS[n - 1].title }));
+          b.appendChild(el('i'));
+          b.addEventListener('click', function () { goTo(n, true); });
+          dotsEl.appendChild(b);
+          dotBtns.push(b);
+        })(i);
+      }
+      if (RM) bPlay.hidden = true;
+      bPrev.addEventListener('click', function () { goTo(target - 1, true); });
+      bNext.addEventListener('click', function () { goTo(target + 1, true); });
+      bPlay.addEventListener('click', function () {
+        if (auto) { setAuto(false); }
+        else { if (target >= total) goTo(0, false); if (target === 0) goTo(1, false); setAuto(true); }
+      });
+      ctl.appendChild(bPrev); ctl.appendChild(bPlay); ctl.appendChild(bNext);
+      right.appendChild(ctl); right.appendChild(dotsEl);
+      bar.appendChild(card); bar.appendChild(right);
+      inner.appendChild(bar);
+      overlay.appendChild(inner);
+      var hint = el('p', 'hintbar', ui.tourHint);
+      hint.setAttribute('aria-hidden', 'true');
+      overlay.appendChild(hint);
+      var closeBtn = el('button', 'btn small ghost stage-close', ui.tourClose);
+      closeBtn.type = 'button';
+      closeBtn.addEventListener('click', function () { exitTour(); });
+      overlay.appendChild(closeBtn);
+      hero.appendChild(overlay);
+    }
+    function enterTour() {
+      if (touring || dead) return;
+      touring = true;
+      buildOverlay();
+      hero.classList.add('touring');
+      hero.setAttribute('role', 'region');
+      hero.setAttribute('aria-label', ui.tourRegion);
+      hero.setAttribute('tabindex', '-1');
+      goTo(1, false);
+      setAuto(true);
+      renderCard();
+      try { hero.scrollIntoView({ block: 'start' }); hero.focus({ preventScroll: true }); } catch (e) { /* older browsers */ }
+    }
+    function exitTour() {
+      if (!touring) return;
+      touring = false;
+      setAuto(false);
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      overlay = null;
+      hero.classList.remove('touring');
+      hero.removeAttribute('role');
+      hero.removeAttribute('aria-label');
+      hero.removeAttribute('tabindex');
+      yaw = 0; pitch = 0;
+      target = 0;
+      if (RM) p = 0;
+      if (opts.onExit) opts.onExit();
+    }
+    document.addEventListener('keydown', onKey);
 
     /* ---------- 3D scene ---------- */
     var V3 = THREE.Vector3, UP = new V3(0, 1, 0);
@@ -511,14 +542,19 @@
 
     /* ---------- interaction ---------- */
     var yaw = 0, pitch = 0, dragging = false, lx = 0, ly = 0, moved = 0, t0 = 0, px = 0, py = 0;
+    function onHeroMove(e) {
+      var rc = hero.getBoundingClientRect();
+      if (!rc.width || !rc.height) return;
+      px = clamp(((e.clientX - rc.left) / rc.width - 0.5) * 2, -1, 1);
+      py = clamp(((e.clientY - rc.top) / rc.height - 0.5) * 2, -1, 1);
+    }
+    hero.addEventListener('pointermove', onHeroMove);
     canvas.addEventListener('pointerdown', function (e) {
+      if (!touring) return;
       dragging = true; moved = 0; lx = e.clientX; ly = e.clientY; t0 = performance.now();
       try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* not supported */ }
     });
     canvas.addEventListener('pointermove', function (e) {
-      var rc = canvas.getBoundingClientRect();
-      px = ((e.clientX - rc.left) / rc.width - 0.5) * 2;
-      py = ((e.clientY - rc.top) / rc.height - 0.5) * 2;
       if (!dragging) return;
       var dx = e.clientX - lx, dy = e.clientY - ly;
       lx = e.clientX; ly = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
@@ -547,25 +583,27 @@
 
     /* ---------- loop ---------- */
     var clock = new THREE.Clock(), visible = true, lw = 0, lh = 0, io = null, ro = null;
-    if (window.IntersectionObserver) { io = new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0 }); io.observe(stage); }
+    if (window.IntersectionObserver) { io = new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0 }); io.observe(hero); }
     function resize() {
-      var w = stage.clientWidth, hh = stage.clientHeight;
+      var w = canvas.clientWidth, hh = canvas.clientHeight;
       if (!w || !hh || (w === lw && hh === lh)) return;
       lw = w; lh = hh;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, touring ? 2 : 1.5));
       renderer.setSize(w, hh, false);
       camera.aspect = w / hh;
       camera.fov = w / hh < 0.85 ? 66 : 50;
       camera.updateProjectionMatrix();
     }
     var cp = new V3(), lp = new V3(), off = new V3(), gc = new THREE.Color(C.mark), tc = new THREE.Color(), gp = new V3();
-    var total = STEPS.length;
     function frame() {
       if (dead) return;
       raf = requestAnimationFrame(frame);
-      if (!visible || document.hidden || !stage.clientWidth) return;
+      if (!visible || document.hidden || !canvas.clientWidth) return;
+      tick++;
+      // ambient mode draws at half rate: the scene is background, and this saves battery
+      if (!touring && !RM && tick % 2) return;
       resize();
-      var dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+      var dt = Math.min(clock.getDelta(), 0.1), t = clock.elapsedTime;
       if (auto && Math.abs(p - target) < 0.06) {
         hold += dt;
         if (hold > 6.5) { hold = 0; if (target < total) goTo(target + 1, false); else setAuto(false); }
@@ -579,10 +617,12 @@
       cp.x += Math.sin(t * 0.33) * 0.9 * sway;
       cp.y += Math.sin(t * 0.41) * 0.35 * sway;
       if (!dragging) { yaw *= Math.exp(-dt * 1.2); pitch *= Math.exp(-dt * 1.2); }
+      var drift = touring ? 0 : Math.sin(t * 0.11) * 0.2 * sway; // slow ambient look-around
+      var par = touring ? 0.05 : 0.12;
       off.copy(cp).sub(lp);
       var len = off.length();
-      off.applyAxisAngle(UP, yaw + (RM ? 0 : px * 0.05));
-      off.y += (pitch + (RM ? 0 : py * 0.03)) * len * 0.55;
+      off.applyAxisAngle(UP, yaw + drift + (RM ? 0 : px * par));
+      off.y += (pitch + (RM ? 0 : py * 0.04)) * len * 0.55;
       camera.position.copy(lp).add(off);
       camera.lookAt(lp);
       stations.forEach(function (s, i) {
@@ -606,18 +646,26 @@
       glow.color.copy(gc);
       dust.rotation.y = Math.sin(t * 0.05) * 0.03;
       renderer.render(scene, camera);
+      if (!ready) { ready = true; canvas.classList.add('ready'); if (opts.onReady) opts.onReady(); }
     }
     resize();
     frame();
-    if (window.ResizeObserver) { ro = new ResizeObserver(resize); ro.observe(stage); }
+    if (window.ResizeObserver) { ro = new ResizeObserver(resize); ro.observe(canvas); }
 
     return {
+      enterTour: enterTour,
+      exitTour: exitTour,
+      isTouring: function () { return touring; },
       destroy: function () {
         dead = true;
         cancelAnimationFrame(raf);
+        document.removeEventListener('keydown', onKey);
+        hero.removeEventListener('pointermove', onHeroMove);
         if (io) io.disconnect();
         if (ro) ro.disconnect();
+        if (touring) exitTour();
         try { renderer.dispose(); if (renderer.forceContextLoss) renderer.forceContextLoss(); } catch (e) { /* ignore */ }
+        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
       }
     };
   }

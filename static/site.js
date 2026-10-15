@@ -228,50 +228,79 @@
     var ns2 = interestHost.nextElementSibling; if (ns2 && ns2.tagName === 'NOSCRIPT') ns2.remove();
   }
 
-  /* 3D tour launcher: nothing is loaded until the visitor presses the button */
+  /* 3D scene in the home hero.
+   It starts by itself, after the page has loaded and the browser is idle, but only for visitors who can take it:
+   not with reduced motion, data-saver on, or a 2G/3G connection. Everyone else keeps the still poster and the
+   button, which loads the scene when pressed. The page works fully without any of this. */
   var startBtn = $('#startTour');
-  var mount = $('#tourMount');
-  if (startBtn && mount && studio) {
+  var hero = $('#hero');
+  if (startBtn && hero && studio) {
     startBtn.hidden = false;
-    var loaded = false;
-    var active = null;
+    var ctrl = null, booting = false, wantTour = false, userStarted = false;
+    var label = startBtn.textContent;
     var studioHref = ($('.hero .actions .btn') || {}).href || '/';
+
+    var canAmbient = function () {
+      try {
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+        var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+        if (c.saveData) return false;
+        if (/^(slow-2g|2g|3g)$/.test(c.effectiveType || '')) return false;
+      } catch (e) { /* assume capable */ }
+      return true;
+    };
     var load = function (src, done, fail) {
       var s = document.createElement('script');
       s.src = src; s.onload = done; s.onerror = fail;
       document.head.appendChild(s);
     };
-    var message = function (text) {
-      mount.textContent = '';
-      var box = h('aside', { class: 'note', role: 'status' }, [text]);
-      mount.appendChild(box);
-      return box;
+    var showFailure = function (text) {
+      var old = $('#tourNote');
+      if (old) old.remove();
+      var note = h('aside', { class: 'note', id: 'tourNote', role: 'status' }, [text]);
+      hero.insertAdjacentElement('afterend', note);
     };
-    var close = function () {
-      if (active) { active.destroy(); active = null; }
-      mount.textContent = '';
-      startBtn.hidden = false;
-      startBtn.focus();
-    };
-    var open = function () {
-      if (active) return;
-      active = window.BBCTour.start({
-        mount: mount, ui: ui, studio: studio, studioHref: studioHref,
-        onClose: close,
-        onFail: function () { active = null; var box = message(ui.tourNoGL); box.appendChild(document.createTextNode(' ')); startBtn.hidden = false; }
-      });
-      if (active) startBtn.hidden = true;
-    };
-    startBtn.addEventListener('click', function () {
-      if (loaded) { open(); return; }
-      startBtn.disabled = true;
-      startBtn.textContent = ui.tourLoading;
-      var restore = function () { startBtn.disabled = false; startBtn.textContent = startBtn.getAttribute('data-label'); };
-      startBtn.setAttribute('data-label', startBtn.getAttribute('data-label') || startBtn.textContent.replace(ui.tourLoading, ''));
+    var restore = function () { startBtn.disabled = false; startBtn.textContent = label; };
+    var boot = function (thenTour) {
+      if (ctrl) { if (thenTour) ctrl.enterTour(); return; }
+      if (booting) { wantTour = wantTour || thenTour; return; }
+      booting = true;
+      wantTour = thenTour;
+      var fail = function (shown) {
+        booting = false; restore();
+        if (userStarted) showFailure(shown || ui.tourFailed);
+      };
       load('/vendor/three.min.js', function () {
-        load('/tour.js', function () { loaded = true; startBtn.disabled = false; startBtn.textContent = startBtn.getAttribute('data-label'); open(); }, function () { restore(); message(ui.tourFailed); });
-      }, function () { restore(); message(ui.tourFailed); });
+        load('/tour.js', function () {
+          ctrl = window.BBCTour.start({
+            hero: hero, ui: ui, studio: studio, studioHref: studioHref,
+            onExit: function () { startBtn.focus(); },
+            onFail: function () { ctrl = null; }
+          });
+          booting = false;
+          restore();
+          if (!ctrl) { if (userStarted) showFailure(ui.tourNoGL); return; }
+          if (wantTour) ctrl.enterTour();
+        }, fail);
+      }, fail);
+    };
+
+    startBtn.addEventListener('click', function () {
+      userStarted = true;
+      var old = $('#tourNote');
+      if (old) old.remove();
+      if (!ctrl) { startBtn.disabled = true; startBtn.textContent = ui.tourLoading; }
+      boot(true);
     });
-    startBtn.setAttribute('data-label', startBtn.textContent);
+
+    if (canAmbient()) {
+      var go = function () { boot(false); };
+      var schedule = function () {
+        if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 3000 });
+        else setTimeout(go, 1200);
+      };
+      if (document.readyState === 'complete') schedule();
+      else window.addEventListener('load', schedule);
+    }
   }
 })();

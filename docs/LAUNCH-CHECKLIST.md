@@ -10,7 +10,7 @@ The site is a draft. Nothing below happens until the owner says so. Tick each it
 - [x] Text and interface colours meet WCAG 2.2 AA contrast in both themes.
 - [x] No horizontal scrolling from 320 px wide, including with text enlarged to 200%.
 - [x] Interactive targets are at least 44 px. Every button and link has an accessible name. One h1, and banner, navigation, main and contentinfo landmarks on every page.
-- [x] Pages are readable and usable with JavaScript off. The tour loads only after its button is pressed, and is not in the offline copy.
+- [x] Pages are readable and usable with JavaScript off. The home-page 3D scene starts by itself only for capable visitors (not with reduced motion, data-saver or 2G/3G), pauses off screen, and is not in the offline copy.
 - [x] Site claims were checked against `docs/gates/` and the digest. Unsupported claims were removed or softened.
 - [x] `indexing` is `false`, the draft banner is on, and `robots.txt` disallows everything.
 

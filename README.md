@@ -21,7 +21,7 @@ Use `node preview.js` to see the site. Opening `public/index.html` straight from
 - Words in the page shell and in the scripts (skip link, menu, footer, tour and tool text): `content/<lang>/ui.json`. Each language folder needs its own `ui.json` and `studio.json`.
 - Site name, contact email, draft banner and indexing switch: `content/data/site.json`. While the email is still the placeholder, the site shows "to be confirmed" instead.
 - Look and feel: `static/styles.css`. Page shell: `templates/page.html`.
-- Scripts: `static/site.js` (theme button, Studio track, the two small tools) and `static/tour.js` (the 3D tour). Fonts: `static/fonts/`. Three.js: `static/vendor/`. Every page works with JavaScript off. The tour loads only after the visitor presses its button, and is not part of the offline copy.
+- Scripts: `static/site.js` (theme button, Studio track, the two small tools) and `static/tour.js` (the 3D tour). Fonts: `static/fonts/`. Three.js: `static/vendor/`. Every page works with JavaScript off. On the home page the 3D scene starts by itself once the page has loaded, except for visitors with reduced motion, data-saver on or a 2G/3G connection, who keep the still poster (`static/hero-poster.jpg`) and can press the button to load it. The scene is not part of the offline copy.
 - Use `{{contactEmail}}` inside a page to insert the email from `site.json`.
 
 ## Before anything goes public
