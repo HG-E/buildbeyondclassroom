@@ -78,10 +78,15 @@ Fixed in the repository:
 - [x] `check.js` and a GitHub Action run about 390 automatic checks on every push, including a check that the vendored files still match their recorded SHA-256 hashes.
 - [x] `SECURITY.md` added; blank public issues switched off in the issue settings file; `docs/design/` marked as a historical reference.
 
-Needs the owner (account settings, not code):
+Done on 15 October 2026 with the owner's approval (account settings, verified afterwards):
 
-- [ ] **Email spoofing.** The domain has no SPF or DMARC record, so anyone can send mail that appears to come from `@buildbeyondclassroom.com`. The domain sends no mail, so two DNS records fix it: a TXT record `v=spf1 -all` on the bare domain, and a TXT record `v=DMARC1; p=reject` on `_dmarc`.
-- [ ] **GitHub:** turn on secret scanning and push protection (shown as disabled for this public repository), and consider disabling the Projects feature. Public Issues can still be opened through templates only; consider switching Issues off entirely until someone can moderate them, because strangers could paste personal information.
-- [ ] **GitHub:** protect the `main` branch against force-pushes and deletion once the history is settled.
+- [x] **Email spoofing closed.** Two DNS records were added in Vercel DNS: a TXT record `v=spf1 -all` on `buildbeyondclassroom.com` and a TXT record `v=DMARC1; p=reject` on `_dmarc.buildbeyondclassroom.com`. The domain sends no mail, so mail claiming to come from it is now rejected by receivers that check. (If the domain ever sends mail, these two records must be replaced first.)
+- [x] **GitHub secret scanning and push protection** are on for the public repository.
+- [x] **`main` branch is protected** against force-pushes and deletion. Normal pushes still work. As the repository's admin you can lift this in the branch settings if a history rewrite is ever needed.
+- [x] **Issues, Projects and Wiki are switched off**, so strangers cannot post personal information in a public place. Turn Issues back on only when someone can moderate them.
+
+Still open (the owner's decisions):
+
 - [ ] **Licence** (see "Public repository" above).
 - [ ] The Vercel project is still named `bbc-site`. Renaming it is optional and cosmetic.
+- [ ] The accounts item above: a BBC GitHub account, two owners and two-step sign-in everywhere.

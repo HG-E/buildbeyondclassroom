@@ -44,6 +44,10 @@ The registry's record of the nameservers can be read at `https://rdap.verisign.c
 
 See `docs/LAUNCH-CHECKLIST.md`: two owners and two-step sign-in on every account, a BBC GitHub account, Vercel's written answer on non-commercial use, and the domain held in the legal entity's name.
 
+## Email: this domain sends none
+
+Two TXT records in Vercel DNS (added 15 October 2026) tell mail servers that nothing is allowed to send as this domain: SPF `v=spf1 -all` on the bare domain and DMARC `v=DMARC1; p=reject` on `_dmarc`. If BBC ever sends email from the domain, replace both records before sending.
+
 ## Caching, and a rule to remember
 
 `vercel.json` sets long caching for `/fonts/` and `/vendor/` (one year, immutable) and one day for the poster and favicon. Everything else is revalidated on each visit.
