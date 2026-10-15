@@ -34,7 +34,12 @@ Done and verified on 15 October 2026:
 Still to do:
 
 - [ ] Turn on two-step sign-in for `buildbeyondclassroom@gmail.com`, the contact address in `site.json`, and keep its recovery codes safe. (Gate 7 also suggested an address a second person can open. That is optional now that BBC runs from the owner's accounts.)
-- [ ] Two-step sign-in, with recovery codes saved somewhere safe, on the owner's GitHub account (`HG-E`), the Vercel account and the registrar account. These three accounts now hold everything, so losing access to one would lock BBC out of that part.
+- [x] **Registrar (Qservers) two-step sign-in is on.** Confirmed by the owner on 15 October 2026 (not something that can be checked from outside). The public registry also shows the transfer lock is on (`client transfer prohibited`).
+- [ ] Registrar: recovery codes saved somewhere safe, not only on the phone that receives the codes.
+- [ ] GitHub (`HG-E`): two-step sign-in on, recovery codes saved.
+- [ ] Vercel: two-step sign-in on, recovery codes saved.
+- [ ] The email address that receives the registrar's messages (and `buildbeyondclassroom@gmail.com`): two-step sign-in on in Google's security settings, because a taken-over email can be used to reset the registrar password.
+- [ ] Domain expiry: the domain runs to **15 October 2027**. Set a reminder for mid-August 2027, check auto-renew is on and that the card on the registrar account is valid.
 - [ ] Ask Vercel support in writing whether the pilot qualifies as non-commercial on Hobby. Keep the reply.
 - [ ] If anyone is paid for site work (including through a grant), or an institution pays BBC, move to Cloudflare Pages or Netlify first.
 - [ ] Hold the domain in the name of the legal entity once the legal form is decided, with a renewal reminder 60 days before expiry (Gate 7). Check the registrar's auto-renew setting.
@@ -89,4 +94,3 @@ Still open (the owner's decisions):
 
 - [ ] **Licence** (see "Public repository" above).
 - [ ] The Vercel project is still named `bbc-site`. Renaming it is optional and cosmetic.
-- [ ] Two-step sign-in and saved recovery codes on the owner's accounts (see the accounts items above).
