@@ -42,7 +42,7 @@ The registry's record of the nameservers can be read at `https://rdap.verisign.c
 
 ## Still open
 
-See `docs/LAUNCH-CHECKLIST.md`: two owners and two-step sign-in on every account, a BBC GitHub account, Vercel's written answer on non-commercial use, and the domain held in the legal entity's name.
+See `docs/LAUNCH-CHECKLIST.md`: two-step sign-in with saved recovery codes on the owner's accounts (GitHub `HG-E`, Vercel, the registrar), Vercel's written answer on non-commercial use, and the domain held in the legal entity's name once the legal form is decided. BBC deliberately stays on the owner's own accounts; there is no separate BBC GitHub account.
 
 ## Email: this domain sends none
 

@@ -4,6 +4,8 @@ A compact summary of Gates 1–9, so site work can be checked against the design
 
 **Status of decisions:** Gate 7 (hosting and stack) and the "no CMS / no WordPress" rule are confirmed by the owner. Gates 3–6 recommendations (studio, AI rules, curriculum, delivery) were confirmed by the owner on 15 October 2026. The decisions listed in Gates 2, 8 and 9 have **not** been recorded as confirmed; treat them as the working plan, not as final.
 
+**Owner decision on ownership (15 October 2026):** BBC stays on the owner's own accounts. The repository (`HG-E/buildbeyondclassroom`), the Vercel project and the domain are held by the owner as product owner. Gate 7's suggestion of a shared BBC email and a separate BBC GitHub account is not being followed, and no one should propose creating one. The gate documents are left as written.
+
 **Owner design decisions (15 October 2026), which refine Gate 7's "no web fonts beyond one family" and "scripts only add convenience":** self-hosted fonts are allowed (Atkinson Hyperlegible, Bricolage Grotesque, IBM Plex Mono); one JavaScript exception, the home-page 3D tour, loaded only after the visitor presses its button. Details are in `CLAUDE.md` and `docs/design/CLAUDE-CODE-PROMPT.md`.
 
 ## What BBC is

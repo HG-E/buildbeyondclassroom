@@ -29,12 +29,12 @@ Done and verified on 15 October 2026:
 - [x] The domain `buildbeyondclassroom.com` is connected and shows "Valid Configuration" in Vercel, with Vercel's nameservers set at the registrar (details in `docs/HOSTING.md`).
 - [x] `https://www.buildbeyondclassroom.com` serves the site over valid HTTPS. The bare domain redirects (308) to www. `http` redirects to `https`. The free address `bbc-site-ten.vercel.app` also works.
 - [x] The live site sends the security headers from `vercel.json` and is still marked `noindex,nofollow`.
+- [x] **Owner decision (15 October 2026): BBC stays on the owner's own accounts.** The repository `HG-E/buildbeyondclassroom`, the Vercel project and the domain are held by the owner, who is the product owner. No separate BBC GitHub account or organisation is needed. This replaces the Gate 7 idea of a shared BBC account. See `docs/GATE-DECISIONS.md`.
 
 Still to do:
 
-- [ ] A shared BBC email address that two people can open (`buildbeyondclassroom@gmail.com` is in `site.json`). Turn on two-step sign-in.
-- [ ] A BBC GitHub account using that email, with two-step sign-in and a second owner. The repository is public but still sits under a personal account (`HG-E`); transfer it, and Vercel and GitHub redirects keep the old address working.
-- [ ] Two-step sign-in and a second owner on the Vercel account, and on the registrar account that holds the domain.
+- [ ] Turn on two-step sign-in for `buildbeyondclassroom@gmail.com`, the contact address in `site.json`, and keep its recovery codes safe. (Gate 7 also suggested an address a second person can open. That is optional now that BBC runs from the owner's accounts.)
+- [ ] Two-step sign-in, with recovery codes saved somewhere safe, on the owner's GitHub account (`HG-E`), the Vercel account and the registrar account. These three accounts now hold everything, so losing access to one would lock BBC out of that part.
 - [ ] Ask Vercel support in writing whether the pilot qualifies as non-commercial on Hobby. Keep the reply.
 - [ ] If anyone is paid for site work (including through a grant), or an institution pays BBC, move to Cloudflare Pages or Netlify first.
 - [ ] Hold the domain in the name of the legal entity once the legal form is decided, with a renewal reminder 60 days before expiry (Gate 7). Check the registrar's auto-renew setting.
@@ -89,4 +89,4 @@ Still open (the owner's decisions):
 
 - [ ] **Licence** (see "Public repository" above).
 - [ ] The Vercel project is still named `bbc-site`. Renaming it is optional and cosmetic.
-- [ ] The accounts item above: a BBC GitHub account, two owners and two-step sign-in everywhere.
+- [ ] Two-step sign-in and saved recovery codes on the owner's accounts (see the accounts items above).

@@ -25,6 +25,7 @@ v0 has **no database, no accounts, no forms that save data and no analytics**. D
 - Keep `"indexing": false` in `content/data/site.json` until the owner approves launch.
 - Hosting is Vercel Hobby, which is for non-commercial use only. Before any paid engagement (institution, licence, paid site work), stop and raise moving to Cloudflare Pages or Netlify.
 - Secrets never go in the repository.
+- **Ownership (owner decision, 15 October 2026):** BBC lives permanently on the owner's own accounts (GitHub `HG-E`, the owner's Vercel, the owner's registrar). The owner is the product owner. Do not suggest creating a separate BBC GitHub account, organisation or shared account, and do not add "transfer the repository" to any checklist.
 
 ## How to work
 - One small task per session. Plan first for anything touching data or consent, and show the plan.
