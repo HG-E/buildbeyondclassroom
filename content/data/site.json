@@ -1,0 +1,11 @@
+{
+  "name": "Build Beyond Classroom",
+  "tagline": "learn to build with AI, solve a real community problem, and own the result.",
+  "defaultLanguage": "en",
+  "languages": [
+    { "code": "en", "name": "English" }
+  ],
+  "contactEmail": "buildbeyondclassroom@gmail.com",
+  "indexing": false,
+  "status": "Draft site: the programme is being designed and has not launched. Details may change."
+}

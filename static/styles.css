@@ -1,0 +1,126 @@
+/* Build Beyond Classroom: one small stylesheet.
+   Light by default: system fonts, no images, no web fonts, no scripts needed to read. */
+
+:root {
+  --bg: #ffffff;
+  --text: #1b1f24;
+  --muted: #4a5360;
+  --link: #0b4f9c;
+  --accent: #0b4f9c;
+  --rule: #d5dae1;
+  --soft: #f3f5f8;
+  --note-bg: #eef4fb;
+  --status-bg: #fff4d6;
+  --status-text: #3d2e00;
+  --focus: #b35c00;
+  --measure: 42rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171b;
+    --text: #e9ecf0;
+    --muted: #b4bcc8;
+    --link: #8cb8f5;
+    --accent: #8cb8f5;
+    --rule: #333a44;
+    --soft: #1d2229;
+    --note-bg: #1b2531;
+    --status-bg: #3a2f10;
+    --status-text: #fbe9b0;
+    --focus: #ffb454;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.wrap { width: 100%; max-width: 60rem; margin: 0 auto; padding: 0 1rem; }
+
+/* Skip link and focus: always visible for keyboard users */
+.skip {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--focus);
+  z-index: 10;
+}
+.skip:focus { top: 0.5rem; }
+
+a { color: var(--link); text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 0.15em; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+main:focus { outline: none; }
+
+/* Header and navigation */
+.site-header { border-bottom: 1px solid var(--rule); }
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1.5rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.brand { font-weight: 700; font-size: 1.2rem; color: var(--text); text-decoration: none; padding: 0.5rem 0; }
+.nav { list-style: none; display: flex; flex-wrap: wrap; gap: 0 0.25rem; margin: 0; padding: 0; }
+.nav a { display: inline-block; padding: 0.7rem 0.6rem; min-height: 44px; color: var(--text); text-decoration: none; font-size: 1rem; }
+.nav a:hover { text-decoration: underline; }
+.nav a[aria-current="page"] { font-weight: 700; border-bottom: 3px solid var(--accent); }
+
+/* Draft banner */
+.status { margin: 0; padding: 0.6rem 1rem; background: var(--status-bg); color: var(--status-text); text-align: center; font-size: 1rem; }
+
+/* Reading column */
+.prose { padding-top: 1.5rem; padding-bottom: 3rem; }
+.prose > * { max-width: var(--measure); }
+.prose > .table-wrap { max-width: none; }
+.prose h1 { font-size: 2rem; line-height: 1.2; margin: 1rem 0 1rem; }
+.prose h2 { font-size: 1.5rem; line-height: 1.25; margin: 2.25rem 0 0.5rem; }
+.prose h3 { font-size: 1.2rem; margin: 1.5rem 0 0.25rem; }
+.prose p, .prose ul, .prose ol { margin: 0 0 1rem; }
+.prose li { margin-bottom: 0.35rem; }
+.prose code { background: var(--soft); padding: 0.1em 0.3em; border-radius: 4px; font-size: 0.95em; }
+
+.note {
+  background: var(--note-bg);
+  border-left: 4px solid var(--accent);
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+}
+
+/* Tables scroll sideways on narrow screens instead of breaking the page */
+.table-wrap { overflow-x: auto; margin: 1rem 0 1.5rem; }
+table { border-collapse: collapse; width: 100%; min-width: 30rem; font-size: 1rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rule); }
+thead th { border-bottom: 2px solid var(--text); }
+tbody th { font-weight: 600; }
+
+/* Footer */
+.site-footer { border-top: 1px solid var(--rule); background: var(--soft); padding: 1.5rem 0 2rem; font-size: 1rem; }
+.site-footer p { margin: 0 0 0.5rem; }
+.small { color: var(--muted); font-size: 0.9rem; }
+.lang-links:empty { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Print: paper first. Plain black on white, links shown, no navigation. */
+@media print {
+  :root { --bg: #fff; --text: #000; --muted: #333; --link: #000; --rule: #999; --soft: #fff; --note-bg: #fff; }
+  body { font-size: 12pt; }
+  .site-header, .skip, .status, .lang-links { display: none; }
+  .wrap, .prose, .prose > * { max-width: none; padding: 0; }
+  .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; }
+  .note { border: 1px solid #000; }
+  h2, h3 { break-after: avoid; }
+  tr, .note { break-inside: avoid; }
+  .site-footer { border: 0; }
+}

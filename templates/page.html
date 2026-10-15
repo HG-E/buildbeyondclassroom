@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta name="robots" content="{{robots}}">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">{{ui.skipLink}}</a>
+
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="brand" href="/">{{siteName}}</a>
+      <nav aria-label="{{ui.navLabel}}">
+        <ul class="nav">{{nav}}</ul>
+      </nav>
+    </div>
+  </header>
+
+  {{status}}
+
+  <main id="main" class="wrap prose" tabindex="-1">
+    {{content}}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>{{siteName}}: {{tagline}}</p>
+      <p>{{ui.contactLabel}} <a href="mailto:{{contactEmail}}">{{contactEmail}}</a></p>
+      <p class="lang-links">{{langLinks}}</p>
+      <p class="small">{{ui.footerNote}}</p>
+    </div>
+  </footer>
+
+  <script src="/register-sw.js" defer></script>
+</body>
+</html>
