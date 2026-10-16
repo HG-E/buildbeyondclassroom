@@ -343,7 +343,7 @@ function markdown(src, ui, blocks) {
       }
       const th = head.map((c) => `<th scope="col">${inline(c)}</th>`).join('');
       const tr = rows
-        .map((r) => `<tr>${r.map((c, n) => (n === 0 ? `<th scope="row">${inline(c)}</th>` : `<td>${inline(c)}</td>`)).join('')}</tr>`)
+        .map((r) => `<tr>${r.map((c, n) => (n === 0 ? `<th scope="row">${inline(c)}</th>` : `<td data-label="${esc(head[n])}">${inline(c)}</td>`)).join('')}</tr>`)
         .join('');
       out.push(`<div class="tw" tabindex="0" role="region" aria-label="${esc(ui.tableLabel)}"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`);
       continue;
@@ -452,7 +452,7 @@ function studioTable(studio, ui) {
       const role = studio.roles[s.ai];
       const partner = s.partner ? studio.partner.yes : studio.partner.no;
       const fac = s.facilitator ? s.facilitator.text : studio.facilitatorDefault;
-      return `<tr id="step-${s.n}"><th scope="row">${s.n}. ${esc(s.title)}</th><td>${esc(s.what)}</td><td><span class="pill ${esc(s.ai)}">${esc(role.label)}</span></td><td>${esc(partner)}</td><td>${esc(fac)}</td></tr>`;
+      return `<tr id="step-${s.n}"><th scope="row">${s.n}. ${esc(s.title)}</th><td data-label="${esc(c.what)}">${esc(s.what)}</td><td data-label="${esc(c.ai)}"><span class="pill ${esc(s.ai)}">${esc(role.label)}</span></td><td data-label="${esc(c.partner)}">${esc(partner)}</td><td data-label="${esc(c.facilitator)}">${esc(fac)}</td></tr>`;
     })
     .join('');
   return (

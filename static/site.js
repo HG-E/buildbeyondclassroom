@@ -285,6 +285,8 @@
         var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
         if (c.saveData) return false;
         if (/^(slow-2g|2g|3g)$/.test(c.effectiveType || '')) return false;
+        if (navigator.deviceMemory && navigator.deviceMemory <= 2) return false;
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return false;
       } catch (e) { /* assume capable */ }
       return true;
     };
