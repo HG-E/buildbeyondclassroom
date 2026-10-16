@@ -1,6 +1,6 @@
 # Launch checklist
 
-The site is a draft. Nothing below happens until the owner says so. Tick each item when it is done and note the date.
+The website launched on 16 October 2026. The items below are what is verified and what is still open. Tick each item when it is done and note the date.
 
 ## Already checked in this repository (15 October 2026)
 
@@ -108,3 +108,16 @@ The site was reviewed page by page, on a laptop and on a phone, in light and dar
 - [x] Plain bullet lists on the inner pages are now clear check-lists, and every inner page has a page header band.
 
 Still needs a person (not possible from here): a pass on real phones and a real screen reader, and a look at the 3D scene on a real graphics card.
+
+## Launch (16 October 2026)
+
+The owner approved launch on 16 October 2026. Done and verified:
+
+- [x] The draft notice and every "draft / not launched / details may change" sentence were removed. The check script now fails if that wording returns.
+- [x] `"indexing": true`: search engines are allowed, `robots.txt` allows crawling and points to `sitemap.xml` (all pages listed). The 404 page stays out of search.
+- [x] Every page has a canonical link, a share image (1200 by 630), a touch icon, theme colours and a clear title and description. The home page carries structured data for search engines.
+- [x] A "Where BBC stands today" section on the home page says plainly what is true: the website is live, applications are not open yet, the first pilot has not been announced, and there are no results yet. Nothing was added that the gate documents do not support.
+- [x] Every link, button and control was exercised: all internal links resolve, the two outside links return 200, each type of visitor reaches their page in one click, and a keyboard user sees a focus mark on every stop.
+- [x] The check script grew to cover well-formed HTML, colour contrast and the launch metadata.
+
+Not done, and not possible from here (so it is not claimed on the site): a pass with a real screen reader on real phones, an outside accessibility tester, and a Vercel written answer that the free plan fits this use. Submitting the site to Google Search Console and Bing Webmaster Tools is the owner's step.

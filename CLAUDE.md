@@ -22,7 +22,7 @@ v0 has **no database, no accounts, no forms that save data and no analytics**. D
 - Never add third-party scripts, trackers, fonts, embeds or analytics, and never make a request to another host. The Content-Security-Policy in `vercel.json` allows only this site's own files. Fonts and scripts are all local.
 - **One JavaScript exception: the 3D scene on the home page.** Three.js is self-hosted in `static/vendor/` at a pinned version with its licence file. Owner decision (15 October 2026): the scene starts by itself behind the home-page headline, after the page has loaded and the browser is idle, and "Take the virtual tour" then guides the visitor through it. It must NOT start for visitors with reduced motion, data-saver on, or a 2G/3G connection; they keep the still poster (`static/hero-poster.jpg`) and can press the button to load it. It pauses when off screen or in a background tab. The page must stay fully readable and usable with JavaScript off. Nothing else may need JavaScript to be read or used, and small interactive tools (the five-questions worksheet, the interest-message builder) are enhancements that save and send nothing.
 - Never write a claim the gate documents do not support (prices, numbers, partner names, outcomes). If a fact is missing, leave it out or write "to be decided".
-- Keep `"indexing": false` in `content/data/site.json` until the owner approves launch.
+- **The website is launched (owner decision, 16 October 2026).** `"indexing"` is `true`, there is no draft notice, and the site must never be described as a draft or as not yet launched. The programme itself has not opened: no cohort has run and applications are not open. Say so plainly where it matters (the "Where BBC stands today" section, the sign-up page), and never claim otherwise. Do not turn indexing off or add a draft notice unless the owner asks.
 - Hosting is Vercel Hobby, which is for non-commercial use only. Before any paid engagement (institution, licence, paid site work), stop and raise moving to Cloudflare Pages or Netlify.
 - Secrets never go in the repository.
 - **Ownership (owner decision, 15 October 2026):** BBC lives permanently on the owner's own accounts (GitHub `HG-E`, the owner's Vercel, the owner's registrar). The owner is the product owner. Do not suggest creating a separate BBC GitHub account, organisation or shared account, and do not add "transfer the repository" to any checklist.
@@ -36,7 +36,7 @@ v0 has **no database, no accounts, no forms that save data and no analytics**. D
 ```
 content/en/*.md        pages (front matter: title, slug, order, description)
 content/en/ui.json     words used by the page shell (skip link, menu label, footer)
-content/data/site.json site name, contact email, languages, draft banner, indexing
+content/data/site.json site name, contact email, site address, languages, indexing (an optional "status" line shows a notice bar)
 templates/page.html    the one page shell
 static/                styles.css, service-worker.js, register-sw.js (copied as-is)
 static/fonts/          self-hosted woff2 fonts (open licences kept alongside)

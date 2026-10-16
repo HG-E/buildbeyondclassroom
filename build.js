@@ -423,9 +423,9 @@ function loadPages(lang) {
 // Words used by the page shell and the scripts live in content/<lang>/, never in the template or here.
 const UI_KEYS = [
   'skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel', 'brandLabel', 'ctaLabel', 'ctaSlug',
-  'themeLabel', 'menuOpen', 'menuClose', 'draftShort', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'draftTag', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking',
+  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking',
   'emailPending', 'emailLabel', 'copyEmail', 'homePrimary', 'homePrimarySlug', 'heroLogTitle', 'heroLogHint',
-  'tourStart', 'noJavaScript',
+  'tourStart', 'noJavaScriptLens', 'noJavaScriptInterest',
 ];
 
 function loadJson(lang, name, keys) {
@@ -463,7 +463,7 @@ function studioTable(studio, ui) {
 }
 
 function toolShell(name, ui) {
-  return `<div class="tool" data-tool="${name}" hidden></div><noscript><p class="hint">${esc(ui.noJavaScript)}</p></noscript>`;
+  return `<div class="tool" data-tool="${name}" hidden></div><noscript><p class="hint">${esc(name === 'lens' ? ui.noJavaScriptLens : ui.noJavaScriptInterest)}</p></noscript>`;
 }
 
 function emailBox(ui) {
@@ -535,10 +535,10 @@ function render(page, pages, ui, studio) {
     .map((l) => `<a href="${urlFor(l.code, page.meta.slug)}" hreflang="${l.code}" lang="${l.code}">${esc(l.name)}</a>`)
     .join(' ');
 
-  const title = page.meta.slug === '' ? site.name : `${page.meta.title} | ${site.name}`;
+  const title = page.meta.titleTag || (page.meta.slug === '' ? site.name : `${page.meta.title} | ${site.name}`);
   const robots = site.indexing && !is404 ? 'index,follow' : 'noindex,nofollow';
   const draft = site.status
-    ? `<div class="draft" role="note"><div class="wrap"><span class="tag">${esc(ui.draftTag)}</span><span class="d-long">${esc(site.status)}</span><span class="d-short">${esc(ui.draftShort)}</span></div></div>`
+    ? `<div class="draft" role="note"><div class="wrap"><span class="tag">${esc(ui.draftTag || 'Notice')}</span><span class="d-long">${esc(site.status)}</span><span class="d-short">${esc(ui.draftShort || '')}</span></div></div>`
     : '';
 
   const tagline = ucfirst(site.tagline);
@@ -550,11 +550,25 @@ function render(page, pages, ui, studio) {
     `<meta property="og:title" content="${esc(title)}">`,
     `<meta property="og:description" content="${esc(page.meta.description || tagline)}">`,
     pageUrl && !is404 ? `<meta property="og:url" content="${esc(pageUrl)}">` : '',
-    '<meta name="twitter:card" content="summary">',
+    pageUrl && !is404 ? `<meta property="og:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}/og-image.jpg">` : '',
+    pageUrl && !is404 ? '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' : '',
+    pageUrl && !is404 ? `<meta property="og:image:alt" content="${esc(ui.ogImageAlt)}">` : '',
+    `<meta name="twitter:card" content="${pageUrl && !is404 ? 'summary_large_image' : 'summary'}">`,
+    pageUrl && !is404 ? `<meta name="twitter:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}/og-image.jpg">` : '',
   ]
     .filter(Boolean)
     .join('\n  ');
   const eyebrow = page.meta.eyebrow ? `<p class="mono">${esc(page.meta.eyebrow)}</p>` : '';
+
+  // structured data for search engines, on the home page only (a data block: it never runs as a script)
+  let jsonld = '';
+  if (isHome && site.siteUrl) {
+    const base = site.siteUrl.replace(/\/$/, '');
+    const org = { '@type': 'Organization', '@id': base + '/#org', name: site.name, url: base + '/', logo: base + '/apple-touch-icon.png' };
+    if (email) org.email = email;
+    const web = { '@type': 'WebSite', '@id': base + '/#site', url: base + '/', name: site.name, description: tagline, inLanguage: lang, publisher: { '@id': base + '/#org' } };
+    jsonld = '<script type="application/ld+json">' + safeJson({ '@context': 'https://schema.org', '@graph': [org, web] }) + '</script>';
+  }
 
   let top;
   if (isHome) {
@@ -590,6 +604,7 @@ function render(page, pages, ui, studio) {
     .replace(/{{description}}/g, esc(page.meta.description || tagline))
     .replace(/{{robots}}/g, robots)
     .replace(/{{meta}}/g, () => metaTags)
+    .replace(/{{jsonld}}/g, () => jsonld)
     .replace(/{{bodyClass}}/g, isHome ? ' class="is-home"' : '')
     .replace(/{{siteName}}/g, esc(site.name))
     .replace(/{{tagline}}/g, esc(tagline))
@@ -634,7 +649,7 @@ function main() {
   // Offline layer: the service worker keeps every page and the small static files.
   // The tour (Three.js and tour.js) is large and optional, so it is never kept offline.
   const assets = listFiles(STATIC).filter(
-    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && f !== '/hero-poster.jpg' && !/\.txt$/.test(f)
+    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && f !== '/hero-poster.jpg' && f !== '/og-image.jpg' && f !== '/apple-touch-icon.png' && !/\.txt$/.test(f)
   );
   const precache = [...written, ...assets];
   const version = crypto.createHash('sha1').update(JSON.stringify(precache) + Date.now()).digest('hex').slice(0, 10);

@@ -3,10 +3,12 @@
   "tagline": "learn to build with AI, solve a real community problem, and own the result.",
   "defaultLanguage": "en",
   "languages": [
-    { "code": "en", "name": "English" }
+    {
+      "code": "en",
+      "name": "English"
+    }
   ],
   "contactEmail": "buildbeyondclassroom@gmail.com",
   "siteUrl": "https://www.buildbeyondclassroom.com",
-  "indexing": false,
-  "status": "Draft site: the programme is being designed and has not launched. Details may change."
+  "indexing": true
 }

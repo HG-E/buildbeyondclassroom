@@ -11,7 +11,7 @@ description: How to register interest as a learner, facilitator, hub host or par
 
 # Tell us who you are and what you want to do.
 
-BBC has not opened applications. You can register interest now, and we will contact you when there is something to join. For now, the way to do that is email.
+Applications to join a cohort are not open yet. Register your interest now and we will contact you when there is something to join. Email is how to do that for now.
 
 ## Prepare your message
 

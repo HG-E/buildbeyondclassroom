@@ -56,9 +56,9 @@ Two TXT records in Vercel DNS (added 15 October 2026) tell mail servers that not
 
 The offline copy (the service worker) keeps only the pages and small files listed at build time. It never stores the 3D scene, the poster or the 404 page.
 
-## When the site is launched
+## Launch
 
-Turning on `"indexing": true` in `content/data/site.json` also writes `robots.txt` (allow) and `sitemap.xml`. The build refuses to do this unless `siteUrl` is set and `contactEmail` is a real address. Every page already carries a canonical link and basic social tags using `siteUrl`.
+The website launched on 16 October 2026. `"indexing": true` is set in `"indexing": true` in `content/data/site.json` also writes `robots.txt` (allow) and `sitemap.xml`. The build refuses to do this unless `siteUrl` is set and `contactEmail` is a real address. Every page already carries a canonical link and basic social tags using `siteUrl`.
 
 ## Automatic checks
 

@@ -10,7 +10,7 @@ description: How this website is built to be usable by everyone, and how to ask 
 
 # Built to be usable by everyone.
 
-BBC aims for this website to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA. The site is a draft, and this page describes what we are building towards and what we check.
+BBC aims for this website to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA. This page says what is built in, what is checked, and how to tell us about a barrier.
 
 ## What we build in
 
@@ -28,7 +28,7 @@ BBC aims for this website to meet the Web Content Accessibility Guidelines (WCAG
 
 ## How we check
 
-Before launch, and for each release after it, the plan is to check with a free automated accessibility tester and by hand with a keyboard and a screen reader.
+Every change to this website runs automatic checks on page structure, headings, links, text alternatives, colour contrast and file sizes. Checks by hand with a keyboard and a screen reader, and with an outside accessibility tester, have not been done yet. If you meet a barrier, please tell us.
 
 ## Languages
 

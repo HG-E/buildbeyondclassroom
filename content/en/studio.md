@@ -9,7 +9,7 @@ description: The eight steps every team follows, and how AI is used safely at ea
 
 # From a real need to a solution in use.
 
-A facilitator plans each cycle, and teams work through eight steps. For each step the table shows who is involved and how AI may be used.
+A facilitator plans each cycle, and teams work through eight steps. For each step you can see who is involved and how AI may be used.
 
 ## The eight steps
 

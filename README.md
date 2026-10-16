@@ -20,16 +20,14 @@ Use `node preview.js` to see the site. Opening `public/index.html` straight from
 - Page layout in Markdown: a line such as `{features 4}`, `{cards 3}`, `{checks}`, `{routes}`, `{path}`, `{stats}`, `{ladder}` or `{legend}` directly before a list turns it into that component. Features, cards and routes can start with an icon written `@name | ` (the icon names are the `ICONS` list in `build.js`). Every second section gets a tinted band automatically, and every page except the sign-up and 404 pages ends with the call to action. `+++ Title` followed by text makes a disclosure. `==text==` is the highlight. See the comment at the top of the Markdown section in `build.js`.
 - The eight Studio steps (title, what happens, AI role, partner, facilitator decision): `content/<lang>/studio.json`. The Studio page, the home page list and the tour all read from it.
 - Words in the page shell and in the scripts (skip link, menu, footer, tour and tool text): `content/<lang>/ui.json`. Each language folder needs its own `ui.json` and `studio.json`.
-- Site name, contact email, draft banner and indexing switch: `content/data/site.json`. While the email is still the placeholder, the site shows "to be confirmed" instead.
+- Site name, contact email, site address (`siteUrl`) and the search-engine switch (`indexing`): `content/data/site.json`. An optional `status` line shows a notice bar above the header; leave it out while the site is live. While the email is still the placeholder, the site shows "to be confirmed" instead.
 - Look and feel: `static/styles.css`. Page shell: `templates/page.html`.
 - Scripts: `static/site.js` (theme button, Studio track, the two small tools) and `static/tour.js` (the 3D tour). Fonts: `static/fonts/`. Three.js: `static/vendor/`. Every page works with JavaScript off. On the home page the 3D scene starts by itself once the page has loaded, except for visitors with reduced motion, data-saver on or a 2G/3G connection, who keep the still poster (`static/hero-poster.jpg`) and can press the button to load it. The scene is not part of the offline copy.
 - Use `{{contactEmail}}` inside a page to insert the email from `site.json`.
 
-## Before anything goes public
+## Launch status
 
-1. Check that the address in `content/data/site.json` (`contactEmail`) is one that two people can open, as Gate 7 requires.
-2. Check every page against the gates. Nothing here is final: the legal form, first pilot site, evaluator, prices and domain are all undecided.
-3. When you approve launch, set `"indexing": true` in `site.json`. Until then the site tells search engines to stay away.
+The website launched on 16 October 2026 (`"indexing": true`). The programme itself has not opened yet: no cohort has run and applications are not open, and the pages say so. Keep every page true to that, and check any new claim against `docs/gates/`. The legal form, first pilot site, evaluator, prices and licence are still undecided.
 
 > The site is already online. See `docs/HOSTING.md` for what is connected (GitHub, Vercel, the domain) and `docs/LAUNCH-CHECKLIST.md` for what is still open. The steps below are how it was set up.
 

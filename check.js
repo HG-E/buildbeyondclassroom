@@ -92,7 +92,7 @@ for (const file of htmlFiles) {
   ok(dups.length === 0, `${name}: no duplicate ids`, [...new Set(dups)].join(', '));
 
   // privacy and the content rules: nothing inline, nothing from other hosts
-  ok(!/ style="|<style|<script(?![^>]*\bsrc=)[^>]*>(?!\s*<\/script>)/.test(h.replace(/<script type="application\/json"[^>]*>[\s\S]*?<\/script>/g, '')),
+  ok(!/ style="|<style|<script(?![^>]*\bsrc=)[^>]*>(?!\s*<\/script>)/.test(h.replace(/<script type="application\/(?:json|ld\+json)"[^>]*>[\s\S]*?<\/script>/g, '')),
     `${name}: no inline styles or inline scripts`);
   ok(!/ on[a-z]+=["']/i.test(h), `${name}: no inline event handlers`);
   const loadable = h.replace(/<link rel="(?:canonical|alternate)"[^>]*>/g, '');
@@ -204,6 +204,7 @@ const BANNED = [
   [/finished solution to real users/i, 'Gate 2: Launch takes a solution into a second community'],
   [/readiness check/i, 'Gate 8 names the stage hub certification'],
   [/guarantee|guaranteed|guarantees/i, 'outcome promises are not supported by the gates'],
+  [/draft site|has not launched|not launched yet|details may change|being designed|is a draft|before launch/i, 'the website is live: do not describe it as a draft or as not yet launched'],
 ];
 const contentFiles = walk(path.join(ROOT, 'content')).filter((f) => /\.(md|json)$/.test(f));
 for (const f of contentFiles) {
@@ -215,6 +216,116 @@ for (const f of contentFiles) {
 }
 for (const f of walk(path.join(ROOT, 'content')).filter((x) => x.endsWith('.md'))) {
   ok(!/\bhttps?:\/\/(?!www\.unesco\.org|digital-skills-jobs\.europa\.eu)/.test(read(f).replace(/\]\(\/[^)]*\)/g, '')), `${rel(f)}: only the expected external links`);
+}
+
+/* ---------- 10. validation: well-formed HTML, search and social metadata, launch state, contrast ---------- */
+const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
+function lintHtml(h) {
+  const problems = [];
+  const src = h
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '<script></script>')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, '<style></style>')
+    .replace(/^<!doctype html>/i, '');
+  const stack = [];
+  const re = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*)((?:\s+[a-zA-Z:_-][\w:.-]*(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'<>=`]+))?)*)\s*(\/?)>/g;
+  let m;
+  let last = 0;
+  while ((m = re.exec(src))) {
+    const between = src.slice(last, m.index);
+    if (/<[a-zA-Z/]/.test(between)) problems.push('a tag that is not well formed near: ' + between.slice(0, 50).replace(/\s+/g, ' '));
+    last = re.lastIndex;
+    const [, closing, name, attrs, selfClose] = m;
+    const tag = name.toLowerCase();
+    if (closing) {
+      const top = stack.pop();
+      if (top !== tag) problems.push(`</${tag}> closes <${top || 'nothing'}>`);
+      continue;
+    }
+    const names = [...attrs.matchAll(/\s+([a-zA-Z:_-][\w:.-]*)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'<>=`]+))?/g)].map((x) => x[1].toLowerCase());
+    const dup = names.filter((n, i) => names.indexOf(n) !== i);
+    if (dup.length) problems.push(`<${tag}> repeats the attribute ${[...new Set(dup)].join(', ')}`);
+    if (tag === 'a' && !/\shref=/.test(attrs)) problems.push('an <a> without href');
+    if (tag === 'button' && !/\stype=/.test(attrs)) problems.push('a <button> without type');
+    if (tag === 'img' && !/\salt=/.test(attrs)) problems.push('an <img> without alt');
+    if (tag === 'a' && stack.includes('a')) problems.push('a link inside a link');
+    if (tag === 'button' && (stack.includes('a') || stack.includes('button'))) problems.push('a button inside a link or button');
+    if (['div', 'section', 'ul', 'ol', 'table', 'h1', 'h2', 'h3', 'p'].includes(tag) && stack.includes('p')) problems.push(`<${tag}> inside a <p>`);
+    if (!VOID.has(tag) && !selfClose) stack.push(tag);
+  }
+  if (/<[a-zA-Z/][^>]*$/.test(src.slice(last))) problems.push('the page ends inside a tag');
+  if (stack.length) problems.push('never closed: ' + stack.join(', '));
+  const ids = new Set([...h.matchAll(/\sid="([^"]+)"/g)].map((x) => x[1]));
+  for (const x of h.matchAll(/\s(?:for|aria-controls|aria-labelledby)="([^"]+)"/g)) {
+    for (const id of x[1].split(/\s+/)) if (!ids.has(id)) problems.push(`a reference to #${id}, which does not exist`);
+  }
+  return problems;
+}
+for (const file of htmlFiles) {
+  const name = rel(file).replace(/^public\//, '');
+  const h = read(file);
+  const problems = lintHtml(h);
+  ok(problems.length === 0, `${name}: well-formed HTML`, problems.slice(0, 3).join(' | '));
+  const title = (h.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
+  const desc = (h.match(/name="description" content="([^"]*)"/) || [])[1] || '';
+  ok(title.length >= 10 && title.length <= 70, `${name}: title length is 10 to 70 characters`, `${title.length}: ${title}`);
+  ok(desc.length >= 50 && desc.length <= 175, `${name}: description is 50 to 175 characters`, String(desc.length));
+  if (name !== '404.html') {
+    if (site.siteUrl) {
+      ok(/<link rel="canonical" href="https:\/\/[^"]+"/.test(h), `${name}: has a canonical link`);
+      ok(/property="og:image" content="https:\/\/[^"]+\.jpg"/.test(h), `${name}: has a share image`);
+    }
+    ok(/name="theme-color"/.test(h) && /rel="apple-touch-icon"/.test(h), `${name}: has theme colour and touch icon`);
+  }
+  for (const ld of h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try {
+      const j = JSON.parse(ld[1]);
+      ok(j['@context'] === 'https://schema.org' && Array.isArray(j['@graph']), `${name}: structured data is valid`);
+    } catch (e) {
+      ok(false, `${name}: structured data is valid JSON`, e.message);
+    }
+  }
+  if (site.indexing && name !== '404.html') ok(/name="robots" content="index,follow"/.test(h), `${name}: open to search engines`);
+  if (!site.status) ok(!/class="draft"/.test(h), `${name}: no draft notice on a launched site`);
+}
+for (const f of ['og-image.jpg', 'apple-touch-icon.png']) {
+  ok(fs.existsSync(path.join(PUBLIC, f)), `${f} exists`);
+}
+ok(size('og-image.jpg') <= 150 * 1024, 'share image is within 150 KB', `${Math.round(size('og-image.jpg') / 1024)} KB`);
+if (site.indexing) {
+  const sm = fs.existsSync(path.join(PUBLIC, 'sitemap.xml')) ? read(path.join(PUBLIC, 'sitemap.xml')) : '';
+  const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((x) => x[1]);
+  const pagesBuilt = htmlFiles.map((f) => rel(f).replace(/^public\//, '')).filter((n) => n !== '404.html');
+  ok(locs.length === pagesBuilt.length, 'sitemap lists every page', `${locs.length} listed, ${pagesBuilt.length} built`);
+  ok(locs.every((u) => u.startsWith(site.siteUrl)), 'sitemap uses the real site address');
+}
+
+// colour contrast of the palette, from the stylesheet itself (WCAG 2: 4.5 for text, 3 for interface marks)
+{
+  const css = read(path.join(ROOT, 'static/styles.css'));
+  const lum = (hex) => {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const ratio = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+    return (x + 0.05) / (y + 0.05);
+  };
+  const tokens = (block) => Object.fromEntries([...block.matchAll(/--([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6})/g)].map((m) => [m[1], m[2]]));
+  const themes = { light: tokens(css.match(/:root\s*\{([\s\S]*?)\n\}/)[1]), dark: tokens(css.match(/:root\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/)[1]) };
+  for (const [theme, t] of Object.entries(themes)) {
+    const pairs = [
+      ['text on page', t.ink, t.bg, 4.5], ['text on card', t.ink, t.surface, 4.5], ['muted text on page', t.muted, t.bg, 4.5],
+      ['muted text on card', t.muted, t.surface, 4.5], ['muted text on band', t.muted, t['surface2'], 4.5],
+      ['link on page', t.accent, t.bg, 4.5], ['link on card', t.accent, t.surface, 4.5], ['link on band', t.accent, t['surface2'], 4.5],
+      ['button text on button', t['accent-ink'], t.accent, 4.5],
+      ['tutor label', t.tutor, t['tutor-bg'], 4.5], ['co-builder label', t.build, t['build-bg'], 4.5], ['own-work label', t.own, t['own-bg'], 4.5],
+      ['highlight text', '#10251E', t.mark, 4.5], ['focus mark on page', t.focus, t.bg, 3], ['focus mark on card', t.focus, t.surface, 3], ['focus mark on band', t.focus, t['surface2'], 3],
+    ];
+    for (const [label, fg, bg, min] of pairs) ok(ratio(fg, bg) >= min, `contrast (${theme}): ${label}`, ratio(fg, bg).toFixed(2));
+  }
+  const fixed = [['call-to-action text', '#E9F0EB', '#10251E', 4.5], ['call-to-action body', '#C9D6CE', '#10251E', 4.5], ['call-to-action button', '#0C1A15', '#8EA9FF', 4.5], ['tour pills', '#10251E', '#35D0B5', 4.5], ['tour link', '#9DB4FF', '#0A1612', 4.5]];
+  for (const [label, fg, bg, min] of fixed) ok(ratio(fg, bg) >= min, `contrast (fixed): ${label}`, ratio(fg, bg).toFixed(2));
 }
 
 /* ---------- 9. the contact address ---------- */

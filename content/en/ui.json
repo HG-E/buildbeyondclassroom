@@ -5,7 +5,6 @@
   "ctaLabel": "Register interest",
   "ctaSlug": "get-involved",
   "themeLabel": "Switch between light and dark theme",
-  "draftTag": "Draft",
   "contactLabel": "Contact:",
   "emailLabel": "Email:",
   "emailPending": "to be confirmed",
@@ -20,7 +19,6 @@
   "heroLogTitle": "One project, eight steps",
   "heroLogHint": "Open a step",
   "tourStart": "Take the virtual tour",
-  "noJavaScript": "This tool needs JavaScript. You can still do the same thing on paper or in your own notes.",
   "js": {
     "studioPick": "The eight steps",
     "studioRowStep": "Step",
@@ -105,9 +103,11 @@
   },
   "menuOpen": "Open the menu",
   "menuClose": "Close the menu",
-  "draftShort": "Not launched yet. Details may change.",
   "journeyEyebrow": "How a project works",
   "journeyLead": "Every project follows the same eight steps. Open a step to see who is involved and how AI may be used.",
   "ctaBandTitle": "Want to hear when the first pilot opens?",
-  "ctaBandText": "BBC has not opened applications. Register interest and we will contact you when there is something to join."
+  "ctaBandText": "Register your interest and we will contact you when there is something to join.",
+  "noJavaScriptLens": "This worksheet needs JavaScript. You can still answer the five questions above on paper or in your own notes.",
+  "noJavaScriptInterest": "The message builder needs JavaScript. You can still write to us directly, using the email address below.",
+  "ogImageAlt": "Build Beyond Classroom: build with AI, solve a real problem, own the result."
 }

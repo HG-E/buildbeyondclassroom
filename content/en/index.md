@@ -1,5 +1,6 @@
 ---
 title: Build with AI. Solve a real problem. Own the result.
+titleTag: Build Beyond Classroom | Build with AI, solve a real problem
 navTitle: Home
 slug:
 order: 1
@@ -47,4 +48,10 @@ Build Beyond Classroom (BBC) helps people learn to use AI to build solutions to 
 - 3 | levels, aligned to UNESCO and OECD frameworks
 - 7 | rungs on the skills ladder
 
-BBC has not launched, so there are no results to show yet. Impact numbers will appear here only after an independent evaluation has measured them. BBC does not claim outcomes it has not measured.
+## Where BBC stands today
+
+{checks}
+- **The website is live.** Programme content is open for anyone to read and print.
+- **Applications are not open yet.** Register your interest and we will contact you when there is something to join.
+- **The first pilot has not been announced.** It is planned as a facilitated eight-week Build journey for adults aged 18 and over.
+- **There are no results yet.** No cohort has run, so there are no learner or project numbers to show. They will appear here only after an independent evaluation has measured them.
