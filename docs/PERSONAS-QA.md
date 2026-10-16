@@ -6,6 +6,10 @@ What was tested on the built site, and what was not. Run from a scripted Chrome 
 
 All eight pages plus the 404 page at 280, 320, 360, 390, 430, 600 and 768 px (63 combinations): no sideways scroll, no clipped content, no link or button smaller than 24 px.
 
+## Modes
+
+All eight pages with JavaScript off (heading and full content present; the Studio steps appear as a table), with forced colours and reduced motion on, and at 320 px wide (the width a 400% zoom gives on a laptop): no sideways scroll and no missing content.
+
 ## Phone fixes made after this review
 
 - Tables stack into labelled rows on phones, so the "What they get" column is no longer hidden off-screen.
