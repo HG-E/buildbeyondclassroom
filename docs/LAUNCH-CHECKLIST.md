@@ -94,3 +94,17 @@ Still open (the owner's decisions):
 
 - [ ] **Licence** (see "Public repository" above).
 - [ ] The Vercel project is still named `bbc-site`. Renaming it is optional and cosmetic.
+
+## User-experience audit (16 October 2026)
+
+The site was reviewed page by page, on a laptop and on a phone, in light and dark. Found and fixed:
+
+- [x] On a phone the draft banner and a three-row sticky header took about a quarter of the screen on every page, and the main button was below the first screen. Now: a one-line draft notice, a 57 px header with a menu button, and the main button on the first screen.
+- [x] Both small tools (the five-questions worksheet and the message builder) had a stretched button and large gaps. The layout is fixed and the preview stays in view while typing.
+- [x] The stage path and several card rows were squeezed or left one card alone on a line. Grids now use set columns.
+- [x] The home page was a stack of look-alike boxes. It now has a connected eight-step timeline, icon features, role routes, alternating section bands and a closing call to action. The weak "n/a" statistic and the repeated yellow note were removed.
+- [x] Sign-up asked people to copy a message into their own email by hand. The page now leads with the form and offers "Open in my email app" (plus a copy button). Nothing is sent or stored by the website.
+- [x] Footer tagline began in lower case, "Contact" appeared twice, the theme button was a vague word, and in-page links hid under the sticky header. All fixed.
+- [x] Plain bullet lists on the inner pages are now clear check-lists, and every inner page has a page header band.
+
+Still needs a person (not possible from here): a pass on real phones and a real screen reader, and a look at the 3D scene on a real graphics card.

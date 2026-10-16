@@ -21,6 +21,7 @@ Facilitators are certified individuals who work through hubs, and BBC's aim is t
 
 ## What a facilitator does
 
+{checks}
 - Plans each cycle of the Community Problem Studio.
 - Arranges the community partner's visits.
 - Decides whether to go on, redesign or stop at step 2, and signs off safety at step 6.

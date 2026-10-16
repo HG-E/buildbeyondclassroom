@@ -75,6 +75,15 @@ for (const file of htmlFiles) {
     ok((h.match(new RegExp('<' + tag + '[ >]', 'g')) || []).length === 1, `${name}: exactly one <${tag}>`);
   }
   ok(/<nav class="main" aria-label="[^"]+"/.test(h), `${name}: main menu has a label`);
+  // the mobile menu button points at the menu, and every page has the shared shell parts
+  const ctrl = (h.match(/id="menuBtn"[^>]*aria-controls="([^"]+)"/) || [])[1] || (h.match(/aria-controls="([^"]+)"[^>]*id="menuBtn"/) || [])[1];
+  ok(!!ctrl && h.includes(`id="${ctrl}"`), `${name}: menu button controls an element that exists`);
+  ok(/id="themeBtn"[^>]*aria-label="[^"]+"/.test(h), `${name}: theme button has a name`);
+  ok(/<div class="draft"[^>]*role="note"/.test(h) || !site.status, `${name}: draft notice is present while the site is a draft`);
+  if (!is404) {
+    ok(name === "index.html" ? /class="hero"/.test(h) : /class="page-head"/.test(h), `${name}: has its page header`);
+    ok(name === "get-involved/index.html" || /class="cta-band"/.test(h), `${name}: ends with the call to action`);
+  }
   const skip = (h.match(/class="skip" href="#([^"]+)"/) || [])[1];
   ok(!!skip && h.includes(`id="${skip}"`), `${name}: skip link points at something`);
 

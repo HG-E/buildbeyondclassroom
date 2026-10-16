@@ -30,5 +30,6 @@ Three short checks with the tool closed, at the start, middle and end of a cycle
 
 ## Staying safe
 
+{checks}
 - A **Do-No-Harm Check** is signed off by the facilitator before a solution reaches users.
 - A project stops or is redesigned if AI alone would be the source of medical, legal or financial advice, if it collects personal data it does not need, if it targets or profiles individuals, or if it puts a young person in direct contact with strangers.

@@ -42,6 +42,32 @@
   }
 
   /* theme: follows the device; the button switches for this visit only */
+  /* menu: on small screens the links open as a panel; without JavaScript they stay in a scrolling row */
+  var menuBtn = $('#menuBtn');
+  var root = document.documentElement;
+  if (menuBtn) {
+    root.classList.add('has-menu');
+    menuBtn.hidden = false;
+    var setMenu = function (open) {
+      root.classList.toggle('menu-open', open);
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menuBtn.setAttribute('aria-label', menuBtn.getAttribute(open ? 'data-label-close' : 'data-label-open'));
+    };
+    menuBtn.addEventListener('click', function () { setMenu(!root.classList.contains('menu-open')); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && root.classList.contains('menu-open')) { setMenu(false); menuBtn.focus(); }
+    });
+    $('#siteNav').addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+    document.addEventListener('click', function (e) {
+      if (root.classList.contains('menu-open') && !e.target.closest('header.site')) setMenu(false);
+    });
+    if (window.matchMedia) {
+      var wide = matchMedia('(min-width: 861px)');
+      var onWide = function (m) { if (m.matches) setMenu(false); };
+      if (wide.addEventListener) wide.addEventListener('change', onWide);
+    }
+  }
+
   var themeBtn = $('#themeBtn');
   if (themeBtn) {
     themeBtn.hidden = false;
@@ -164,7 +190,7 @@
     });
     lensHost.appendChild(h('div', { class: 'grid g2' }, [
       form,
-      h('div', { class: 'spec' }, [
+      h('div', { class: 'spec preview' }, [
         h('div', {}, [h('div', { class: 'meter', 'aria-hidden': 'true' }, [meter]), count]),
         brief,
         h('div', { class: 'actions' }, [copyBtn, msg]),
@@ -172,6 +198,8 @@
       ])
     ]));
     lensHost.hidden = false;
+    var plainList = lensHost.previousElementSibling;
+    if (plainList && plainList.tagName === 'OL') plainList.hidden = true; // the worksheet shows the same five questions
     var ns = lensHost.nextElementSibling; if (ns && ns.tagName === 'NOSCRIPT') ns.remove();
   }
 
@@ -186,6 +214,8 @@
     var out = h('pre', { class: 'brief', 'aria-live': 'polite' });
     var note = h('p', { class: 'hint' });
     var status = h('span', { class: 'hint', role: 'status' });
+    var mailBtn = null;
+    var updateMail = function () {};
     var build = function () {
       var r = ui.roles[role];
       var n = nameEl.value.trim(), p = placeEl.value.trim(), m = msgEl.value.trim();
@@ -193,6 +223,7 @@
         fill(ui.interestIntro, { role: r.toLowerCase(), place: p ? fill(ui.interestIn, { place: p }) : '' }) + ' ' +
         (m || ui.interestDefault) + '\n\n' + ui.interestThanks + (n ? ',\n' + n : '.');
       out.textContent = text;
+      updateMail(text);
       return text;
     };
     var renderChips = function () {
@@ -205,8 +236,17 @@
     };
     renderChips();
     [nameEl, placeEl, msgEl].forEach(function (el) { el.addEventListener('input', build); });
-    note.textContent = data.email ? ui.interestSendTo + ' ' + data.email : ui.interestNoEmail;
-    var copyMsg = h('button', { class: 'btn small', type: 'button', text: ui.interestCopy });
+    note.textContent = data.email ? ui.interestNote : ui.interestNoteNoEmail;
+    if (data.email) {
+      mailBtn = h('a', { class: 'btn', href: 'mailto:' + data.email }, [ui.interestOpen]);
+      updateMail = function (text) {
+        var lines = text.split('\n');
+        var subject = lines[0].replace(/^Subject:\s*/, '');
+        var body = lines.slice(2).join('\r\n');
+        mailBtn.href = 'mailto:' + data.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      };
+    }
+    var copyMsg = h('button', { class: 'btn ghost', type: 'button', text: ui.interestCopy });
     copyMsg.addEventListener('click', function () { copyText(build(), status); });
     build();
     interestHost.appendChild(h('div', { class: 'grid g2' }, [
@@ -216,12 +256,11 @@
         h('div', { class: 'field' }, [h('label', { for: 'inv-place', text: ui.interestPlace }), placeEl]),
         h('div', { class: 'field' }, [h('label', { for: 'inv-msg', text: ui.interestMessage }), msgEl, h('span', { class: 'hint', text: ui.interestWarning })])
       ]),
-      h('div', { class: 'spec' }, [
+      h('div', { class: 'spec preview' }, [
         h('h3', { text: ui.interestTitle }),
         out,
-        h('div', { class: 'actions' }, [copyMsg, status]),
-        note,
-        h('p', { class: 'hint', text: ui.interestNote })
+        h('div', { class: 'actions' }, mailBtn ? [mailBtn, copyMsg, status] : [copyMsg, status]),
+        note
       ])
     ]));
     interestHost.hidden = false;
@@ -237,7 +276,7 @@
   if (startBtn && hero && studio) {
     startBtn.hidden = false;
     var ctrl = null, booting = false, wantTour = false, userStarted = false;
-    var label = startBtn.textContent;
+    var labelHtml = startBtn.innerHTML;
     var studioHref = ($('.hero .actions .btn') || {}).href || '/';
 
     var canAmbient = function () {
@@ -260,7 +299,7 @@
       var note = h('aside', { class: 'note', id: 'tourNote', role: 'status' }, [text]);
       hero.insertAdjacentElement('afterend', note);
     };
-    var restore = function () { startBtn.disabled = false; startBtn.textContent = label; };
+    var restore = function () { startBtn.disabled = false; startBtn.innerHTML = labelHtml; };
     var boot = function (thenTour) {
       if (ctrl) { if (thenTour) ctrl.enterTour(); return; }
       if (booting) { wantTour = wantTour || thenTour; return; }

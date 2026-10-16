@@ -17,7 +17,7 @@ Use `node preview.js` to see the site. Opening `public/index.html` straight from
 ## Edit it
 
 - Pages: `content/en/*.md`. Each file starts with a short block (`title`, `slug`, `order`, `description`, plus optional `eyebrow`, `nav: false` to keep a page out of the top menu, and `layout: home`).
-- Page layout in Markdown: a line such as `{cards 3}`, `{path}`, `{defs}`, `{stats}`, `{routes}`, `{ladder}` or `{legend}` directly before a list turns it into that component. `+++ Title` followed by text makes a disclosure. `==text==` is the highlight. See the comment at the top of the Markdown section in `build.js`.
+- Page layout in Markdown: a line such as `{features 4}`, `{cards 3}`, `{checks}`, `{routes}`, `{path}`, `{stats}`, `{ladder}` or `{legend}` directly before a list turns it into that component. Features, cards and routes can start with an icon written `@name | ` (the icon names are the `ICONS` list in `build.js`). Every second section gets a tinted band automatically, and every page except the sign-up and 404 pages ends with the call to action. `+++ Title` followed by text makes a disclosure. `==text==` is the highlight. See the comment at the top of the Markdown section in `build.js`.
 - The eight Studio steps (title, what happens, AI role, partner, facilitator decision): `content/<lang>/studio.json`. The Studio page, the home page list and the tour all read from it.
 - Words in the page shell and in the scripts (skip link, menu, footer, tour and tool text): `content/<lang>/ui.json`. Each language folder needs its own `ui.json` and `studio.json`.
 - Site name, contact email, draft banner and indexing switch: `content/data/site.json`. While the email is still the placeholder, the site shows "to be confirmed" instead.

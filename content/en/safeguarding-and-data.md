@@ -13,6 +13,7 @@ This page explains the rules, in plain words.
 
 ## Safeguarding
 
+{checks}
 - Learners under 13 take part only in facilitator-led sessions.
 - Young people take part only in sessions run by a certified facilitator.
 - The first pilot is for adults aged 18 and over. Work with younger learners begins only after local legal advice has cleared the age and consent rules.
@@ -21,6 +22,7 @@ This page explains the rules, in plain words.
 
 ## What this website does
 
+{checks}
 - It has **no accounts, no forms that save information and no analytics.**
 - It uses no cookies for tracking and loads no third-party scripts.
 - It can save a copy of its pages on your device so it still works offline. That copy contains only the public pages, no personal information, and you can clear it in your browser settings.
@@ -44,11 +46,13 @@ At this stage, learner records are kept by the hub on paper and in a single spre
 
 ## Your rights
 
+{checks}
 - Learners own their portfolio and can take a copy in open formats.
 - A learner can ask to correct or withdraw their data.
 
 ## How results will be measured
 
+{checks}
 - Impact is counted at community results: where the partner confirms the solution is in use, at step 8 and again at day 90.
 - An independent evaluator agrees the design and thresholds before week 1.
 - BBC will not claim outcomes it has not measured.

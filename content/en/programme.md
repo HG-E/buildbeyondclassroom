@@ -54,6 +54,7 @@ Every learner looks at their own subject through five questions.
 
 ## Who can take part
 
+{checks}
 - BBC is for learners of different ages and backgrounds. Learners under 13 take part only in facilitator-led sessions.
 - The first pilot is a facilitated eight-week Build journey for adults aged 18 and over.
 - Facilitators are also trained and certified, as explained on the [facilitators page](/facilitators/).

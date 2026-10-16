@@ -135,13 +135,45 @@ function titleText(item) {
   return m ? { title: m[1].replace(/\.$/, ''), text: m[2] } : { title: item, text: '' };
 }
 
+/* ---------- icons: simple outline shapes, drawn for BBC, no external files ---------- */
+const ICONS = {
+  build: '<rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="10" y="9" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>',
+  briefcase: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>',
+  export: '<path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/>',
+  learner: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/>',
+  users: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15.5 14.2c3 .2 5.5 2.4 5.5 5.8"/>',
+  hub: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  funder: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v10"/><path d="M14.8 9.4c-.6-.8-1.6-1.2-2.8-1.2-1.6 0-2.8.8-2.8 2s1 1.7 2.8 2.1 2.8.9 2.8 2.1-1.2 2-2.8 2c-1.2 0-2.3-.4-3-1.3"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+  bulb: '<path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2.2 2.2L15.5 10"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  arrow: '<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
+  play: '<path d="M8 5l11 7-11 7z" fill="currentColor"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+};
+
+function svgIcon(name, cls) {
+  if (!ICONS[name]) throw new Error('Unknown icon @' + name + ' (known: ' + Object.keys(ICONS).join(', ') + ')');
+  return `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
+}
+
+// "@name | a | b" -> ['name', ['a', 'b']];  "a | b" -> ['', ['a', 'b']]
+function splitIcon(parts) {
+  if (parts[0] && parts[0].startsWith('@')) return [parts[0].slice(1).trim(), parts.slice(1)];
+  return ['', parts];
+}
+const iconWrap = (name) => (name ? `<span class="ic-wrap">${svgIcon(name)}</span>` : '');
+
 function renderDirectiveList(kind, items, ui) {
   const cell = (t) => inline(t);
   if (kind === 'path') {
     return `<ol class="path">${items
       .map((t) => {
         const { title, text } = titleText(t);
-        return `<li><strong>${cell(title)}</strong>${text ? `<br><span class="muted">${cell(text)}</span>` : ''}</li>`;
+        return `<li><strong>${cell(title)}</strong>${text ? `<span class="muted">${cell(text)}</span>` : ''}</li>`;
       })
       .join('')}</ol>`;
   }
@@ -150,37 +182,43 @@ function renderDirectiveList(kind, items, ui) {
       .map((t, i) => `<li class="rung r${i + 1}"><span class="n">${i + 1}</span><strong>${cell(t)}</strong></li>`)
       .join('')}</ol>`;
   }
-  if (kind === 'defs') {
-    return `<div class="defs">${items
-      .map((t, i) => {
-        const { title, text } = titleText(t);
-        return `<div class="def"><div class="k">${String.fromCharCode(65 + i)}</div><div><h3>${cell(title)}</h3><p class="muted">${cell(text)}</p></div></div>`;
-      })
-      .join('')}</div>`;
+  if (kind === 'checks') {
+    return `<ul class="checks">${items.map((t) => `<li>${svgIcon('check')}<span>${cell(t)}</span></li>`).join('')}</ul>`;
   }
   if (kind === 'stats') {
     return `<div class="stats">${items
       .map((t) => {
         const [value, label] = t.split('|').map((x) => x.trim());
-        const pending = /^n\/a$/i.test(value) ? ' pending' : '';
-        return `<div class="stat${pending}"><b>${cell(value)}</b><span>${cell(label || '')}</span></div>`;
+        return `<div class="stat"><b>${cell(value)}</b><span>${cell(label || '')}</span></div>`;
       })
       .join('')}</div>`;
   }
   if (kind === 'routes') {
     return `<div class="grid g4">${items
       .map((t) => {
-        const [eyebrow, title, text, go, href] = t.split('|').map((x) => x.trim());
+        const [ic, rest] = splitIcon(t.split('|').map((x) => x.trim()));
+        const [eyebrow, title, text, go, href] = rest;
         assertSafeHref(href);
-        return `<a class="route" href="${esc(href)}"><span class="mono">${cell(eyebrow)}</span><strong>${cell(title)}</strong><span class="muted">${cell(text)}</span><span class="go">${cell(go)}</span></a>`;
+        return `<a class="route" href="${esc(href)}">${iconWrap(ic)}<span class="mono">${cell(eyebrow)}</span><strong>${cell(title)}</strong><span class="muted">${cell(text)}</span><span class="go">${cell(go)}${svgIcon('arrow')}</span></a>`;
       })
       .join('')}</div>`;
   }
   if (kind === 'legend') {
-    return `<div class="legend">${items
+    return `<ul class="legend">${items
       .map((t) => {
         const [role, label, text] = t.split('|').map((x) => x.trim());
-        return `<span class="pill ${esc(role)}">${cell(label)}</span><span class="hint">${cell(text)}</span>`;
+        return `<li><span class="pill ${esc(role)}">${cell(label)}</span><span>${cell(text)}</span></li>`;
+      })
+      .join('')}</ul>`;
+  }
+  const f = kind.match(/^features(?:\s+(\d))?$/);
+  if (f) {
+    const cols = { 2: 'g2', 3: 'g3', 4: 'g4' }[f[1] || 4] || 'g4';
+    return `<div class="grid ${cols}">${items
+      .map((t) => {
+        const [ic, rest] = splitIcon(t.split(' | ').map((x) => x.trim()));
+        const [title, text = ''] = rest;
+        return `<article class="feature">${iconWrap(ic)}<h3>${cell(title)}</h3>${text ? `<p class="muted">${cell(text)}</p>` : ''}</article>`;
       })
       .join('')}</div>`;
   }
@@ -189,14 +227,14 @@ function renderDirectiveList(kind, items, ui) {
     const cols = { 2: 'g2', 3: 'g3', 4: 'g4' }[m[1] || 3] || 'g3';
     return `<div class="grid ${cols}">${items
       .map((t) => {
-        const parts = t.split(' | ').map((x) => x.trim());
+        const [ic, parts] = splitIcon(t.split(' | ').map((x) => x.trim()));
         let eyebrow = '';
         let title;
         let text = '';
         if (parts.length >= 3) [eyebrow, title, text] = parts;
         else if (parts.length === 2) [title, text] = parts;
         else ({ title, text } = titleText(parts[0]));
-        return `<div class="card">${eyebrow ? `<p class="mono">${cell(eyebrow)}</p>` : ''}<h3>${cell(title)}</h3>${text ? `<p class="muted">${cell(text)}</p>` : ''}</div>`;
+        return `<div class="card">${iconWrap(ic)}${eyebrow ? `<p class="mono">${cell(eyebrow)}</p>` : ''}<h3>${cell(title)}</h3>${text ? `<p class="muted">${cell(text)}</p>` : ''}</div>`;
       })
       .join('')}</div>`;
   }
@@ -210,6 +248,7 @@ function markdown(src, ui, blocks) {
   let h1 = '';
   let lede = '';
   let sectionOpen = false;
+  let sectionCount = 0;
   let afterH1 = false;
   let i = 0;
 
@@ -251,7 +290,7 @@ function markdown(src, ui, blocks) {
       if (level === 2) {
         closeSection();
         headings.push({ id, text });
-        out.push(`<section class="block"><div class="head"><h2 id="${id}">${inline(text)}</h2></div>`);
+        out.push(`<section class="block${sectionCount++ % 2 ? ' alt' : ''}"><div class="head"><h2 id="${id}">${inline(text)}</h2></div>`);
         sectionOpen = true;
       } else {
         out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
@@ -384,7 +423,7 @@ function loadPages(lang) {
 // Words used by the page shell and the scripts live in content/<lang>/, never in the template or here.
 const UI_KEYS = [
   'skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel', 'brandLabel', 'ctaLabel', 'ctaSlug',
-  'themeLabel', 'themeButton', 'draftTag', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking',
+  'themeLabel', 'menuOpen', 'menuClose', 'draftShort', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'draftTag', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking',
   'emailPending', 'emailLabel', 'copyEmail', 'homePrimary', 'homePrimarySlug', 'heroLogTitle', 'heroLogHint',
   'tourStart', 'noJavaScript',
 ];
@@ -439,6 +478,18 @@ function emailBox(ui) {
 
 /* ---------- page render ---------- */
 
+const ucfirst = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+function journeyBlock(studio, ui, lang) {
+  const items = studio.steps
+    .map(
+      (s) =>
+        `<li><a href="${urlFor(lang, ui.homePrimarySlug)}#step-${s.n}"><span class="n">${s.n}</span><span class="jt">${esc(s.title)}</span><span class="pill ${esc(s.ai)}">${esc(studio.roles[s.ai].label)}</span></a></li>`
+    )
+    .join('');
+  return `<section class="block journey-block alt"><div class="head"><p class="mono">${esc(ui.journeyEyebrow)}</p><h2>${esc(ui.heroLogTitle)}</h2><p class="muted">${esc(ui.journeyLead)}</p></div><ol class="journey">${items}</ol></section>`;
+}
+
 function render(page, pages, ui, studio) {
   const lang = page.lang;
   const email = hasRealEmail() ? site.contactEmail : '';
@@ -454,6 +505,7 @@ function render(page, pages, ui, studio) {
     lensTool: toolShell('lens', ui),
     interestTool: toolShell('interest', ui),
     emailBox: emailBox(ui),
+    journey: journeyBlock(studio, ui, lang),
   };
   const md = markdown(body, ui, blocks);
 
@@ -461,16 +513,18 @@ function render(page, pages, ui, studio) {
   const needsTools = /\{\{(lensTool|interestTool)\}\}/.test(page.body);
   const needsEmail = /\{\{emailBox\}\}/.test(page.body) || needsTools;
   const isHome = page.meta.layout === 'home';
+  const is404 = page.meta.slug === '404';
 
-  const navPages = pages.filter((p) => p.meta.nav !== 'false');
-  const navLinks = navPages
-    .map((p) => {
-      const href = urlFor(lang, p.meta.slug);
-      const current = p === page ? ' aria-current="page"' : '';
-      return `<a href="${href}"${current}>${esc(p.meta.navTitle || p.meta.title)}</a>`;
-    })
-    .join('');
   const ctaHref = urlFor(lang, ui.ctaSlug);
+  const navPages = pages.filter((p) => p.meta.nav !== 'false');
+  const navLinks =
+    navPages
+      .map((p) => {
+        const href = urlFor(lang, p.meta.slug);
+        const current = p === page ? ' aria-current="page"' : '';
+        return `<a href="${href}"${current}>${esc(p.meta.navTitle || p.meta.title)}</a>`;
+      })
+      .join('') + `<a class="btn small nav-cta" href="${ctaHref}">${esc(ui.ctaLabel)}</a>`;
   const footerLinks = pages
     .filter((p) => p.meta.slug !== '' && p.meta.slug !== '404')
     .map((p) => `<li><a href="${urlFor(lang, p.meta.slug)}">${esc(p.meta.navTitle || p.meta.title)}</a></li>`)
@@ -482,19 +536,19 @@ function render(page, pages, ui, studio) {
     .join(' ');
 
   const title = page.meta.slug === '' ? site.name : `${page.meta.title} | ${site.name}`;
-  const is404 = page.meta.slug === '404';
   const robots = site.indexing && !is404 ? 'index,follow' : 'noindex,nofollow';
   const draft = site.status
-    ? `<div class="draft" role="note"><div class="wrap"><span class="tag">${esc(ui.draftTag)}</span><span>${esc(site.status)}</span></div></div>`
+    ? `<div class="draft" role="note"><div class="wrap"><span class="tag">${esc(ui.draftTag)}</span><span class="d-long">${esc(site.status)}</span><span class="d-short">${esc(ui.draftShort)}</span></div></div>`
     : '';
 
+  const tagline = ucfirst(site.tagline);
   const pageUrl = site.siteUrl ? site.siteUrl.replace(/\/$/, '') + urlFor(lang, page.meta.slug) : '';
   const metaTags = [
     pageUrl && !is404 ? `<link rel="canonical" href="${esc(pageUrl)}">` : '',
     `<meta property="og:site_name" content="${esc(site.name)}">`,
     '<meta property="og:type" content="website">',
     `<meta property="og:title" content="${esc(title)}">`,
-    `<meta property="og:description" content="${esc(page.meta.description || site.tagline)}">`,
+    `<meta property="og:description" content="${esc(page.meta.description || tagline)}">`,
     pageUrl && !is404 ? `<meta property="og:url" content="${esc(pageUrl)}">` : '',
     '<meta name="twitter:card" content="summary">',
   ]
@@ -504,23 +558,22 @@ function render(page, pages, ui, studio) {
 
   let top;
   if (isHome) {
-    const log = studio.steps
-      .map(
-        (s) =>
-          `<li><a href="${urlFor(lang, ui.homePrimarySlug)}#step-${s.n}"><span class="n">${s.n}</span><span>${esc(s.title)}</span><span class="pill ${esc(s.ai)}">${esc(studio.roles[s.ai].label)}</span></a></li>`
-      )
-      .join('');
     top =
       `<section class="hero" id="hero"><div class="wrap">` +
       `<div class="hero-copy">${eyebrow}${md.h1}${md.lede}` +
-      `<div class="actions"><a class="btn" href="${urlFor(lang, ui.homePrimarySlug)}">${esc(ui.homePrimary)}</a>` +
-      `<a class="btn ghost" href="${ctaHref}">${esc(ui.ctaLabel)}</a>` +
-      `<button class="btn ghost" type="button" id="startTour" hidden>${esc(ui.tourStart)}</button></div></div>` +
-      `</div></section>` +
-      `<div class="wrap"><section class="block steps-strip"><div class="log"><div class="log-head"><strong>${esc(ui.heroLogTitle)}</strong><span class="mono">${esc(ui.heroLogHint)}</span></div><ol>${log}</ol></div></section></div>`;
+      `<div class="actions"><a class="btn" href="${ctaHref}">${esc(ui.ctaLabel)}${svgIcon('arrow')}</a>` +
+      `<a class="btn ghost" href="${urlFor(lang, ui.homePrimarySlug)}">${esc(ui.homePrimary)}</a>` +
+      `<button class="btn quiet" type="button" id="startTour" hidden>${svgIcon('play')}${esc(ui.tourStart)}</button></div></div>` +
+      `</div></section>`;
   } else {
-    top = `<div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div>`;
+    top = `<div class="page-head"><div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div></div>`;
   }
+
+  // closing call to action, on every page except the sign-up page and the 404 page
+  const showCta = !is404 && page.meta.cta !== 'false';
+  const ctaBand = showCta
+    ? `<section class="cta-band" aria-labelledby="ctaTitle"><div class="wrap cta-in"><div><h2 id="ctaTitle">${esc(ui.ctaBandTitle)}</h2><p>${esc(ui.ctaBandText)}</p></div><div class="cta-actions"><a class="btn" href="${ctaHref}">${esc(ui.ctaLabel)}${svgIcon('arrow')}</a></div></div></section>`
+    : '';
 
   const data = {};
   if (needsStudio || needsTools || needsEmail) data.ui = ui.js || {};
@@ -529,26 +582,23 @@ function render(page, pages, ui, studio) {
   data.lang = lang;
   const dataBlock = `<script type="application/json" id="bbc-data">${safeJson(data)}</script>`;
 
-  const footerEmail = email
-    ? `<a href="mailto:${esc(email)}">${esc(email)}</a>`
-    : esc(ui.emailPending);
-
+  const footerEmail = email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : esc(ui.emailPending);
   const pageHtml = `${top}<div class="wrap">${md.html}</div>`;
 
   return TEMPLATE.replace(/{{lang}}/g, esc(lang))
     .replace(/{{title}}/g, esc(title))
-    .replace(/{{description}}/g, esc(page.meta.description || site.tagline))
+    .replace(/{{description}}/g, esc(page.meta.description || tagline))
     .replace(/{{robots}}/g, robots)
     .replace(/{{meta}}/g, () => metaTags)
     .replace(/{{bodyClass}}/g, isHome ? ' class="is-home"' : '')
     .replace(/{{siteName}}/g, esc(site.name))
-    .replace(/{{tagline}}/g, esc(site.tagline))
-    .replace(/{{navLinks}}/g, navLinks)
-    .replace(/{{ctaHref}}/g, ctaHref)
+    .replace(/{{tagline}}/g, esc(tagline))
+    .replace(/{{navLinks}}/g, () => navLinks)
     .replace(/{{footerLinks}}/g, footerLinks)
     .replace(/{{footerEmail}}/g, () => footerEmail)
     .replace(/{{langLinks}}/g, langLinks)
     .replace(/{{status}}/g, () => draft)
+    .replace(/{{ctaBand}}/g, () => ctaBand)
     .replace(/{{year}}/g, String(new Date().getFullYear()))
     .replace(/{{ui\.(\w+)}}/g, (_, key) => {
       if (typeof ui[key] !== 'string') throw new Error(`templates/page.html uses {{ui.${key}}}, which is not in ui.json`);

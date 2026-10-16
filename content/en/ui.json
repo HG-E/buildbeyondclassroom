@@ -5,7 +5,6 @@
   "ctaLabel": "Register interest",
   "ctaSlug": "get-involved",
   "themeLabel": "Switch between light and dark theme",
-  "themeButton": "Theme",
   "draftTag": "Draft",
   "contactLabel": "Contact:",
   "emailLabel": "Email:",
@@ -61,7 +60,13 @@
       "4. What rules apply?",
       "5. Who else already serves this need?"
     ],
-    "lensShort": ["Who benefits", "Who pays", "What it costs", "What rules apply", "Who else already serves this need"],
+    "lensShort": [
+      "Who benefits",
+      "Who pays",
+      "What it costs",
+      "What rules apply",
+      "Who else already serves this need"
+    ],
     "lensCount": "{done} of 5 answered",
     "lensEmpty": "Your field brief will appear here as you answer.",
     "lensTitle": "FIELD BRIEF",
@@ -69,7 +74,14 @@
     "lensCopy": "Copy brief",
     "lensNeedOne": "Answer at least one question first.",
     "lensNote": "Nothing you type here is saved or sent.",
-    "roles": ["Learner", "Facilitator", "Hub host", "Community partner", "Mentor or employer", "Funder or evaluator"],
+    "roles": [
+      "Learner",
+      "Facilitator",
+      "Hub host",
+      "Community partner",
+      "Mentor or employer",
+      "Funder or evaluator"
+    ],
     "interestIam": "I am a",
     "interestName": "Your name (optional)",
     "interestPlace": "Country and place",
@@ -81,12 +93,21 @@
     "interestCopy": "Copy message",
     "interestSendTo": "Send it to:",
     "interestNoEmail": "The BBC contact address is to be confirmed, so no address is shown yet.",
-    "interestNote": "This prepares your message on this page only. It does not send or store anything.",
+    "interestNote": "Nothing is sent or stored by this website. Your email app opens with the message ready for you to read and send.",
     "interestSubject": "Interest in Build Beyond Classroom ({role})",
     "interestHello": "Hello,",
     "interestIntro": "I am a {role}{place}.",
     "interestIn": " in {place}",
     "interestDefault": "I would like to hear when the first pilot is announced.",
-    "interestThanks": "Thank you"
-  }
+    "interestThanks": "Thank you",
+    "interestOpen": "Open in my email app",
+    "interestNoteNoEmail": "The BBC contact address is to be confirmed, so no address is shown yet. You can copy the message for later."
+  },
+  "menuOpen": "Open the menu",
+  "menuClose": "Close the menu",
+  "draftShort": "Not launched yet. Details may change.",
+  "journeyEyebrow": "How a project works",
+  "journeyLead": "Every project follows the same eight steps. Open a step to see who is involved and how AI may be used.",
+  "ctaBandTitle": "Want to hear when the first pilot opens?",
+  "ctaBandText": "BBC has not opened applications. Register interest and we will contact you when there is something to join."
 }

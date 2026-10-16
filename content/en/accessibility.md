@@ -14,6 +14,7 @@ BBC aims for this website to meet the Web Content Accessibility Guidelines (WCAG
 
 ## What we build in
 
+{checks}
 - Clear headings and page regions, so screen readers can move around.
 - A "skip to content" link at the top of every page.
 - Everything works with a keyboard, with a visible mark showing where you are.
