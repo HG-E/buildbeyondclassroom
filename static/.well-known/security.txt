@@ -1,0 +1,5 @@
+Contact: mailto:buildbeyondclassroom@gmail.com
+Expires: 2027-10-16T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://www.buildbeyondclassroom.com/.well-known/security.txt
+Policy: https://github.com/HG-E/buildbeyondclassroom/blob/main/SECURITY.md

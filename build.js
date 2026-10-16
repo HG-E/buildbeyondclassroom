@@ -423,7 +423,7 @@ function loadPages(lang) {
 // Words used by the page shell and the scripts live in content/<lang>/, never in the template or here.
 const UI_KEYS = [
   'skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel', 'brandLabel', 'ctaLabel', 'ctaSlug',
-  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking',
+  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking', 'footerCopyright',
   'emailPending', 'emailLabel', 'copyEmail', 'homePrimary', 'homePrimarySlug', 'heroLogTitle', 'heroLogHint',
   'tourStart', 'noJavaScriptLens', 'noJavaScriptInterest',
 ];

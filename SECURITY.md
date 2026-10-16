@@ -12,4 +12,4 @@ Please:
 - do not include personal information, and never anything about children;
 - do not test the site in ways that disrupt it for other people.
 
-This is a volunteer-run draft project, so replies may not be quick.
+BBC is run by volunteers, so replies may not be quick. We will acknowledge a report and tell you what we decide.
