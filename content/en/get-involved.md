@@ -23,7 +23,7 @@ Choose who you are, add a few words, and open the message in your email app.
 
 {{emailBox}}
 
-Please do not include sensitive personal information, or any information about children. Read how BBC handles information in [safeguarding and data](/safeguarding-and-data/).
+Please do not include sensitive personal information, or any information about children. Read how Build Beyond Classroom handles information in [safeguarding and data](/safeguarding-and-data/).
 
 ## Who can write to us
 

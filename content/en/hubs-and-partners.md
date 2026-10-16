@@ -4,12 +4,12 @@ navTitle: Partners
 slug: hubs-and-partners
 order: 4
 eyebrow: Hubs and partners
-description: Where BBC cohorts meet, who BBC works with, and what every partner agrees to.
+description: Where cohorts meet, who we work with, and what every partner agrees to.
 ---
 
 # Use the most human contact a site allows.
 
-BBC is delivered through facilitated cohorts. The rule for choosing how a site runs is simple: use the most human contact the site's resources allow, and add virtual sessions only to reach what a hub cannot.
+Build Beyond Classroom is delivered through facilitated cohorts. The rule for choosing how a site runs is simple: use the most human contact the site's resources allow, and add virtual sessions only to reach what a hub cannot.
 
 ## Ways to run a cohort
 
@@ -28,7 +28,7 @@ A hub runs a cohort only when it has both of these.
 - Required | A certified facilitator | Young people take part only in sessions run by a certified facilitator.
 - Required | A signed data protocol | With a named data owner, before any learner information is kept.
 
-## Who BBC works with
+## Who Build Beyond Classroom works with
 
 | Partner | What they give | What they get |
 | --- | --- | --- |
@@ -59,8 +59,8 @@ Under-13s take part only in facilitator-led sessions, and minors only in facilit
 +++ Data
 A signed data protocol and a named data owner. Minimal data, no tracking, no profiling, and no sale or sharing with advertisers.
 
-+++ Open content and the BBC name
-Programme content and documented solutions stay open. Partners may use the BBC name only as the agreement allows, and may not present their own programme as BBC.
++++ Open content and the name
+Programme content and documented solutions stay open. Partners may use the name Build Beyond Classroom only as their agreement allows, and may not present their own programme as Build Beyond Classroom.
 
 +++ Learner ownership
 The learner owns their portfolio and can export it. A partner may use a learner's solution only with that learner's written consent.

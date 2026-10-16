@@ -33,13 +33,13 @@ The website launched on 16 October 2026 (`"indexing": true`). The programme itse
 
 ## Put it online (all free, no card expected)
 
-BBC is run from the owner's own accounts (GitHub `HG-E`, Vercel, and the registrar that holds the domain). There is no separate BBC account. The steps below are how it was set up:
+Build Beyond Classroom is run from the owner's own accounts (GitHub `HG-E`, Vercel, and the registrar that holds the domain). There is no separate Build Beyond Classroom account. The steps below are how it was set up:
 
 1. On your GitHub account, make a new **public** repository and push this folder.
 2. Create a Vercel account by signing in with GitHub, import the repository, and accept the settings (they come from `vercel.json`).
 3. Buy the domain only after the name and trademark checks. Until then the free Vercel address works.
 
-**Hosting rule (Gate 7):** Vercel's free Hobby plan is for non-commercial use only, and Vercel counts anyone paid for any part of the site work, including through a company or grant. Use Hobby for the pilot only after Vercel support confirms in writing that the pilot qualifies, and keep the reply. Before the first paid engagement, paid site work or an institution paying BBC, move to Cloudflare Pages or Netlify. Nothing in this folder is tied to Vercel except `vercel.json`.
+**Hosting rule (Gate 7):** Vercel's free Hobby plan is for non-commercial use only, and Vercel counts anyone paid for any part of the site work, including through a company or grant. Use Hobby for the pilot only after Vercel support confirms in writing that the pilot qualifies, and keep the reply. Before the first paid engagement, paid site work or an institution paying Build Beyond Classroom, move to Cloudflare Pages or Netlify. Nothing in this folder is tied to Vercel except `vercel.json`.
 
 **Account safety:** turn on two-step sign-in for GitHub, Vercel and the registrar, and keep the recovery codes somewhere safe.
 

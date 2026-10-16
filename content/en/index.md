@@ -12,7 +12,7 @@ description: Build Beyond Classroom helps people use AI to build solutions to re
 
 # Build with AI. Solve a ==real problem==. Own the result.
 
-Build Beyond Classroom (BBC) helps people learn to use AI to build solutions to problems in their own communities, and to make the business case for those solutions in their own field of study or work. It is not specific to one country, and it goes beyond the classroom.
+Build Beyond Classroom helps people learn to use AI to build solutions to problems in their own communities, and to make the business case for those solutions in their own field of study or work. It is not specific to one country, and it goes beyond the classroom.
 
 {{journey}}
 
@@ -36,7 +36,7 @@ Build Beyond Classroom (BBC) helps people learn to use AI to build solutions to 
 
 {features 2}
 - @target | The measure is a shipped project | Success is a solution that real people use, confirmed by a community partner, not attendance.
-- @users | A person guides every group | Learning happens in teams with a facilitator, at a hub, in a hybrid format or in live online sessions. BBC does not offer a self-paced online course as its core.
+- @users | A person guides every group | Learning happens in teams with a facilitator, at a hub, in a hybrid format or in live online sessions. Build Beyond Classroom does not offer a self-paced online course as its core.
 - @bulb | AI helps you learn; it does not do the thinking for you | Short checks with the tool closed show whether the learner has learned or only produced.
 - @globe | Light and open | Programme content is open and works on weak connections. Information about learners is protected.
 
@@ -48,7 +48,7 @@ Build Beyond Classroom (BBC) helps people learn to use AI to build solutions to 
 - 3 | levels, aligned to UNESCO and OECD frameworks
 - 7 | rungs on the skills ladder
 
-## Where BBC stands today
+## Where Build Beyond Classroom stands today
 
 {checks}
 - **The website is live.** Programme content is open for anyone to read and print.

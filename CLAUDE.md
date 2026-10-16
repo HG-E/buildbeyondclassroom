@@ -51,3 +51,8 @@ docs/                  GATE-DECISIONS.md digest; gates/ full gate text; design/ 
 docs/HOSTING.md       what is connected (GitHub, Vercel, domain) and how it was set up
 docs/LAUNCH-CHECKLIST.md  what is verified and what still needs a person
 ```
+
+
+## Name rule (owner decision, 16 October 2026)
+
+In page copy, write "Build Beyond Classroom" in full. Do not use the abbreviation "BBC" in visible text: it reads like a trademark the project does not hold, and it is also the British Broadcasting Corporation. No trademark, patent or licence is claimed or registered: never add a TM or R sign or any such claim unless the owner confirms a registration. `check.js` fails the build if "BBC" returns to the content. Code names (such as the `BBCTour` object) and folder names are not visible and may stay.

@@ -4,7 +4,7 @@ navTitle: Safety and data
 slug: safeguarding-and-data
 order: 6
 eyebrow: Safeguarding and data
-description: How BBC protects young people and learner information.
+description: How Build Beyond Classroom protects young people and learner information.
 ---
 
 # Content is open. Information about people is protected.
@@ -26,11 +26,11 @@ This page explains the rules, in plain words.
 - It has **no accounts, no forms that save information and no analytics.**
 - It uses no cookies for tracking and loads no third-party scripts.
 - It can save a copy of its pages on your device so it still works offline. That copy contains only the public pages, no personal information, and you can clear it in your browser settings.
-- If you email BBC, your message will be read by the BBC team. How messages are kept, and for how long, is still to be decided with local legal advice.
+- If you email Build Beyond Classroom, your message will be read by the team. How messages are kept, and for how long, is still to be decided with local legal advice.
 
-## What BBC collects about learners
+## What Build Beyond Classroom collects about learners
 
-At this stage, learner records are kept by the hub on paper and in a single spreadsheet per cohort, using codes rather than names where possible. BBC collects only what a step needs. It does not profile learners, rank them against each other, sell or share their data with advertisers, or publish anything about a named learner.
+At this stage, learner records are kept by the hub on paper and in a single spreadsheet per cohort, using codes rather than names where possible. Build Beyond Classroom collects only what a step needs. It does not profile learners, rank them against each other, sell or share their data with advertisers, or publish anything about a named learner.
 
 ## Eight rules for learner information
 
@@ -55,8 +55,8 @@ At this stage, learner records are kept by the hub on paper and in a single spre
 {checks}
 - Impact is counted at community results: where the partner confirms the solution is in use, at step 8 and again at day 90.
 - An independent evaluator agrees the design and thresholds before week 1.
-- BBC will not claim outcomes it has not measured.
+- Build Beyond Classroom will not claim outcomes it has not measured.
 
 > Please do not send sensitive personal information, or any information about children, by email. Tell us what you need and we will explain how to share it safely.
 
-BBC has not yet confirmed which data protection laws apply in each pilot country. Local legal advice is being arranged before any learner records are kept beyond paper and a hub spreadsheet.
+Build Beyond Classroom has not yet confirmed which data protection laws apply in each pilot country. Local legal advice is being arranged before any learner records are kept beyond paper and a hub spreadsheet.

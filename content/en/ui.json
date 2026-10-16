@@ -33,7 +33,7 @@
     "studioLabelAi": "AI",
     "studioLabelPartner": "Partner",
     "studioLabelFacilitator": "Facilitator",
-    "tourRegion": "Interactive 3D tour of a BBC project. Use the buttons, arrow keys, or drag to look around.",
+    "tourRegion": "Interactive 3D tour of a Build Beyond Classroom project. Use the buttons, arrow keys, or drag to look around.",
     "tourHint": "Drag to look around. Tap a label to jump. Stops light up as the project reaches them.",
     "tourControls": "Tour controls",
     "tourStops": "Tour stops",
@@ -92,7 +92,7 @@
     "interestTitle": "Your message",
     "interestCopy": "Copy message",
     "interestSendTo": "Send it to:",
-    "interestNoEmail": "The BBC contact address is to be confirmed, so no address is shown yet.",
+    "interestNoEmail": "The Build Beyond Classroom contact address is to be confirmed, so no address is shown yet.",
     "interestNote": "Nothing is sent or stored by this website. Your email app opens with the message ready for you to read and send.",
     "interestSubject": "Interest in Build Beyond Classroom ({role})",
     "interestHello": "Hello,",
@@ -101,7 +101,7 @@
     "interestDefault": "I would like to hear when the first pilot is announced.",
     "interestThanks": "Thank you",
     "interestOpen": "Open in my email app",
-    "interestNoteNoEmail": "The BBC contact address is to be confirmed, so no address is shown yet. You can copy the message for later."
+    "interestNoteNoEmail": "The Build Beyond Classroom contact address is to be confirmed, so no address is shown yet. You can copy the message for later."
   },
   "menuOpen": "Open the menu",
   "menuClose": "Close the menu",

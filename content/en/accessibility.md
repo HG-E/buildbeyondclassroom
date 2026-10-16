@@ -10,7 +10,7 @@ description: How this website is built to be usable by everyone, and how to ask 
 
 # Built to be usable by everyone.
 
-BBC aims for this website to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA. This page says what is built in, what is checked, and how to tell us about a barrier.
+Build Beyond Classroom aims for this website to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA. This page says what is built in, what is checked, and how to tell us about a barrier.
 
 ## What we build in
 

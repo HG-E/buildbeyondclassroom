@@ -5,12 +5,12 @@ slug: facilitators
 order: 5
 nav: false
 eyebrow: Facilitators
-description: How people become certified BBC facilitators, and what facilitators do.
+description: How people become certified Build Beyond Classroom facilitators, and what facilitators do.
 ---
 
 # Every cohort has a certified facilitator.
 
-Facilitators are certified individuals who work through hubs, and BBC's aim is that local people run the studios in their own communities.
+Facilitators are certified individuals who work through hubs, and Build Beyond Classroom's aim is that local people run the studios in their own communities.
 
 ## A route in three stages
 
@@ -32,6 +32,6 @@ Facilitators are certified individuals who work through hubs, and BBC's aim is t
 
 The plan is for a small central team to train facilitators, hold a weekly office hour, review sample build logs and keep a channel open for urgent safeguarding questions. It will not run sessions in other people's hubs. These supports are designed but not yet in place.
 
-Training and certification fees, if any, are still being decided. BBC's intention is that fees never exclude someone who cannot pay, through sponsored places.
+Training and certification fees, if any, are still being decided. Build Beyond Classroom's intention is that fees never exclude someone who cannot pay, through sponsored places.
 
 To register interest, see [get involved](/get-involved/).

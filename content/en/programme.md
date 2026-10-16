@@ -9,7 +9,7 @@ description: Three journeys, three levels and a ladder of skills, all built arou
 
 # Three journeys, three levels, one ladder.
 
-BBC is built around one idea: people learn to use AI best by building something real that helps their community.
+Build Beyond Classroom is built around one idea: people learn to use AI best by building something real that helps their community.
 
 ## Three journeys
 
@@ -20,7 +20,7 @@ BBC is built around one idea: people learn to use AI best by building something 
 
 ## Three levels
 
-The levels follow [UNESCO's AI competency framework for students](https://www.unesco.org/en/articles/ai-competency-framework-students) (Understand, Apply, Create) and the [OECD and European Commission AI literacy framework](https://digital-skills-jobs.europa.eu/en/latest/news/new-ai-literacy-framework-common-reference-integrating-ai-literacy-education), so schools and funders can see where BBC fits.
+The levels follow [UNESCO's AI competency framework for students](https://www.unesco.org/en/articles/ai-competency-framework-students) (Understand, Apply, Create) and the [OECD and European Commission AI literacy framework](https://digital-skills-jobs.europa.eu/en/latest/news/new-ai-literacy-framework-common-reference-integrating-ai-literacy-education), so schools and funders can see where Build Beyond Classroom fits.
 
 {cards 3}
 - Level 1 | Understand and use | Use AI tools well and safely.
@@ -55,7 +55,7 @@ Every learner looks at their own subject through five questions.
 ## Who can take part
 
 {checks}
-- BBC is for learners of different ages and backgrounds. Learners under 13 take part only in facilitator-led sessions.
+- Build Beyond Classroom is for learners of different ages and backgrounds. Learners under 13 take part only in facilitator-led sessions.
 - The first pilot is a facilitated eight-week Build journey for adults aged 18 and over.
 - Facilitators are also trained and certified, as explained on the [facilitators page](/facilitators/).
 - The plan is to keep access free or low cost for learners, with institutions and funders paying for cohorts. This is still being tested, and no prices have been set.

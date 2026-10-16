@@ -1,6 +1,6 @@
 # Security
 
-This repository holds the public website of Build Beyond Classroom (BBC). It is a static site with no accounts, no database, no forms that save data and no analytics.
+This repository holds the public website of Build Beyond Classroom. It is a static site with no accounts, no database, no forms that save data and no analytics.
 
 ## Reporting a problem
 
@@ -12,4 +12,4 @@ Please:
 - do not include personal information, and never anything about children;
 - do not test the site in ways that disrupt it for other people.
 
-BBC is run by volunteers, so replies may not be quick. We will acknowledge a report and tell you what we decide.
+Build Beyond Classroom is run by volunteers, so replies may not be quick. We will acknowledge a report and tell you what we decide.
