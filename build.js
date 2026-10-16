@@ -423,7 +423,7 @@ function loadPages(lang) {
 // Words used by the page shell and the scripts live in content/<lang>/, never in the template or here.
 const UI_KEYS = [
   'skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel', 'brandLabel', 'ctaLabel', 'ctaSlug',
-  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking', 'footerCopyright',
+  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking', 'footerCopyright', 'toTop',
   'emailPending', 'emailLabel', 'copyEmail', 'homePrimary', 'homePrimarySlug', 'heroLogTitle', 'heroLogHint',
   'tourStart', 'noJavaScriptLens', 'noJavaScriptInterest',
 ];
@@ -553,6 +553,9 @@ function render(page, pages, ui, studio) {
     pageUrl && !is404 ? `<meta property="og:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}/og-image.jpg">` : '',
     pageUrl && !is404 ? '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' : '',
     pageUrl && !is404 ? `<meta property="og:image:alt" content="${esc(ui.ogImageAlt)}">` : '',
+    '<meta property="og:locale" content="' + esc(lang === 'en' ? 'en_GB' : lang) + '">',
+    `<meta name="twitter:title" content="${esc(title)}">`,
+    `<meta name="twitter:description" content="${esc(page.meta.description || tagline)}">`,
     `<meta name="twitter:card" content="${pageUrl && !is404 ? 'summary_large_image' : 'summary'}">`,
     pageUrl && !is404 ? `<meta name="twitter:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}/og-image.jpg">` : '',
   ]
@@ -568,6 +571,13 @@ function render(page, pages, ui, studio) {
     if (email) org.email = email;
     const web = { '@type': 'WebSite', '@id': base + '/#site', url: base + '/', name: site.name, description: tagline, inLanguage: lang, publisher: { '@id': base + '/#org' } };
     jsonld = '<script type="application/ld+json">' + safeJson({ '@context': 'https://schema.org', '@graph': [org, web] }) + '</script>';
+  } else if (site.siteUrl && !is404) {
+    const base = site.siteUrl.replace(/\/$/, '');
+    const crumbs = { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: base + '/' },
+      { '@type': 'ListItem', position: 2, name: page.meta.title, item: pageUrl } ] };
+    const webpage = { '@type': 'WebPage', '@id': pageUrl + '#page', url: pageUrl, name: title, description: page.meta.description || tagline, inLanguage: lang, isPartOf: { '@id': base + '/#site' }, breadcrumb: crumbs };
+    jsonld = '<script type="application/ld+json">' + safeJson({ '@context': 'https://schema.org', '@graph': [webpage] }) + '</script>';
   }
 
   let top;
@@ -666,7 +676,10 @@ function main() {
     if (!site.siteUrl) throw new Error('site.json needs "siteUrl" before "indexing" can be turned on');
     if (!hasRealEmail()) throw new Error('Set a real "contactEmail" in site.json before turning "indexing" on');
     const base = site.siteUrl.replace(/\/$/, '');
-    const urls = written.map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n');
+    let lastmod = '';
+    try { lastmod = require('child_process').execSync('git log -1 --format=%cs -- content static templates', { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch (e) { lastmod = ''; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(lastmod)) lastmod = '';
+    const urls = written.map((u) => `  <url><loc>${base}${u}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`).join('\n');
     fs.writeFileSync(
       path.join(OUT, 'sitemap.xml'),
       '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n'

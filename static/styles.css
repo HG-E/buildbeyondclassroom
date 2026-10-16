@@ -511,9 +511,51 @@ footer p { margin-top: .5rem; }
   .tcard .tt { font-size: 1.4rem; }
 }
 
+
+/* ---------- motion and polish (all of it switches off for reduced motion; the pages read fine without it) ---------- */
+.btn { transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, background-color .18s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -10px rgba(0, 0, 0, .45); }
+.btn:active { transform: translateY(0) scale(.98); box-shadow: none; }
+.btn .ic { transition: transform .2s ease; }
+.btn:hover .ic { transform: translateX(3px); }
+.card, .feature, .stat, .rung, .path li { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+.card:hover, .feature:hover, .path li:hover, .rung:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 14px 30px -16px rgba(0, 0, 0, .5); }
+.icon-btn { transition: transform .15s ease, background-color .15s ease; }
+.icon-btn:active { transform: scale(.92); }
+.nav a { transition: color .15s ease, background-color .15s ease; }
+summary { transition: color .15s ease; }
+summary:hover { color: var(--accent); }
+.step-btn { transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.step-btn:hover { transform: translateY(-2px); }
+.step-btn:active { transform: scale(.97); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.hero-copy > *, .page-head .head > * { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; }
+.hero-copy > :nth-child(2), .page-head .head > :nth-child(2) { animation-delay: .08s; }
+.hero-copy > :nth-child(3), .page-head .head > :nth-child(3) { animation-delay: .16s; }
+.hero-copy > :nth-child(4), .page-head .head > :nth-child(4) { animation-delay: .24s; }
+
+html.js-reveal .rv { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s cubic-bezier(.2, .7, .2, 1); }
+html.js-reveal .rv.in { opacity: 1; transform: none; }
+
+header.site { transition: box-shadow .2s ease; }
+header.site.scrolled { box-shadow: 0 6px 24px -14px rgba(0, 0, 0, .6); }
+.progress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 60; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); pointer-events: none; }
+.to-top {
+  position: fixed; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 50;
+  width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .55); opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+}
+.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { filter: brightness(1.1); }
+.to-top .ic { width: 22px; height: 22px; }
+.to-top[hidden] { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }
+  .progress, .to-top { display: none; }
+  html.js-reveal .rv { opacity: 1; transform: none; }
 }
 
 /* ---------- print: paper first. Plain black on white, links shown, no navigation or tools. ---------- */
@@ -552,6 +594,8 @@ footer p { margin-top: .5rem; }
   footer.site { border: 0; margin-top: 1rem; }
   .tw { overflow: visible; }
   table { min-width: 0; }
+  html.js-reveal .rv { opacity: 1 !important; transform: none !important; }
+  .progress, .to-top { display: none !important; }
   .journey { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 

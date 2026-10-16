@@ -344,4 +344,52 @@
       else window.addEventListener('load', schedule);
     }
   }
+
+  /* ---------- polish: reveal on scroll, reading progress, header shadow, back to top ---------- */
+  (function () {
+    var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var header = $('header.site');
+    var toTop = $('#toTop');
+    var bar = null;
+    if (!calm) {
+      bar = h('div', { 'class': 'progress', 'aria-hidden': 'true' });
+      document.body.appendChild(bar);
+    }
+    var ticking = false;
+    function onScroll() {
+      ticking = false;
+      var y = window.pageYOffset || 0;
+      var max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      if (header) header.classList.toggle('scrolled', y > 8);
+      if (bar) bar.style.transform = 'scaleX(' + Math.min(1, y / max).toFixed(4) + ')';
+      if (toTop) { toTop.hidden = false; toTop.classList.toggle('show', y > 900); }
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+    onScroll();
+    if (toTop) toTop.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+      var m = $('#main'); if (m) m.focus({ preventScroll: true });
+    });
+    if (calm || !('IntersectionObserver' in window)) return;
+    var targets = $$('main .block > *, main .cta-band .cta-in, .page-head + .wrap .card, .path li, .journey li').filter(function (el) {
+      return !el.closest('#hero') && !el.hasAttribute('hidden');
+    });
+    if (!targets.length) return;
+    root.classList.add('js-reveal');
+    var seen = 0;
+    targets.forEach(function (el) {
+      el.classList.add('rv');
+      var sib = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+      el.style.setProperty('transition-delay', Math.min(sib, 5) * 70 + 'ms');
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    targets.forEach(function (el) { io.observe(el); });
+    // safety net: never leave content hidden if something goes wrong
+    setTimeout(function () { targets.forEach(function (el) { el.classList.add('in'); }); }, 6000);
+  })();
 })();
