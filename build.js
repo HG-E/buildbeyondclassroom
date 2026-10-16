@@ -543,6 +543,7 @@ function render(page, pages, ui, studio) {
 
   const tagline = ucfirst(site.tagline);
   const pageUrl = site.siteUrl ? site.siteUrl.replace(/\/$/, '') + urlFor(lang, page.meta.slug) : '';
+  const ogPath = !isHome && page.meta.slug && fs.existsSync(path.join(STATIC, 'og', page.meta.slug + '.png')) ? '/og/' + page.meta.slug + '.png' : '/og-image.jpg';
   const metaTags = [
     pageUrl && !is404 ? `<link rel="canonical" href="${esc(pageUrl)}">` : '',
     `<meta property="og:site_name" content="${esc(site.name)}">`,
@@ -550,14 +551,14 @@ function render(page, pages, ui, studio) {
     `<meta property="og:title" content="${esc(title)}">`,
     `<meta property="og:description" content="${esc(page.meta.description || tagline)}">`,
     pageUrl && !is404 ? `<meta property="og:url" content="${esc(pageUrl)}">` : '',
-    pageUrl && !is404 ? `<meta property="og:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}/og-image.jpg">` : '',
+    pageUrl && !is404 ? `<meta property="og:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}${ogPath}">` : '',
     pageUrl && !is404 ? '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' : '',
     pageUrl && !is404 ? `<meta property="og:image:alt" content="${esc(ui.ogImageAlt)}">` : '',
     '<meta property="og:locale" content="' + esc(lang === 'en' ? 'en_GB' : lang) + '">',
     `<meta name="twitter:title" content="${esc(title)}">`,
     `<meta name="twitter:description" content="${esc(page.meta.description || tagline)}">`,
     `<meta name="twitter:card" content="${pageUrl && !is404 ? 'summary_large_image' : 'summary'}">`,
-    pageUrl && !is404 ? `<meta name="twitter:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}/og-image.jpg">` : '',
+    pageUrl && !is404 ? `<meta name="twitter:image" content="${esc(site.siteUrl.replace(/\/$/, ''))}${ogPath}">` : '',
   ]
     .filter(Boolean)
     .join('\n  ');
@@ -590,7 +591,9 @@ function render(page, pages, ui, studio) {
       `<button class="btn quiet" type="button" id="startTour" hidden>${svgIcon('play')}${esc(ui.tourStart)}</button></div></div>` +
       `</div></section>`;
   } else {
-    top = `<div class="page-head"><div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div></div>`;
+    const artIcon = { programme: 'learner', studio: 'bulb', 'hubs-and-partners': 'hub', facilitators: 'users', 'safeguarding-and-data': 'shield', accessibility: 'globe', 'get-involved': 'mail' }[page.meta.slug];
+    const art = artIcon ? `<div class="art" aria-hidden="true">${svgIcon(artIcon)}<i class="d1"></i><i class="d2"></i><i class="d3"></i></div>` : '';
+    top = `<div class="page-head">${art}<div class="wrap"><div class="head">${eyebrow}${md.h1}${md.lede}</div></div></div>`;
   }
 
   // closing call to action, on every page except the sign-up page and the 404 page
@@ -659,7 +662,7 @@ function main() {
   // Offline layer: the service worker keeps every page and the small static files.
   // The tour (Three.js and tour.js) is large and optional, so it is never kept offline.
   const assets = listFiles(STATIC).filter(
-    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && f !== '/hero-poster.jpg' && f !== '/og-image.jpg' && f !== '/apple-touch-icon.png' && !/\.txt$/.test(f)
+    (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && f !== '/hero-poster.jpg' && f !== '/og-image.jpg' && !f.startsWith('/og/') && f !== '/apple-touch-icon.png' && !/\.txt$/.test(f)
   );
   const precache = [...written, ...assets];
   const version = crypto.createHash('sha1').update(JSON.stringify(precache) + Date.now()).digest('hex').slice(0, 10);

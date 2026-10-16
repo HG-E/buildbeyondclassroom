@@ -273,7 +273,9 @@ for (const file of htmlFiles) {
   if (name !== '404.html') {
     if (site.siteUrl) {
       ok(/<link rel="canonical" href="https:\/\/[^"]+"/.test(h), `${name}: has a canonical link`);
-      ok(/property="og:image" content="https:\/\/[^"]+\.jpg"/.test(h), `${name}: has a share image`);
+      const ogUrl = (h.match(/property="og:image" content="https:\/\/[^"/]+(\/[^"]+\.(?:jpg|png))"/) || [])[1];
+      ok(!!ogUrl && fs.existsSync(path.join(PUBLIC, ogUrl)), `${name}: has a share image that exists`);
+      if (ogUrl) ok(fs.statSync(path.join(PUBLIC, ogUrl)).size <= 150 * 1024, `${name}: share image is within 150 KB`);
     }
     ok(/name="theme-color"/.test(h) && /rel="apple-touch-icon"/.test(h), `${name}: has theme colour and touch icon`);
   }
