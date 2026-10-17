@@ -58,3 +58,12 @@ Real phones, real screen readers (VoiceOver, TalkBack, NVDA), outside accessibil
 - The test computer was slower than Lighthouse expects, so absolute times are pessimistic, and identical runs varied by several points.
 - Run Google's own check on the live pages for an independent reading: https://pagespeed.web.dev
 - Changes made from these results: hero picture and heading font are preloaded; the page height is no longer read at start-up (it forced a layout); the picture is cached for a week.
+
+## Speed refinement pass (17 October 2026)
+
+Measured with the browser's own timers on a slowed CPU (medians over several runs), and with Lighthouse runs alternated between builds.
+
+- **Programme page:** none of five suspects (entrance animation, transitions, the full-width background bands, header blur, lazy rendering) reduced the browser's style and layout time. The whole load costs about 350 ms of browser work with the CPU slowed 4x. No design change was made for it. The Lighthouse score of 81 there is mostly a slow test computer and run-to-run noise.
+- **Home page:** with the old fade-in animation, Speed Index was 2.4 to 2.6 s in two of three runs; with no animation it was 1.5 s every time. The animation is now a short 0.4 s slide with no fade and no delays, so text is visible from the first paint. Over five alternating pairs it was at least as good as before (median Speed Index 1554 ms against 1572 ms, LCP 2129 ms against 2322 ms).
+- **Header jump on phones:** before the script arrived, the phone header was 89 px tall; when it arrived the header shrank to 57 px and pushed the page up. A 300-byte script in the page head (`early.js`) now sets the compact header from the first frame. If the main script never loads, the plain links come back after six seconds.
+- The same code scores about 98 when served locally and about 94 live, so the rest of the gap is the network path to the server, not the code.
