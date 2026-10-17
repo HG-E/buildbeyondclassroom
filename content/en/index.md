@@ -22,7 +22,7 @@ Build Beyond Classroom helps people learn to use AI to build solutions to proble
 - @build | Builds with AI | Learners use AI tools to design, build and publish something real.
 - @search | Finds and checks a community problem | The need is confirmed with the people who live with it, not assumed.
 - @briefcase | Makes the business case in their own field | Who benefits, who pays, what it costs, what rules apply and who else already serves the need.
-- @export | Owns the result | The work belongs to the learner and can be taken with them.
+- @export | Owns the result | Learners check what AI produced, handle data responsibly and explain the work without the tool. The work belongs to them and can be taken with them.
 
 ## Start where you are
 
