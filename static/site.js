@@ -364,13 +364,13 @@
     function onScroll() {
       ticking = false;
       var y = window.pageYOffset || 0;
-      var max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      var max = y > 0 ? Math.max(1, document.documentElement.scrollHeight - window.innerHeight) : 1; /* reading the page height forces a layout, so only do it once someone has scrolled */
       if (header) header.classList.toggle('scrolled', y > 8);
       if (bar) bar.style.transform = 'scaleX(' + Math.min(1, y / max).toFixed(4) + ')';
-      if (toTop) { toTop.hidden = false; toTop.classList.toggle('show', y > 900); }
+      if (toTop) toTop.classList.toggle('show', y > 900);
     }
     window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
-    onScroll();
+    if (toTop) toTop.hidden = false;
     if (toTop) toTop.addEventListener('click', function (e) {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
