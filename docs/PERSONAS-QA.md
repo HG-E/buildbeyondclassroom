@@ -46,3 +46,15 @@ Real phones, real screen readers (VoiceOver, TalkBack, NVDA), outside accessibil
 - The offline copy is skipped when data saver is on.
 - Fonts and the 3D library are cached for a year, so a returning visitor downloads almost nothing.
 - Not measured: real mobile networks and real phones. Speed in the emulated 4G test varied between runs on this computer, so treat the load times as rough.
+
+## Lighthouse (mobile, slow 4G, 4x slower CPU), live site, 17 October 2026
+
+| Page | Performance | Accessibility | Best practices | SEO | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Home | 94 | 100 | 100 | 100 | first paint 1.6 s, 138 KB, layout shift 0.005 |
+| Programme | 81 | 100 | 100 | 100 | 113 KB; remaining cost is browser style and layout work |
+| Get involved | not measured | | | | Lighthouse stopped with a trace-recording error (NO_NAVSTART) on two runs; the page loads normally in other browser tests |
+
+- The test computer was slower than Lighthouse expects, so absolute times are pessimistic, and identical runs varied by several points.
+- Run Google's own check on the live pages for an independent reading: https://pagespeed.web.dev
+- Changes made from these results: hero picture and heading font are preloaded; the page height is no longer read at start-up (it forced a layout); the picture is cached for a week.
