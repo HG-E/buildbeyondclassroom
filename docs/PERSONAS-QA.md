@@ -34,3 +34,15 @@ All eight pages with JavaScript off (heading and full content present; the Studi
 ## Not tested here
 
 Real phones, real screen readers (VoiceOver, TalkBack, NVDA), outside accessibility testers, and people from each persona group. Do these before making any claim beyond what is listed.
+
+## Data use (measured on the live site, cold cache, 17 October 2026)
+
+| Visit | Before | After |
+| --- | --- | --- |
+| Home page on a phone | 312 KB (the 3D scene downloaded by itself) | 152 KB (still picture; the scene loads only if the visitor taps the tour button) |
+| Any other page | about 127 KB, plus about 60 KB the offline copy downloaded in the background | about 127 KB; other pages are saved for offline only when opened |
+
+- The 3D scene starts by itself only on screens at least 1000 px wide, with a mouse, on a 4G or better connection, and never with data saver or reduced motion on.
+- The offline copy is skipped when data saver is on.
+- Fonts and the 3D library are cached for a year, so a returning visitor downloads almost nothing.
+- Not measured: real mobile networks and real phones. Speed in the emulated 4G test varied between runs on this computer, so treat the load times as rough.

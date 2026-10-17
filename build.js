@@ -664,8 +664,11 @@ function main() {
   const assets = listFiles(STATIC).filter(
     (f) => f !== '/service-worker.js' && !f.startsWith('/vendor/') && f !== '/tour.js' && f !== '/hero-poster.jpg' && f !== '/og-image.jpg' && !f.startsWith('/og/') && f !== '/apple-touch-icon.png' && !/\.txt$/.test(f)
   );
-  const precache = [...written, ...assets];
-  const version = crypto.createHash('sha1').update(JSON.stringify(precache) + Date.now()).digest('hex').slice(0, 10);
+  // Saved on the first visit: only the home page and the files every page needs. Every other page is saved
+  // when the visitor opens it, so a first visit never downloads pages nobody asked for (data is expensive).
+  const keep = [...written, ...assets];
+  const precache = ['/', ...assets.filter((f) => !/ibm-plex-mono-latin-400/.test(f))];
+  const version = crypto.createHash('sha1').update(JSON.stringify(keep) + Date.now()).digest('hex').slice(0, 10);
   const swPath = path.join(OUT, 'service-worker.js');
   fs.writeFileSync(
     swPath,
@@ -673,6 +676,7 @@ function main() {
       .readFileSync(swPath, 'utf8')
       .replace('__VERSION__', version)
       .replace('__PRECACHE__', JSON.stringify(precache))
+      .replace('__KEEP__', JSON.stringify(keep))
   );
 
   if (site.indexing) {
