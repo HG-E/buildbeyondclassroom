@@ -289,7 +289,7 @@
         if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return false;
         /* the scene is about 160 KB of extra data: start it by itself only on a wide, fast screen with a mouse.
            On a phone or tablet the still picture shows and the scene loads only if the visitor taps the tour button. */
-        if (window.innerWidth < 1000) return false;
+        if (!(window.matchMedia && matchMedia('(min-width: 1000px)').matches)) return false;
         if (window.matchMedia && matchMedia('(pointer: coarse)').matches) return false;
         if (c.effectiveType && c.effectiveType !== '4g') return false;
       } catch (e) { /* assume capable */ }

@@ -545,6 +545,7 @@ function render(page, pages, ui, studio) {
   const pageUrl = site.siteUrl ? site.siteUrl.replace(/\/$/, '') + urlFor(lang, page.meta.slug) : '';
   const ogPath = !isHome && page.meta.slug && fs.existsSync(path.join(STATIC, 'og', page.meta.slug + '.png')) ? '/og/' + page.meta.slug + '.png' : '/og-image.jpg';
   const metaTags = [
+    isHome ? '<link rel="preload" as="image" href="/hero-poster.jpg" fetchpriority="high">' : '',
     pageUrl && !is404 ? `<link rel="canonical" href="${esc(pageUrl)}">` : '',
     `<meta property="og:site_name" content="${esc(site.name)}">`,
     '<meta property="og:type" content="website">',
