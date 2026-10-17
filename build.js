@@ -667,7 +667,7 @@ function main() {
   // Saved on the first visit: only the home page and the files every page needs. Every other page is saved
   // when the visitor opens it, so a first visit never downloads pages nobody asked for (data is expensive).
   const keep = [...written, ...assets];
-  const precache = ['/', ...assets.filter((f) => !/ibm-plex-mono-latin-400/.test(f))];
+  const precache = ['/', ...assets];
   const version = crypto.createHash('sha1').update(JSON.stringify(keep) + Date.now()).digest('hex').slice(0, 10);
   const swPath = path.join(OUT, 'service-worker.js');
   fs.writeFileSync(
