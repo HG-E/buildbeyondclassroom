@@ -279,9 +279,10 @@ function markdown(src, ui, blocks) {
     if (h) {
       const level = h[1].length;
       const text = h[2].trim();
-      const id = slugify(text);
+      const id = slugify(text.split(' // ').join(' '));
       if (level === 1) {
-        h1 = `<h1 id="${id}" tabindex="-1">${inline(text)}</h1>`;
+        // " // " in a main heading is a deliberate line break
+        h1 = `<h1 id="${id}" tabindex="-1">${text.split(' // ').map((part) => inline(part)).join('<br>')}</h1>`;
         afterH1 = true;
         i++;
         continue;

@@ -408,7 +408,7 @@ pre.brief {
     content: ""; display: block; height: 13rem; margin: 1.75rem calc(-1 * var(--gutter)) 0;
     background: #0A1612 url("/hero-poster.jpg") 70% 40% / cover no-repeat;
   }
-  .hero h1 { font-size: clamp(2rem, 9.5vw, 2.6rem); }
+  .hero h1 { font-size: clamp(1.5rem, 7.6vw, 2.6rem); } /* sized so "Solve a real problem." stays on one line */
   .hero .lede { font-size: 1.05rem; }
 }
 @media (min-width: 861px) { .hero { min-height: min(74vh, 38rem); display: flex; align-items: center; } }

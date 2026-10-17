@@ -1,5 +1,5 @@
 ---
-title: Build with AI. Solve a real problem. Own the result.
+title: Build with AI. Solve a real problem.
 titleTag: Build Beyond Classroom | Build with AI, solve a real problem
 navTitle: Home
 slug:
@@ -10,7 +10,7 @@ eyebrow: A programme for any country, field and age group
 description: Build Beyond Classroom helps people use AI to build solutions to real community problems and make the business case for them in their own field.
 ---
 
-# Build with AI. Solve a ==real problem==. Own the result.
+# Build with AI. // Solve a ==real problem==.
 
 Build Beyond Classroom helps people learn to use AI to build solutions to problems in their own communities, and to make the business case for those solutions in their own field of study or work. It is not specific to one country, and it goes beyond the classroom.
 
