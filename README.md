@@ -29,7 +29,7 @@ Use `node preview.js` to see the site. Opening `public/index.html` straight from
 
 The website launched on 16 October 2026 (`"indexing": true`). The programme itself has not opened yet: no cohort has run and applications are not open, and the pages say so. Keep every page true to that, and check any new claim against `docs/gates/`. The legal form, first pilot site, evaluator, prices and licence are still undecided.
 
-> The site is already online. See `docs/HOSTING.md` for what is connected (GitHub, Vercel, the domain) and `docs/LAUNCH-CHECKLIST.md` for what is still open. The steps below are how it was set up.
+> The site is already online. The owner keeps the hosting notes and the launch checklist (what is connected, and what is still open) privately, outside this public repository. The steps below are how it was set up.
 
 ## Put it online (all free, no card expected)
 

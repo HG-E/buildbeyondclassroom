@@ -4,3 +4,7 @@ node_modules/
 .env
 .env.*
 .vercel/
+
+# Operational and account-security notes: kept locally, never published (the repository is public)
+docs/HOSTING.md
+docs/LAUNCH-CHECKLIST.md

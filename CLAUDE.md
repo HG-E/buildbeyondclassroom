@@ -48,8 +48,8 @@ check.js              automatic checks (also run on every push by .github/workfl
 preview.js            builds and serves the site at http://localhost:3000
 content/en/404.md      the page shown for a wrong address (written to public/404.html)
 docs/                  GATE-DECISIONS.md digest; gates/ full gate text; design/ approved design reference and build prompt
-docs/HOSTING.md       what is connected (GitHub, Vercel, domain) and how it was set up
-docs/LAUNCH-CHECKLIST.md  what is verified and what still needs a person
+docs/HOSTING.md       (local only, not in the public repository) what is connected and how it was set up
+docs/LAUNCH-CHECKLIST.md  (local only, not in the public repository) what is verified and what still needs a person. Account-security status lives here, so never copy it into a tracked file
 ```
 
 
