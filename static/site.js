@@ -110,6 +110,7 @@
     var studioStatus = h('p', { class: 'sr-only', role: 'status' });
     live.parentNode.insertBefore(studioStatus, live.nextSibling);
 
+    var trackWatch = null;
     var renderStudio = function (focusOn) {
       var oldScroller = live.querySelector('.track-scroll');
       var prevScroll = oldScroller ? oldScroller.scrollLeft : 0;
@@ -150,8 +151,15 @@
         if (br.left < sr.left + inset || br.right > sr.right) scroller.scrollLeft += (br.left + br.width / 2) - (sr.left + inset + (sr.width - inset) / 2);
       }
       var hint = h('p', { class: 'hint', 'data-track-hint': '', text: ui.studioSwipe });
-      hint.hidden = !(scroller.scrollWidth > scroller.clientWidth + 1);
+      var showHint = function () { hint.hidden = !(scroller.scrollWidth > scroller.clientWidth + 1); };
+      showHint();
       live.appendChild(hint);
+      // watch the track itself, so the hint is right after a rotation or a late layout, not only after a window resize
+      if (window.ResizeObserver) {
+        if (trackWatch) trackWatch.disconnect();
+        trackWatch = new ResizeObserver(showHint);
+        trackWatch.observe(scroller);
+      }
 
       var s = studio.steps[cur];
       var role = studio.roles[s.ai];
