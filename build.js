@@ -424,7 +424,7 @@ function loadPages(lang) {
 // Words used by the page shell and the scripts live in content/<lang>/, never in the template or here.
 const UI_KEYS = [
   'skipLink', 'navLabel', 'contactLabel', 'footerNote', 'tableLabel', 'brandLabel', 'ctaLabel', 'ctaSlug',
-  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking', 'footerCopyright', 'toTop',
+  'themeLabel', 'menuOpen', 'menuClose', 'ogImageAlt', 'journeyEyebrow', 'journeyLead', 'ctaBandTitle', 'ctaBandText', 'footerPagesTitle', 'footerContactTitle', 'footerNoTracking', 'footerCopyright', 'toTop', 'offlineSave', 'offlineHint', 'offlineSaving', 'offlineDone', 'offlineSaved', 'offlineFail',
   'emailPending', 'emailLabel', 'copyEmail', 'homePrimary', 'homePrimarySlug', 'heroLogTitle', 'heroLogHint',
   'tourStart', 'noJavaScriptLens', 'noJavaScriptInterest',
 ];
@@ -670,7 +670,14 @@ function main() {
   // when the visitor opens it, so a first visit never downloads pages nobody asked for (data is expensive).
   const keep = [...written, ...assets];
   const precache = ['/', ...assets];
-  const version = crypto.createHash('sha1').update(JSON.stringify(keep) + Date.now()).digest('hex').slice(0, 10);
+  // The version follows the content, not the clock: a deploy that changes no page or file leaves visitors' saved copies alone.
+  const contentHash = crypto.createHash('sha1');
+  for (const f of keep) {
+    const p = path.join(OUT, f.endsWith('/') ? f + 'index.html' : f);
+    contentHash.update(f);
+    if (fs.existsSync(p)) contentHash.update(fs.readFileSync(p));
+  }
+  const version = contentHash.digest('hex').slice(0, 10);
   const swPath = path.join(OUT, 'service-worker.js');
   fs.writeFileSync(
     swPath,

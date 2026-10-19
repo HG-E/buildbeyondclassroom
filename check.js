@@ -15,6 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 const { execFileSync } = require('child_process');
 
 const ROOT = __dirname;
@@ -158,14 +159,29 @@ ok(precache.length > 8, 'the offline list is not empty', String(precache.length)
 ok(precache.every((u) => fs.existsSync(path.join(PUBLIC, u.endsWith('/') ? u + 'index.html' : u))), 'every offline file exists');
 ok(!precache.some((u) => u.startsWith('/vendor/') || u === '/tour.js' || u === '/hero-poster.jpg' || u.startsWith('/404')), 'the 3D scene, poster and 404 page are not in the offline list');
 ok(/KEEP\.has\(/.test(sw), 'the service worker only keeps listed files');
+ok(/save-offline/.test(sw) && /offline-status/.test(sw), 'the service worker answers the "save for offline use" messages');
+const keepList = JSON.parse((sw.match(/const KEEP_LIST = (\[.*\]);/) || [, '[]'])[1]);
+ok(keepList.length >= precache.length && precache.every((u) => keepList.includes(u)), 'everything saved on a first visit is also in the full offline list');
+ok(!keepList.some((u) => u.startsWith('/vendor/') || u === '/tour.js' || u === '/hero-poster.jpg' || u.startsWith('/og/') || u.startsWith('/404')), 'the full offline list leaves out the 3D scene, pictures and the 404 page');
 
-/* ---------- 6. budgets (bytes) ---------- */
+/* ---------- 6. budgets: what a visitor actually downloads (gzip estimate; the host may compress a little better) ---------- */
 const size = (p) => fs.statSync(path.join(PUBLIC, p)).size;
-const fonts = walk(path.join(PUBLIC, 'fonts')).filter((f) => f.endsWith('.woff2')).reduce((a, f) => a + fs.statSync(f).size, 0);
-const homeWeight = size('index.html') + size('styles.css') + size('site.js') + size('register-sw.js') + fonts;
-ok(homeWeight <= 200 * 1024, 'home page weight before the 3D scene is within 200 KB', `${Math.round(homeWeight / 1024)} KB`);
-ok(size('hero-poster.jpg') <= 60 * 1024, 'hero poster is within 60 KB', `${Math.round(size('hero-poster.jpg') / 1024)} KB`);
-ok(size('styles.css') <= 40 * 1024, 'stylesheet is within 40 KB', `${Math.round(size('styles.css') / 1024)} KB`);
+const gz = (p) => zlib.gzipSync(fs.readFileSync(path.join(PUBLIC, p.endsWith('/') ? p + 'index.html' : p)), { level: 9 }).length;
+const kb = (n) => `${Math.round(n / 1024)} KB`;
+const fontFiles = walk(path.join(PUBLIC, 'fonts')).filter((f) => f.endsWith('.woff2'));
+const fonts = fontFiles.reduce((a, f) => a + fs.statSync(f).size, 0);
+ok(fontFiles.length <= 4, 'no more than four font files are loaded', String(fontFiles.length));
+const shell = gz('styles.css') + gz('site.js') + gz('early.js') + gz('register-sw.js') + size('favicon.svg') + fonts;
+const firstVisitInner = shell + Math.max(...['programme/', 'studio/', 'hubs-and-partners/', 'facilitators/', 'safeguarding-and-data/', 'accessibility/', 'get-involved/'].map((p) => gz(p)));
+const firstVisitHome = shell + gz('/') + size('hero-poster.jpg');
+ok(firstVisitInner <= 135 * 1024, 'first visit to an inner page downloads at most 135 KB', kb(firstVisitInner));
+ok(firstVisitHome <= 165 * 1024, 'first visit to the home page (picture, no 3D scene) downloads at most 165 KB', kb(firstVisitHome));
+const offlinePack = keepList.filter((u) => !precache.includes(u)).reduce((a, u) => a + gz(u), 0);
+ok(offlinePack <= 50 * 1024, 'the "save for offline use" download is under the 50 KB the button promises (content/<lang>/ui.json: offlineHint)', kb(offlinePack));
+ok(precache.length <= 14, 'a first visit saves at most 14 files for offline use', String(precache.length));
+ok(size('hero-poster.jpg') <= 60 * 1024, 'hero poster is within 60 KB', kb(size('hero-poster.jpg')));
+ok(size('styles.css') <= 40 * 1024, 'stylesheet is within 40 KB', kb(size('styles.css')));
+ok(size('early.js') <= 1024, 'the head script stays under 1 KB', `${size('early.js')} B`);
 
 /* ---------- 7. supply chain: vendored files match their recorded hashes ---------- */
 for (const dir of ['static/fonts', 'static/vendor']) {

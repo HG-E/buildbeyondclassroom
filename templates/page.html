@@ -56,6 +56,11 @@
         <strong class="foot-title">{{siteName}}</strong>
         <p>{{tagline}}</p>
         <p class="lang-links">{{langLinks}}</p>
+        <p class="offline" id="offlineBox" hidden>
+          <button type="button" class="btn ghost small" id="offlineBtn" data-saving="{{ui.offlineSaving}}" data-done="{{ui.offlineDone}}" data-saved="{{ui.offlineSaved}}" data-fail="{{ui.offlineFail}}">{{ui.offlineSave}}</button>
+          <span class="small" id="offlineMsg" role="status" aria-live="polite">{{ui.offlineHint}}</span>
+          <span class="small" id="offlineCount" aria-hidden="true" hidden></span>
+        </p>
       </div>
       <div>
         <strong>{{ui.footerPagesTitle}}</strong>

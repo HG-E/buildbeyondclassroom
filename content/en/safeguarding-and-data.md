@@ -25,7 +25,7 @@ This page explains the rules, in plain words.
 {checks}
 - It has **no accounts, no forms that save information and no analytics.**
 - It uses no cookies for tracking and loads no third-party scripts.
-- It can save a copy of its pages on your device so it still works offline. That copy contains only the public pages, no personal information, and you can clear it in your browser settings.
+- It saves the pages you open on your device so they still work offline, and the button at the bottom of every page saves all of them if you choose. That copy contains only the public pages, no personal information, and you can clear it in your browser settings.
 - If you email Build Beyond Classroom, your message will be read by the team. How messages are kept, and for how long, is still to be decided with local legal advice.
 
 ## What Build Beyond Classroom collects about learners

@@ -67,3 +67,12 @@ Measured with the browser's own timers on a slowed CPU (medians over several run
 - **Home page:** with the old fade-in animation, Speed Index was 2.4 to 2.6 s in two of three runs; with no animation it was 1.5 s every time. The animation is now a short 0.4 s slide with no fade and no delays, so text is visible from the first paint. Over five alternating pairs it was at least as good as before (median Speed Index 1554 ms against 1572 ms, LCP 2129 ms against 2322 ms).
 - **Header jump on phones:** before the script arrived, the phone header was 89 px tall; when it arrived the header shrank to 57 px and pushed the page up. A 300-byte script in the page head (`early.js`) now sets the compact header from the first frame. If the main script never loads, the plain links come back after six seconds.
 - The same code scores about 98 when served locally and about 94 live, so the rest of the gap is the network path to the server, not the code.
+
+## Offline use is now a choice (19 October 2026)
+
+Earlier the offline copy saved only pages as they were opened, which weakened the offline promise for hubs on poor connections. Now a "Save for offline use" button in every footer saves all pages once (about 30 KB, with the button promising under 50 KB), and the copy is refreshed quietly after site updates for anyone who chose it. Nothing extra downloads without that choice, and the button also works when data saver is on.
+
+- **Tested end to end in a real browser:** pressed the button (10 files saved before, 17 after), then stopped the web server. All 8 pages and an unknown address opened from the saved copy. A second browser that never pressed the button showed the home page instead of the studio and programme pages, so the saving is what makes it work. Returning offline shows "Saved for offline use".
+- **Screen readers** hear two messages (start and result), not every progress step.
+- **Budgets in `check.js` now measure what a visitor downloads**, not raw file sizes: inner page first visit at most 135 KB (now about 111 KB), home page with picture at most 165 KB (about 135 KB), the offline download under 50 KB (about 30 KB), a first visit saves at most 14 files for offline use, and the head script stays under 1 KB.
+- **Not tested:** real phones and real mobile networks, and a real screen reader on the button.

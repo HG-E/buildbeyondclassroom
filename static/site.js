@@ -350,6 +350,40 @@
     }
   }
 
+  /* ---------- offline: a visitor can choose to save every page (the service worker does the saving) ---------- */
+  (function () {
+    var box = $('#offlineBox'), btn = $('#offlineBtn'), msg = $('#offlineMsg'), count = $('#offlineCount');
+    if (!box || !btn || !msg || !('serviceWorker' in navigator) || !('caches' in window)) return;
+    // register on demand, so a visitor on data saver (where it is not registered automatically) can still choose to save
+    var ready = function () {
+      return navigator.serviceWorker.getRegistration().then(function (r) {
+        return r || navigator.serviceWorker.register('/service-worker.js');
+      }).then(function () { return navigator.serviceWorker.ready; });
+    };
+    var send = function (message) { return ready().then(function (reg) { if (reg.active) reg.active.postMessage(message); }); };
+    // only the start and the result are announced to screen readers; the running count is for the eye
+    var showSaved = function (text) { msg.textContent = text; count.hidden = true; btn.hidden = true; };
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      var d = e.data || {};
+      if (d.type === 'offline-progress') { count.hidden = false; count.textContent = d.done + ' / ' + d.total; }
+      else if (d.type === 'offline-done') {
+        if (d.ok) showSaved(btn.getAttribute('data-done'));
+        else { btn.disabled = false; count.hidden = true; msg.textContent = btn.getAttribute('data-fail'); }
+      } else if (d.type === 'offline-status' && d.saved) showSaved(btn.getAttribute('data-saved'));
+    });
+    if (navigator.serviceWorker.startMessages) navigator.serviceWorker.startMessages();
+    box.hidden = false;
+    btn.addEventListener('click', function () {
+      btn.disabled = true;
+      msg.textContent = btn.getAttribute('data-saving');
+      send({ type: 'save-offline' }).catch(function () { btn.disabled = false; count.hidden = true; msg.textContent = btn.getAttribute('data-fail'); });
+    });
+    // if the pages are already saved (an earlier visit), say so instead of offering the button
+    navigator.serviceWorker.getRegistration().then(function (r) {
+      if (r && r.active) r.active.postMessage({ type: 'offline-status' });
+    });
+  })();
+
   /* ---------- polish: reveal on scroll, reading progress, header shadow, back to top ---------- */
   (function () {
     var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;

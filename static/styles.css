@@ -562,6 +562,11 @@ header.site.scrolled { box-shadow: 0 6px 24px -14px rgba(0, 0, 0, .6); }
 }
 
 /* ---------- print: paper first. Plain black on white, links shown, no navigation or tools. ---------- */
+/* ---------- offline save control (footer) ---------- */
+.offline { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: .9rem 0 0; }
+.offline[hidden] { display: none; }
+.offline .small { flex: 1 1 14rem; min-width: 0; }
+
 /* ---------- phones: stacked tables, roomier studio track ---------- */
 @media (max-width: 640px) {
   .track { min-width: 900px; grid-template-columns: 92px repeat(8, minmax(0, 1fr)); }
@@ -598,7 +603,7 @@ header.site.scrolled { box-shadow: 0 6px 24px -14px rgba(0, 0, 0, .6); }
   .tw { overflow: visible; }
   table { min-width: 0; }
   html.js-reveal .rv { opacity: 1 !important; transform: none !important; }
-  .progress, .to-top { display: none !important; }
+  .progress, .to-top, .offline { display: none !important; }
   .journey { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
