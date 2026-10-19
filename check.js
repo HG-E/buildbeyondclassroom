@@ -57,7 +57,7 @@ const titles = new Map();
 for (const file of htmlFiles) {
   const name = rel(file).replace(/^public\//, '');
   const h = read(file);
-  const is404 = name === '404.html';
+  const is404 = name === '404.html' || name === 'offline/index.html'; // utility pages: never indexed, no canonical, no share image, no closing call to action
 
   ok(/<html lang="[a-z-]+"/.test(h), `${name}: has a language`);
   const title = (h.match(/<title>([^<]+)<\/title>/) || [])[1];
@@ -161,6 +161,7 @@ ok(!precache.some((u) => u.startsWith('/vendor/') || u === '/tour.js' || u === '
 ok(/KEEP\.has\(/.test(sw), 'the service worker only keeps listed files');
 ok(/save-offline/.test(sw) && /offline-status/.test(sw), 'the service worker answers the "save for offline use" messages');
 const keepList = JSON.parse((sw.match(/const KEEP_LIST = (\[.*\]);/) || [, '[]'])[1]);
+ok(precache.includes('/offline/') && keepList.includes('/offline/'), 'the offline page is saved on a first visit, so an unsaved page can say so');
 ok(keepList.length >= precache.length && precache.every((u) => keepList.includes(u)), 'everything saved on a first visit is also in the full offline list');
 ok(!keepList.some((u) => u.startsWith('/vendor/') || u === '/tour.js' || u === '/hero-poster.jpg' || u.startsWith('/og/') || u.startsWith('/404')), 'the full offline list leaves out the 3D scene, pictures and the 404 page');
 
@@ -287,7 +288,7 @@ for (const file of htmlFiles) {
   const desc = (h.match(/name="description" content="([^"]*)"/) || [])[1] || '';
   ok(title.length >= 10 && title.length <= 70, `${name}: title length is 10 to 70 characters`, `${title.length}: ${title}`);
   ok(desc.length >= 50 && desc.length <= 175, `${name}: description is 50 to 175 characters`, String(desc.length));
-  if (name !== '404.html') {
+  if (name !== '404.html' && name !== 'offline/index.html') {
     if (site.siteUrl) {
       ok(/<link rel="canonical" href="https:\/\/[^"]+"/.test(h), `${name}: has a canonical link`);
       const ogUrl = (h.match(/property="og:image" content="https:\/\/[^"/]+(\/[^"]+\.(?:jpg|png))"/) || [])[1];
@@ -304,7 +305,7 @@ for (const file of htmlFiles) {
       ok(false, `${name}: structured data is valid JSON`, e.message);
     }
   }
-  if (site.indexing && name !== '404.html') ok(/name="robots" content="index,follow"/.test(h), `${name}: open to search engines`);
+  if (site.indexing && name !== '404.html' && name !== 'offline/index.html') ok(/name="robots" content="index,follow"/.test(h), `${name}: open to search engines`);
   if (!site.status) ok(!/class="draft"/.test(h), `${name}: no draft notice on a launched site`);
 }
 for (const f of ['og-image.jpg', 'apple-touch-icon.png']) {
@@ -314,7 +315,7 @@ ok(size('og-image.jpg') <= 150 * 1024, 'share image is within 150 KB', `${Math.r
 if (site.indexing) {
   const sm = fs.existsSync(path.join(PUBLIC, 'sitemap.xml')) ? read(path.join(PUBLIC, 'sitemap.xml')) : '';
   const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((x) => x[1]);
-  const pagesBuilt = htmlFiles.map((f) => rel(f).replace(/^public\//, '')).filter((n) => n !== '404.html');
+  const pagesBuilt = htmlFiles.map((f) => rel(f).replace(/^public\//, '')).filter((n) => n !== '404.html' && n !== 'offline/index.html');
   ok(locs.length === pagesBuilt.length, 'sitemap lists every page', `${locs.length} listed, ${pagesBuilt.length} built`);
   ok(locs.every((u) => u.startsWith(site.siteUrl)), 'sitemap uses the real site address');
 }

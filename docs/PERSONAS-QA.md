@@ -76,3 +76,24 @@ Earlier the offline copy saved only pages as they were opened, which weakened th
 - **Screen readers** hear two messages (start and result), not every progress step.
 - **Budgets in `check.js` now measure what a visitor downloads**, not raw file sizes: inner page first visit at most 135 KB (now about 111 KB), home page with picture at most 165 KB (about 135 KB), the offline download under 50 KB (about 30 KB), a first visit saves at most 14 files for offline use, and the head script stays under 1 KB.
 - **Not tested:** real phones and real mobile networks, and a real screen reader on the button.
+
+## Review, find and fix pass (19 October 2026)
+
+A full review of every page on a phone (dark) and desktop, then behaviour, keyboard, accessibility-engine, device, print and offline tests. What was found and fixed:
+
+| Found | Fixed |
+| --- | --- |
+| Studio steps on a phone: track clipped with no sign it scrolls; no way to move to the next step without scrolling the track; scroll position lost on each tap | Previous and Next step buttons; a swipe hint (only when the track really overflows); the chosen step stays in view; the step is announced to screen readers; a sideways swipe at the track's end no longer triggers the browser's back gesture |
+| Worksheet field placeholder cut off mid-word on a phone | Shorter example text |
+| Email message had no length limit; many email apps silently cut links over about 2,000 characters | Field limits (500 characters for the message) and a clear warning, with "Copy message" as the fallback |
+| Stats box: doubled border on the bottom-left box on phones | Dividers drawn by the grid itself; an odd last box takes the full row; high-contrast mode keeps the dividers |
+| Heading lines ending in a single word (for example the label above the home heading) | Balanced line breaks on headings and labels |
+| Tour link indented from the buttons above it on phones | Aligned |
+| Phones held sideways: the main button fell below the first screen | On short, wide screens the buttons sit beside the text |
+| An unsaved page offline silently showed the home page under the wrong address; a missing script or font came back as a page of HTML | A proper "You are offline" page (never indexed, not in the sitemap); only page visits fall back to it; missing files fail honestly |
+| Back-to-top link sat outside any page region | Moved into the footer |
+| Printed pages were 1 px too wide | Full-width bands reset for print |
+
+What passed with no change: the menu (open, Escape, tap outside, focus return), theme button, worksheet, message builder encoding, back to top, the tour on a phone, and zero console or security-policy errors; keyboard use on phone and desktop (58 and 59 stops, every stop has a visible focus mark, none hidden under the sticky header); the header fits at every width from 320 to 2560 px; no sideways scroll at any tested width; the independent accessibility engine (axe-core) found no violations in 42 views (ten pages, light and dark, phone and desktop, plus the open menu and the running tour); a code review found no way for visitor input to be injected into a page.
+
+Still not tested: real phones, real mobile networks, a real screen reader (VoiceOver, TalkBack, NVDA). Automated engines find only part of real accessibility problems.

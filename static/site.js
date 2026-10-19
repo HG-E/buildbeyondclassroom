@@ -101,7 +101,18 @@
     var fromHash = /^#step-(\d)$/.exec(location.hash || '');
     if (fromHash) cur = Math.max(0, Math.min(studio.steps.length - 1, +fromHash[1] - 1));
 
-    var renderStudio = function () {
+    var go = function (i, focusOn) {
+      cur = i;
+      if (history.replaceState) history.replaceState(null, '', '#step-' + studio.steps[i].n);
+      renderStudio(focusOn);
+    };
+    // read out the chosen step: the region below is rebuilt on every change, which screen readers do not announce
+    var studioStatus = h('p', { class: 'sr-only', role: 'status' });
+    live.parentNode.insertBefore(studioStatus, live.nextSibling);
+
+    var renderStudio = function (focusOn) {
+      var oldScroller = live.querySelector('.track-scroll');
+      var prevScroll = oldScroller ? oldScroller.scrollLeft : 0;
       live.textContent = '';
       var track = h('div', { class: 'track', role: 'group', 'aria-label': ui.studioPick });
       track.appendChild(h('div', { class: 'rowlab', text: ui.studioRowStep }));
@@ -110,7 +121,7 @@
           h('span', { class: 'n', text: String(s.n) }),
           h('span', { class: 't', text: s.title })
         ]);
-        b.addEventListener('click', function () { cur = i; if (history.replaceState) history.replaceState(null, '', '#step-' + s.n); renderStudio(); var again = $('.step-btn[aria-pressed="true"]', live); if (again) again.focus(); });
+        b.addEventListener('click', function () { go(i, 'step'); });
         track.appendChild(b);
       });
       track.appendChild(h('div', { class: 'rowlab', text: ui.studioRowAi }));
@@ -127,7 +138,20 @@
         var label = kind === 'decide' ? ui.studioDecides : kind === 'signoff' ? ui.studioSignsOff : ui.studioGuides;
         track.appendChild(h('div', { class: 'cell ' + (s.facilitator ? 'own' : 'none') + (i === cur ? ' on' : ''), text: label }));
       });
-      live.appendChild(h('div', { class: 'track-scroll' }, [track]));
+      var scroller = h('div', { class: 'track-scroll' }, [track]);
+      live.appendChild(scroller);
+      // keep the place the visitor scrolled to, and bring the chosen step into view if it is hidden
+      scroller.scrollLeft = prevScroll;
+      var sel = $('.step-btn[aria-pressed="true"]', scroller);
+      if (sel) {
+        var sr = scroller.getBoundingClientRect(), br = sel.getBoundingClientRect();
+        var label = $('.rowlab', track);
+        var inset = label ? label.getBoundingClientRect().width : 0;
+        if (br.left < sr.left + inset || br.right > sr.right) scroller.scrollLeft += (br.left + br.width / 2) - (sr.left + inset + (sr.width - inset) / 2);
+      }
+      var hint = h('p', { class: 'hint', 'data-track-hint': '', text: ui.studioSwipe });
+      hint.hidden = !(scroller.scrollWidth > scroller.clientWidth + 1);
+      live.appendChild(hint);
 
       var s = studio.steps[cur];
       var role = studio.roles[s.ai];
@@ -144,8 +168,30 @@
         ])
       ]);
       live.appendChild(panel);
+
+      var prevBtn = h('button', { class: 'btn ghost small', type: 'button', 'data-step-prev': '', text: ui.studioPrev });
+      var nextBtn = h('button', { class: 'btn ghost small', type: 'button', 'data-step-next': '', text: ui.studioNext });
+      prevBtn.disabled = cur === 0;
+      nextBtn.disabled = cur === studio.steps.length - 1;
+      prevBtn.addEventListener('click', function () { go(cur - 1, 'prev'); });
+      nextBtn.addEventListener('click', function () { go(cur + 1, 'next'); });
+      live.appendChild(h('div', { class: 'step-nav' }, [prevBtn, nextBtn]));
+
+      studioStatus.textContent = s.n + ' / ' + studio.steps.length + ': ' + s.title;
+      if (focusOn) {
+        // after Next or Previous, focus stays on that button; if it has just become disabled (the last or first step), on its neighbour
+        var target;
+        if (focusOn === 'next') target = !nextBtn.disabled ? nextBtn : prevBtn;
+        else if (focusOn === 'prev') target = !prevBtn.disabled ? prevBtn : nextBtn;
+        else target = $('.step-btn[aria-pressed="true"]', live);
+        if (target) target.focus({ preventScroll: true });
+      }
     };
     renderStudio();
+    window.addEventListener('resize', function () {
+      var sc = $('.track-scroll', live), hn = $('[data-track-hint]', live);
+      if (sc && hn) hn.hidden = !(sc.scrollWidth > sc.clientWidth + 1);
+    });
     staticTable.hidden = true;
     live.hidden = false;
     window.addEventListener('hashchange', function () {
@@ -208,9 +254,9 @@
   if (interestHost && ui.roles) {
     var role = 0;
     var chips = h('div', { class: 'chips' });
-    var nameEl = h('input', { id: 'inv-name', type: 'text', autocomplete: 'name' });
-    var placeEl = h('input', { id: 'inv-place', type: 'text', placeholder: ui.interestPlaceHint });
-    var msgEl = h('textarea', { id: 'inv-msg', placeholder: ui.interestMessageHint });
+    var nameEl = h('input', { id: 'inv-name', type: 'text', autocomplete: 'name', maxlength: '80' });
+    var placeEl = h('input', { id: 'inv-place', type: 'text', placeholder: ui.interestPlaceHint, maxlength: '80' });
+    var msgEl = h('textarea', { id: 'inv-msg', placeholder: ui.interestMessageHint, maxlength: '500' });
     var out = h('pre', { class: 'brief', 'aria-live': 'polite' });
     var note = h('p', { class: 'hint' });
     var status = h('span', { class: 'hint', role: 'status' });
@@ -244,6 +290,8 @@
         var subject = lines[0].replace(/^Subject:\s*/, '');
         var body = lines.slice(2).join('\r\n');
         mailBtn.href = 'mailto:' + data.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        // many email apps cut a link much over 2,000 characters, which would lose the end of the message without a word
+        status.textContent = mailBtn.getAttribute('href').length > 1900 ? ui.interestLong : '';
       };
     }
     var copyMsg = h('button', { class: 'btn ghost', type: 'button', text: ui.interestCopy });

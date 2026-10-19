@@ -50,7 +50,14 @@ self.addEventListener('fetch', (event) => {
         }
         return res;
       })
-      .catch(() => caches.match(req).then((hit) => hit || caches.match('/')))
+      .catch(() =>
+        caches
+          .match(req)
+          // a page that is not saved shows the offline page, never another page under the wrong address;
+          // a missing script, style or picture is left to fail, not answered with a page of HTML
+          .then((hit) => hit || (req.mode === 'navigate' ? caches.match('/offline/') : null))
+          .then((hit) => hit || Response.error())
+      )
   );
 });
 

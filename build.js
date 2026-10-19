@@ -514,7 +514,7 @@ function render(page, pages, ui, studio) {
   const needsTools = /\{\{(lensTool|interestTool)\}\}/.test(page.body);
   const needsEmail = /\{\{emailBox\}\}/.test(page.body) || needsTools;
   const isHome = page.meta.layout === 'home';
-  const is404 = page.meta.slug === '404';
+  const is404 = page.meta.slug === '404' || page.meta.slug === 'offline'; // utility pages: never indexed, no share image, no closing call to action
 
   const ctaHref = urlFor(lang, ui.ctaSlug);
   const navPages = pages.filter((p) => p.meta.nav !== 'false');
@@ -527,7 +527,7 @@ function render(page, pages, ui, studio) {
       })
       .join('') + `<a class="btn small nav-cta" href="${ctaHref}">${esc(ui.ctaLabel)}</a>`;
   const footerLinks = pages
-    .filter((p) => p.meta.slug !== '' && p.meta.slug !== '404')
+    .filter((p) => p.meta.slug !== '' && p.meta.slug !== '404' && p.meta.slug !== 'offline')
     .map((p) => `<li><a href="${urlFor(lang, p.meta.slug)}">${esc(p.meta.navTitle || p.meta.title)}</a></li>`)
     .join('');
 
@@ -644,6 +644,7 @@ function main() {
   if (fs.existsSync(STATIC)) copyDir(STATIC, OUT);
 
   const written = [];
+  const utility = []; // pages the service worker needs but that are not part of the site proper (the offline page)
   for (const { code } of site.languages) {
     if (!fs.existsSync(path.join(CONTENT, code))) continue;
     const pages = loadPages(code);
@@ -657,7 +658,8 @@ function main() {
         : path.join(OUT, url, 'index.html');
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       fs.writeFileSync(dest, render(page, pages, ui, studio));
-      if (!is404) written.push(url);
+      if (page.meta.slug === 'offline') utility.push(url);
+      else if (!is404) written.push(url);
     }
   }
 
@@ -668,8 +670,8 @@ function main() {
   );
   // Saved on the first visit: only the home page and the files every page needs. Every other page is saved
   // when the visitor opens it, so a first visit never downloads pages nobody asked for (data is expensive).
-  const keep = [...written, ...assets];
-  const precache = ['/', ...assets];
+  const keep = [...written, ...utility, ...assets];
+  const precache = ['/', ...utility, ...assets];
   // The version follows the content, not the clock: a deploy that changes no page or file leaves visitors' saved copies alone.
   const contentHash = crypto.createHash('sha1');
   for (const f of keep) {

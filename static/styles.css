@@ -238,12 +238,13 @@ ul.plain, ol.plain { margin: 0; padding-left: 1.3em; display: grid; gap: .5rem; 
 .legend .pill { justify-self: start; }
 @media (max-width: 560px) { .legend li { grid-template-columns: minmax(0, 1fr); gap: .25rem; } }
 
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); }
-.stat { padding: 1.4rem 1.2rem; border-right: 1px solid var(--line); }
-.stat:last-child { border-right: 0; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--line); overflow: hidden; box-shadow: var(--shadow); }
+.stat { padding: 1.4rem 1.2rem; background: var(--surface); }
 .stat b { display: block; font: 800 2.8rem/1 var(--font-display); font-variant-numeric: tabular-nums; color: var(--accent); }
 .stat span { display: block; margin-top: .5rem; font-size: .95rem; color: var(--muted); }
-@media (max-width: 640px) { .stat { border-right: 0; border-bottom: 1px solid var(--line); } .stat:last-child { border-bottom: 0; } }
+/* two columns on a phone: an odd last box takes the whole row, so no empty slot shows the divider colour */
+@media (max-width: 640px) { .stat:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@media (forced-colors: active) { .stat { border: 1px solid CanvasText; } }
 
 .pill { font: 500 .75rem var(--font-mono); letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; display: inline-block; }
 .pill.tutor { background: var(--tutor-bg); color: var(--tutor); }
@@ -562,6 +563,27 @@ header.site.scrolled { box-shadow: 0 6px 24px -14px rgba(0, 0, 0, .6); }
 }
 
 /* ---------- print: paper first. Plain black on white, links shown, no navigation or tools. ---------- */
+/* ---------- small refinements ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+h1, h2, h3, .mono { text-wrap: balance; }                 /* no one-word last lines in headings and labels */
+.lede, .head p, .cta-band p { text-wrap: pretty; }
+.track-scroll { overscroll-behavior-x: contain; }          /* a sideways swipe at the end of the track must not trigger the browser's back gesture */
+.step-nav { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.1rem; }
+.step-nav .btn[disabled] { opacity: .45; cursor: default; transform: none; box-shadow: none; }
+@media (max-width: 560px) { .hero .actions .btn.quiet { padding-inline: 0; } }   /* the tour link lines up with the buttons above it */
+
+/* A phone held sideways is only about 375 to 430 px tall. The buttons go beside the text, so the main action stays on the first screen. */
+@media (max-height: 520px) and (orientation: landscape) and (max-width: 1000px) {
+  .hero { padding-block: 1rem 1.1rem; min-height: 0; display: block; }
+  .hero-copy { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1.75rem; align-items: start; }
+  .hero-copy > :not(.actions) { grid-column: 1; }
+  .hero-copy .actions { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; flex-direction: column; align-items: stretch; align-self: center; }
+  .hero h1 { font-size: clamp(1.5rem, 4.4vw, 2rem); }
+  .hero .lede { margin-top: .6rem; font-size: .98rem; }
+  .hero-copy .mono { margin-bottom: .5rem; }
+  .hero .actions .btn.quiet { padding-inline: .6rem; justify-content: flex-start; }
+}
+
 /* ---------- offline save control (footer) ---------- */
 .offline { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: .9rem 0 0; }
 .offline[hidden] { display: none; }
@@ -604,6 +626,9 @@ header.site.scrolled { box-shadow: 0 6px 24px -14px rgba(0, 0, 0, .6); }
   table { min-width: 0; }
   html.js-reveal .rv { opacity: 1 !important; transform: none !important; }
   .progress, .to-top, .offline { display: none !important; }
+  .stats { background: none; gap: 0; }
+  .stat { background: none; }
+  .hero, .page-head, footer.site { margin-left: 0; margin-right: 0; } /* the full-width bands made every printed page 1 px too wide */
   .journey { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 

@@ -29,6 +29,9 @@
   "tourStart": "Take the virtual tour",
   "js": {
     "studioPick": "The eight steps",
+    "studioSwipe": "Swipe sideways to see all eight steps, or use the buttons below.",
+    "studioPrev": "Previous step",
+    "studioNext": "Next step",
     "studioRowStep": "Step",
     "studioRowAi": "AI may be",
     "studioRowPartner": "Partner",
@@ -58,7 +61,7 @@
     "copied": "Copied.",
     "copyFailed": "Select the text and copy it.",
     "lensField": "Your field or subject",
-    "lensFieldHint": "For example: nursing, farming, law, graphic design",
+    "lensFieldHint": "For example: nursing, farming, law",
     "lensQuestions": [
       "1. Who benefits?",
       "2. Who pays?",
@@ -94,6 +97,7 @@
     "interestPlaceHint": "For example: a city and a country",
     "interestMessage": "What would you like to do?",
     "interestMessageHint": "A sentence or two is enough.",
+    "interestLong": "This message is long. If your email app cuts it off, use Copy message instead.",
     "interestWarning": "Please do not include sensitive personal information, or any information about children.",
     "interestTitle": "Your message",
     "interestCopy": "Copy message",
